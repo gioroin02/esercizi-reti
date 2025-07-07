@@ -184,25 +184,10 @@ http_request_read_header(HTTP_Request_Reader* self, str8* key, str8* value)
     return 0;
 }
 
-b32
-http_request_read_content(HTTP_Request_Reader* self, Buffer* content)
-{
-    u8*  memory = self->buffer.memory + self->offset;
-    uptr length = self->buffer.size   - self->offset;
-
-    str8 string = str8_make(memory, length);
-
-    if (self->body == 0) return 0;
-
-    buffer_encode_str8(content, string);
-
-    return 1;
-}
-
-Hash_Map<str8, str8>
+HTTP_Heading
 http_request_heading(HTTP_Request_Reader* self, Arena* arena, Socket_TCP session)
 {
-    Hash_Map<str8, str8> result =
+    HTTP_Heading result =
         hash_map_reserve<str8, str8>(arena, 512, &http_hash_str8);
 
     while (self->body == 0) {
@@ -262,29 +247,6 @@ http_request_content(HTTP_Request_Reader* self, Arena* arena, uptr length, Socke
             buffer_clear(&self->buffer);
         }
     }
-
-    return result;
-}
-
-str8
-http_heading_get_content_type(Hash_Map<str8, str8>* self, str8 other)
-{
-    return hash_map_get_or(self, HTTP_HEADER_CONTENT_TYPE, other);
-}
-
-uptr
-http_heading_get_content_length(Hash_Map<str8, str8>* self, uptr other)
-{
-    str8 string = {};
-    u64  result = other;
-
-    if (hash_map_get(self, HTTP_HEADER_CONTENT_LENGTH, &string) == 0)
-        return other;
-
-    Format_Spec spec = format_spec(10, FORMAT_FLAG_NONE);
-
-    if (str8_parse_u64(string, spec, &result) == 0)
-        return other;
 
     return result;
 }

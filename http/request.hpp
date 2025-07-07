@@ -3,7 +3,7 @@
 
 #include "imports.hpp"
 #include "helpers.hpp"
-#include "headers.hpp"
+#include "heading.hpp"
 
 //
 // Types
@@ -68,21 +68,12 @@ http_request_read_start(HTTP_Request_Reader* self, str8* method, str8* resource,
 b32
 http_request_read_header(HTTP_Request_Reader* self, str8* key, str8* value);
 
-b32
-http_request_read_content(HTTP_Request_Reader *self, Buffer* content);
-
 /* Helpers */
 
-Hash_Map<str8, str8>
+HTTP_Heading
 http_request_heading(HTTP_Request_Reader* self, Arena* arena, Socket_TCP session);
 
 Buffer
 http_request_content(HTTP_Request_Reader* self, Arena* arena, uptr length, Socket_TCP session);
-
-str8
-http_heading_get_content_type(Hash_Map<str8, str8>* self, str8 other);
-
-uptr
-http_heading_get_content_length(Hash_Map<str8, str8>* self, uptr other);
 
 #endif // HTTP_REQUEST_HPP

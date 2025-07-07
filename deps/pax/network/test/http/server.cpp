@@ -38,7 +38,7 @@ hash_str8(str8 key)
 }
 
 str8
-headers_get_method(Hash_Map<str8, str8>* headers)
+headers_get_method(HTTP_Heading* headers)
 {
     str8 result = {};
 
@@ -49,7 +49,7 @@ headers_get_method(Hash_Map<str8, str8>* headers)
 }
 
 str8
-headers_get_resource(Hash_Map<str8, str8>* headers)
+headers_get_resource(HTTP_Heading* headers)
 {
     str8 result = {};
 
@@ -59,10 +59,10 @@ headers_get_resource(Hash_Map<str8, str8>* headers)
     return result;
 }
 
-Hash_Map<str8, str8>
-headers_get_resource_args(Hash_Map<str8, str8>* headers, Arena* arena)
+HTTP_Heading
+headers_get_resource_args(HTTP_Heading* headers, Arena* arena)
 {
-    Hash_Map<str8, str8> result =
+    HTTP_Heading result =
         hash_map_reserve<str8, str8>(arena, 64, &hash_str8);
 
     str8 string = {};
@@ -89,7 +89,7 @@ headers_get_resource_args(Hash_Map<str8, str8>* headers, Arena* arena)
 }
 
 str8
-headers_get_version(Hash_Map<str8, str8>* headers)
+headers_get_version(HTTP_Heading* headers)
 {
     str8 result = {};
 
@@ -99,10 +99,10 @@ headers_get_version(Hash_Map<str8, str8>* headers)
     return result;
 }
 
-Hash_Map<str8, str8>
-headers_get_content_type(Hash_Map<str8, str8>* headers, Arena* arena, str8* type)
+HTTP_Heading
+headers_get_content_type(HTTP_Headings, Arena* arena, str8* type)
 {
-    Hash_Map<str8, str8> result =
+    HTTP_Heading result =
         hash_map_reserve<str8, str8>(arena, 64, &hash_str8);
 
     str8 string = {};
@@ -138,7 +138,7 @@ headers_get_content_type(Hash_Map<str8, str8>* headers, Arena* arena, str8* type
 }
 
 uptr
-headers_get_content_length(Hash_Map<str8, str8>* headers, uptr other)
+headers_get_content_length(HTTP_Heading* headers, uptr other)
 {
     Format_Spec spec = format_spec(10,
         FORMAT_FLAG_LEADING_ZERO | FORMAT_FLAG_LEADING_PLUS);
@@ -155,10 +155,10 @@ headers_get_content_length(Hash_Map<str8, str8>* headers, uptr other)
     return result;
 }
 
-Hash_Map<str8, str8>
+HTTP_Heading
 content_multipart_form_data(str8 content, Arena* arena, str8* data)
 {
-    Hash_Map<str8, str8> result =
+    HTTP_Heading result =
         hash_map_reserve<str8, str8>(arena, 64, &hash_str8);
 
     str8 left  = {};
@@ -189,10 +189,10 @@ content_multipart_form_data(str8 content, Arena* arena, str8* data)
     return result;
 }
 
-Hash_Map<str8, str8>
-headers_get_content_disp(Hash_Map<str8, str8>* headers, Arena* arena, str8* disp)
+HTTP_Heading
+headers_get_content_disp(HTTP_Heading* headers, Arena* arena, str8* disp)
 {
-    Hash_Map<str8, str8> result =
+    HTTP_Heading result =
         hash_map_reserve<str8, str8>(arena, 64, &hash_str8);
 
     str8 string = {};
@@ -248,7 +248,7 @@ main()
     while (1) {
         Socket_TCP session = session_open(server, &arena);
 
-        Hash_Map<str8, str8> headers =
+        HTTP_Heading headers =
             hash_map_reserve<str8, str8>(&arena, 1024, &hash_str8);
 
         /* Head */
@@ -295,7 +295,7 @@ main()
 
         str8 content_type = {};
 
-        Hash_Map<str8, str8> content_args =
+        HTTP_Heading content_args =
             headers_get_content_type(&headers, &arena, &content_type);
 
         Buffer content_data = buffer_reserve(&arena,
@@ -340,7 +340,7 @@ main()
         str8 resource = headers_get_resource(&headers);
         str8 version  = headers_get_version(&headers);
 
-        Hash_Map<str8, str8> resource_args = headers_get_resource_args(&headers, &arena);
+        HTTP_Heading resource_args = headers_get_resource_args(&headers, &arena);
 
         printf(INFO " Resource Args (%llu):\n", resource_args.inner.size);
 
@@ -415,7 +415,7 @@ main()
                 payload = str8_slice_until_first(payload, boundary_stop);
                 payload = str8_trim_spaces(payload);
 
-                Hash_Map<str8, str8> payload_args =
+                HTTP_Heading payload_args =
                     content_multipart_form_data(payload, &arena, &payload);
 
                 printf(INFO " Payload args (%llu):\n", payload_args.inner.size);
@@ -431,7 +431,7 @@ main()
 
                 str8 content_disp = {};
 
-                Hash_Map<str8, str8> content_disp_args =
+                HTTP_Heading content_disp_args =
                     headers_get_content_disp(&payload_args, &arena, &content_disp);
 
                 printf(INFO " Content Disp args (%llu):\n", content_disp_args.inner.size);

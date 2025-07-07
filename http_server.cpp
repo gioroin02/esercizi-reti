@@ -3,6 +3,15 @@
 
 #include <stdio.h>
 
+b32
+http_server_on_get(Arena* arena, HTTP_Heading* heading, Buffer* content, HTTP_Response_Writer* writer);
+
+b32
+http_server_on_post(Arena* arena, HTTP_Heading* heading, Buffer* content, HTTP_Response_Writer* writer);
+
+b32
+http_server_fallback(Arena* arena, HTTP_Heading* heading, Buffer* content, HTTP_Response_Writer* writer);
+
 int
 main()
 {
@@ -21,8 +30,8 @@ main()
         HTTP_Request_Reader  reader = http_request_reader_init(&arena, MEMORY_KIB);
         HTTP_Response_Writer writer = http_response_writer_init(&arena);
 
-        Hash_Map<str8, str8> heading = http_request_heading(&reader, &arena, session);
-        Buffer               content = {};
+        HTTP_Heading heading = http_request_heading(&reader, &arena, session);
+        Buffer       content = {};
 
         uptr payload = http_heading_get_content_length(&heading, 0);
 
@@ -34,8 +43,8 @@ main()
         printf(DEBUG " Heading (%llu):\n", heading.inner.size);
 
         for (uptr i = 0; i < heading.inner.size; i += 1) {
-            str8 key   = array_get_or(&heading.key,   i, pax_str8("<empty>"));
-            str8 value = array_get_or(&heading.value, i, pax_str8("<empty>"));
+            str8 key   = array_get_or(&heading.key,   i, pax_str8(""));
+            str8 value = array_get_or(&heading.value, i, pax_str8(""));
 
             printf(DEBUG "     - " YLW("'%.*s'") " => " PRP("'%.*s'") "\n",
                 pax_cast(int, key.length), key.memory,
@@ -46,8 +55,16 @@ main()
 
         /* End debug */
 
-        http_response_write_start(&writer,
-            HTTP_VERSION_1_1, HTTP_STATUS_200, HTTP_MESSAGE_OK);
+        str8 method = http_heading_get_method(&heading, pax_str8(""));
+        b32  state  = 0;
+
+        if (str8_is_equal(method, HTTP_METHOD_GET) != 0)
+            state = http_server_on_get(&arena, &heading, &content, &writer);
+
+        if (str8_is_equal(method, HTTP_METHOD_POST) != 0)
+            state = http_server_on_post(&arena, &heading, &content, &writer);
+
+        if (state == 0) http_server_fallback(&arena, &heading, &content, &writer);
 
         http_response_write(&writer, session);
 
@@ -59,4 +76,31 @@ main()
     server_stop(server);
 
     system_network_stop();
+}
+
+b32
+http_server_on_get(Arena* arena, HTTP_Heading* heading, Buffer* content, HTTP_Response_Writer* writer)
+{
+    http_response_write_start(writer,
+        HTTP_VERSION_1_1, HTTP_STATUS_OK, HTTP_MESSAGE_OK);
+
+    return 1;
+}
+
+b32
+http_server_on_post(Arena* arena, HTTP_Heading* heading, Buffer* content, HTTP_Response_Writer* writer)
+{
+    http_response_write_start(writer,
+        HTTP_VERSION_1_1, HTTP_STATUS_OK, HTTP_MESSAGE_OK);
+
+    return 1;
+}
+
+b32
+http_server_fallback(Arena* arena, HTTP_Heading* heading, Buffer* content, HTTP_Response_Writer* writer)
+{
+    http_response_write_start(writer,
+        HTTP_VERSION_1_1, HTTP_STATUS_METHOD_NOT_ALLOWED, HTTP_MESSAGE_METHOD_NOT_ALLOWED);
+
+    return 1;
 }

@@ -184,19 +184,71 @@ http_response_read_header(HTTP_Response_Reader* self, str8* key, str8* value)
     return 0;
 }
 
-b32
-http_response_read_content(HTTP_Response_Reader* self, Buffer* content)
+HTTP_Heading
+http_response_heading(HTTP_Response_Reader* self, Arena* arena, Socket_TCP session)
 {
-    u8*  memory = self->buffer.memory + self->offset;
-    uptr length = self->buffer.size   - self->offset;
+    HTTP_Heading result =
+        hash_map_reserve<str8, str8>(arena, 512, &http_hash_str8);
 
-    str8 string = str8_make(memory, length);
+    while (self->body == 0) {
+        if (http_response_read(self, session) == 0) break;
 
-    if (self->body == 0) return 0;
+        if (self->line == 0) {
+            str8 version = {};
+            str8 status  = {};
+            str8 message = {};
 
-    buffer_encode_str8(content, string);
+            http_response_read_start(self, &version, &status, &message);
 
-    return 1;
+            hash_map_insert(&result, str8_copy(arena, HTTP_VERSION),
+                str8_copy(arena, version));
+
+            hash_map_insert(&result, str8_copy(arena, HTTP_STATUS),
+                str8_copy(arena, status));
+
+            hash_map_insert(&result, str8_copy(arena, HTTP_MESSAGE),
+                str8_copy(arena, message));
+        }
+
+        while (self->offset < self->buffer.size) {
+            str8 key   = {};
+            str8 value = {};
+
+            if (http_response_read_header(self, &key, &value) == 0)
+                break;
+
+            hash_map_insert(&result, str8_copy(arena, key),
+                str8_copy(arena, value));
+        }
+    }
+
+    return result;
+}
+
+Buffer
+http_response_content(HTTP_Response_Reader* self, Arena* arena, uptr length, Socket_TCP session)
+{
+    Buffer result = buffer_reserve(arena, length);
+
+    if (result.length != 0) {
+        buffer_slide(&self->buffer, self->offset);
+
+        length -= self->buffer.size;
+
+        buffer_encode_buffer(&result, self->buffer);
+        buffer_clear(&self->buffer);
+
+        while (length > 0) {
+            if (http_response_read(self, session) == 0) break;
+
+            length -= self->buffer.size;
+
+            buffer_encode_buffer(&result, self->buffer);
+            buffer_clear(&self->buffer);
+        }
+    }
+
+    return result;
 }
 
 #endif // HTTP_RESPONSE_CPP

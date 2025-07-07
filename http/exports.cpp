@@ -6,4 +6,6 @@
 #include "request.cpp"
 #include "response.cpp"
 
+#include "heading.cpp"
+
 #endif // HTTP_EXPORTS_CPP

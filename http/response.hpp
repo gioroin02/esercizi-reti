@@ -3,6 +3,7 @@
 
 #include "imports.hpp"
 #include "helpers.hpp"
+#include "heading.hpp"
 
 //
 // Types
@@ -67,7 +68,12 @@ http_response_read_start(HTTP_Response_Reader* self, str8* version, str8* status
 b32
 http_response_read_header(HTTP_Response_Reader* self, str8* key, str8* value);
 
-b32
-http_response_read_content(HTTP_Response_Reader *self, Buffer* content);
+/* Helpers */
+
+HTTP_Heading
+http_response_heading(HTTP_Response_Reader* self, Arena* arena, Socket_TCP session);
+
+Buffer
+http_response_content(HTTP_Response_Reader* self, Arena* arena, uptr length, Socket_TCP session);
 
 #endif // HTTP_RESPONSE_HPP
