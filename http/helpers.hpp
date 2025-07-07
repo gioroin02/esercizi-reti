@@ -3,9 +3,17 @@
 
 #include "imports.hpp"
 
+//
+// Values
+//
+
 static const str8 CRLF  = pax_str8("\r\n");
 static const str8 SPACE = pax_str8(" ");
 static const str8 COLON = pax_str8(":");
+
+//
+// Procs
+//
 
 uptr
 http_hash_str8(str8 key);
