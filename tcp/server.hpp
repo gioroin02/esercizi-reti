@@ -18,7 +18,7 @@ session_close(Socket_TCP self);
 b32
 session_write(Socket_TCP self, Buffer buffer);
 
-void
+b32
 session_read(Socket_TCP self, Buffer* buffer);
 
 #endif // TCP_SERVER_HPP

@@ -23,3 +23,6 @@ zig c++ %src% "%dir%\http_server.cpp" %lib% -o http_server.exe
 
 zig c++ %src% "%dir%\tcp_server_first.cpp" %lib% -o tcp_server_first.exe
 zig c++ %src% "%dir%\tcp_client_first.cpp" %lib% -o tcp_client_first.exe
+
+zig c++ %src% "%dir%\tcp_server_add.cpp" %lib% -o tcp_server_add.exe
+zig c++ %src% "%dir%\tcp_client_add.cpp" %lib% -o tcp_client_add.exe

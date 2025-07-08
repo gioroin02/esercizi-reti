@@ -48,19 +48,27 @@ main(int argc, const char* argv[])
 
     u32 number = 0;
 
-    printf("-> ");
+    do {
+        printf("-> ");
 
-    str8 input = stdin_read_str8(&arena, 32);
-    str8 line  = str8_split_on(input, pax_str8("\n"), &input);
+        str8 input  = stdin_read_str8(&arena, 32);
+        str8 line   = str8_split_on(input, pax_str8("\n"), &input);
 
-    u32_from_str8(line, format_options(10, FORMAT_FLAG_NONE), &number);
+        Format_Options opts = format_options(10, FORMAT_FLAG_NONE);
 
-    number = u32_net_from_host(number);
+        if (u32_from_str8(line, opts, &number) == 0)
+            number = 0;
 
-    buffer_write_mem8(&request, pax_cast(u8*, &number),
-        pax_size_of(u32));
+        number = u32_net_from_host(number);
 
-    client_write(client, request);
+        buffer_clear(&request);
+
+        buffer_write_mem8(&request, pax_cast(u8*, &number),
+            pax_size_of(u32));
+
+        client_write(client, request);
+    } while (number != 0);
+
     client_read(client, &response);
 
     buffer_read_mem8(&response, 0, pax_cast(u8*, &number),
@@ -68,7 +76,7 @@ main(int argc, const char* argv[])
 
     number = u32_host_from_net(number);
 
-    printf(INFO " %lu\n", number);
+    printf(INFO " result = %lu\n", number);
 
     client_stop(client);
 

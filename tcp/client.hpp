@@ -15,7 +15,7 @@ client_connect(Socket_TCP self, u16 port, Address address);
 b32
 client_write(Socket_TCP self, Buffer buffer);
 
-void
+b32
 client_read(Socket_TCP self, Buffer* buffer);
 
 #endif // TCP_CLIENT_HPP

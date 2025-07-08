@@ -14,11 +14,14 @@ main(int argc, const char* argv[])
     if (argc == 2) {
         Format_Options opts = format_options(10, FORMAT_FLAG_NONE);
 
-        u16_from_str8(str8_count_max(pax_cast(const u8*, argv[1]), 128),
-            opts, &server_port);
+        str8 arg1 = str8_count_max(
+            pax_cast(const u8*, argv[1]), 128);
+
+        u16_from_str8(arg1, opts, &server_port);
     }
 
-    Socket_TCP server = server_start(&arena, server_port, address_any(ADDRESS_KIND_IP4));
+    Socket_TCP server = server_start(&arena,
+        server_port, address_any(ADDRESS_KIND_IP4));
 
     if (server == 0) return 1;
 

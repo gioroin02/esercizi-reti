@@ -98,16 +98,18 @@ session_write(Socket_TCP self, Buffer buffer)
     return state;
 }
 
-void
+b32
 session_read(Socket_TCP self, Buffer* buffer)
 {
     printf(TRACE " Lettura richiesta ");
 
-    socket_tcp_read(self, buffer);
+    b32 state = socket_tcp_read(self, buffer);
 
     printf("di " YLW("%lluB") ": ", buffer->size);
 
-    printf("%s\n", buffer->size > 0 ? SUCC : FAIL);
+    printf("%s\n", state != 0 ? SUCC : FAIL);
+
+    return state;
 }
 
 #endif // TCP_SERVER_CPP
