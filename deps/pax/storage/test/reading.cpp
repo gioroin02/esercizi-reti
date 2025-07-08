@@ -16,7 +16,7 @@ main(int argc, const char* argv[])
     if (argc != 2) return 1;
 
     str8 name = str8_count_max(pax_cast(u8*, argv[1]), 128);
-    File file = file_open(&arena, name, FILE_PERM_READ);
+    File file = file_open(&arena, pax_str8("."), name, FILE_PERM_READ);
 
     if (file == 0) return 1;
 

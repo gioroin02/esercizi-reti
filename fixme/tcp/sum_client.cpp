@@ -17,14 +17,17 @@ main()
     if (str8_parse_address(SERVER_ADDR, ADDRESS_KIND_IP4, &server_addr) == 0)
         return 1;
 
-    Socket_UDP client = client_start(&arena, ADDRESS_KIND_IP4);
+    Socket_TCP client = client_start(&arena, ADDRESS_KIND_IP4);
+
+    if (client_connect(client, SERVER_PORT, server_addr) == 0)
+        return 1;
 
     uptr number = 0;
 
-    Format_Spec spec = {};
+    Format_Options opts = {};
 
-    spec.base  = 10;
-    spec.flags = FORMAT_FLAG_LEADING_ZERO |
+    opts.base  = 10;
+    opts.flags = FORMAT_FLAG_LEADING_ZERO |
                  FORMAT_FLAG_LEADING_PLUS;
 
     do {
@@ -35,30 +38,24 @@ main()
         str8 input = str8_read_from_stdin(&arena, MEMORY_KIB);
         str8 line  = str8_slice_until_first(input, pax_str8("\n"));
 
-        if (str8_parse_u64(line, spec, &number) == 0) continue;
+        if (str8_parse_u64(line, opts, &number) == 0) continue;
 
         arena_rewind(&arena, offset);
 
         buffer_encode_u64(&request, u64_net_from_host(number));
-        client_write(client, request, SERVER_PORT, server_addr);
+        client_write(client, request);
 
         if (number == 0) break;
     } while (true);
 
-    Address addr = {};
-    u16     port = 0;
+    client_read(client, &response);
 
-    client_read(client, &response, &port, &addr);
+    uptr total = 0;
 
-    if (address_is_equal(addr, server_addr) != 0 && port == SERVER_PORT) {
-        uptr total = 0;
-
-        if (buffer_decode_u64(&response, &total) != 0)
-            printf(INFO " total = " YLW("%lli")  "\n", total);
-        else
-            printf(ERROR " Errore nella lettura del risultato...\n");
-    } else
-        printf(ERROR " Indirizzo o porta inaspettati...\n");
+    if (buffer_decode_u64(&response, &total) != 0)
+        printf(INFO " total = " YLW("%lli")  "\n", total);
+    else
+        printf(ERROR " Errore nella lettura del risultato...\n");
 
     client_stop(client);
 

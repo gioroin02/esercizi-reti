@@ -235,7 +235,7 @@ http_request_content(HTTP_Request_Reader* self, Arena* arena, uptr length, Socke
 
         length -= self->buffer.size;
 
-        buffer_encode_buffer(&result, self->buffer);
+        buffer_write(&result, self->buffer);
         buffer_clear(&self->buffer);
 
         while (length > 0) {
@@ -243,7 +243,7 @@ http_request_content(HTTP_Request_Reader* self, Arena* arena, uptr length, Socke
 
             length -= self->buffer.size;
 
-            buffer_encode_buffer(&result, self->buffer);
+            buffer_write(&result, self->buffer);
             buffer_clear(&self->buffer);
         }
     }

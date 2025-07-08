@@ -1,8 +1,8 @@
 #ifndef PAX_FORMAT_STR_BUILDER_HPP
 #define PAX_FORMAT_STR_BUILDER_HPP
 
-#include "parse_unsigned.hpp"
-#include "parse_integer.hpp"
+#include "unsigned.hpp"
+#include "integer.hpp"
 
 namespace pax {
 

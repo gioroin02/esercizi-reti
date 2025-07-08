@@ -17,7 +17,7 @@ main(int argc, const char* argv[])
     if (argc != 2) return 1;
 
     str8 content = str8_count_max(pax_cast(u8*, argv[1]), 2 * MEMORY_KIB);
-    File file    = file_open_new(&arena, pax_str8(".temp.txt"), FILE_PERM_READ_WRITE);
+    File file    = file_open_new(&arena, pax_str8("."), pax_str8(".temp.txt"), FILE_PERM_READ_WRITE);
 
     if (file == 0) return 1;
 
@@ -37,5 +37,5 @@ main(int argc, const char* argv[])
 
     file_close(file);
 
-    file_delete(&arena, pax_str8(".temp.txt"));
+    file_delete(&arena, pax_str8("."), pax_str8(".temp.txt"));
 }

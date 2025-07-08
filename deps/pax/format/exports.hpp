@@ -1,10 +1,10 @@
 #ifndef PAX_FORMAT_EXPORTS_HPP
 #define PAX_FORMAT_EXPORTS_HPP
 
-#include "format_spec.hpp"
+#include "options.hpp"
 
-#include "parse_unsigned.hpp"
-#include "parse_integer.hpp"
+#include "unsigned.hpp"
+#include "integer.hpp"
 
 #include "builder.hpp"
 

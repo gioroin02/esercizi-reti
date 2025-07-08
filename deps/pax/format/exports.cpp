@@ -1,10 +1,10 @@
 #ifndef PAX_FORMAT_EXPORTS_CPP
 #define PAX_FORMAT_EXPORTS_CPP
 
-#include "format_spec.cpp"
+#include "options.cpp"
 
-#include "parse_unsigned.cpp"
-#include "parse_integer.cpp"
+#include "unsigned.cpp"
+#include "integer.cpp"
 
 #include "builder.cpp"
 

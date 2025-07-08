@@ -163,16 +163,25 @@ b32
 ascii_is_letter(u32 value);
 
 b32
-ascii_is_letter_lower(u32 value);
+ascii_is_lower(u32 value);
 
 b32
-ascii_is_letter_upper(u32 value);
+ascii_is_upper(u32 value);
 
 uptr
-ascii_digit_index(u32 value, uptr base);
+digit_from_ascii(u32 value, uptr base);
 
 uptr
-ascii_letter_index(u32 value);
+letter_from_ascii(u32 value);
+
+u32
+ascii_from_digit(uptr value, uptr base);
+
+u32
+ascii_from_upper(uptr value);
+
+u32
+ascii_from_lower(uptr value);
 
 } // namespace pax
 

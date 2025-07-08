@@ -1,5 +1,5 @@
-#ifndef PAX_FORMAT_FORMAT_SPEC_HPP
-#define PAX_FORMAT_FORMAT_SPEC_HPP
+#ifndef PAX_FORMAT_OPTIONS_HPP
+#define PAX_FORMAT_OPTIONS_HPP
 
 #include "imports.hpp"
 
@@ -16,7 +16,7 @@ enum Format_Flag
     FORMAT_FLAG_LEADING_PLUS = 0x2,
 };
 
-struct Format_Spec
+struct Format_Options
 {
     uptr flags = FORMAT_FLAG_NONE;
     uptr base  = 10;
@@ -26,11 +26,11 @@ struct Format_Spec
 // Procs
 //
 
-/* Format_Spec */
+/* Format_Options */
 
-Format_Spec
-format_spec(uptr base, uptr flags);
+Format_Options
+format_options(uptr base, uptr flags);
 
 } // namespace pax
 
-#endif // PAX_FORMAT_FORMAT_SPEC_HPP
+#endif // PAX_FORMAT_OPTIONS_HPP

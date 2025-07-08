@@ -42,7 +42,7 @@ main()
         printf("base = %3llu: { ", i);
 
         for (uptr j = 0; j < pax_array_length(CODEPOINTS); j += 1)
-            printf("%s ", ascii_digit_index(CODEPOINTS[j], i) < i ? TRUE : FALSE);
+            printf("%s ", digit_from_ascii(CODEPOINTS[j], i) < i ? TRUE : FALSE);
 
         printf("}\n");
     }

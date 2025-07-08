@@ -15,10 +15,10 @@ using namespace pax;
 #define FALSE RED("F")
 
 void
-show_str8_parse_i64(Format_Spec spec, str8 string)
+show_i64_from_str8(Format_Options opts, str8 string)
 {
     i64 value = 0;
-    b32 state = str8_parse_i64(string, spec, &value);
+    b32 state = i64_from_str8(string, opts, &value);
 
     printf("i64(" PRP("'%24.*s'") ") -> %s | %lli\n",
         pax_cast(int, string.length), string.memory,
@@ -26,10 +26,10 @@ show_str8_parse_i64(Format_Spec spec, str8 string)
 }
 
 void
-show_str8_parse_i32(Format_Spec spec, str8 string)
+show_i32_from_str8(Format_Options opts, str8 string)
 {
     i32 value = 0;
-    b32 state = str8_parse_i32(string, spec, &value);
+    b32 state = i32_from_str8(string, opts, &value);
 
     printf("i32(" PRP("'%24.*s'") ") -> %s | %li\n",
         pax_cast(int, string.length), string.memory,
@@ -37,10 +37,10 @@ show_str8_parse_i32(Format_Spec spec, str8 string)
 }
 
 void
-show_str8_parse_i16(Format_Spec spec, str8 string)
+show_i16_from_str8(Format_Options opts, str8 string)
 {
     i16 value = 0;
-    b32 state = str8_parse_i16(string, spec, &value);
+    b32 state = i16_from_str8(string, opts, &value);
 
     printf("i16(" PRP("'%24.*s'") ") -> %s | %i\n",
         pax_cast(int, string.length), string.memory,
@@ -48,126 +48,145 @@ show_str8_parse_i16(Format_Spec spec, str8 string)
 }
 
 void
-show_str8_parse_i8(Format_Spec spec, str8 string)
+show_i8_from_str8(Format_Options opts, str8 string)
 {
     i8  value = 0;
-    b32 state = str8_parse_i8(string, spec, &value);
+    b32 state = i8_from_str8(string, opts, &value);
 
     printf("i8(" PRP("'%24.*s'") ") -> %s | %i\n",
         pax_cast(int, string.length), string.memory,
         state ? TRUE : FALSE, value);
 }
 
+void
+show_str8_from_i8(Arena* arena, Format_Options opts, i8 value)
+{
+    str8 string = str8_from_i8(arena, opts, value);
+
+    printf("str8(%i) -> " PRP("'%24.*s'") "\n",
+        value, pax_cast(int, string.length), string.memory);
+}
+
 int
 main()
 {
-    Format_Spec spec = {};
+    u8 memory[MEMORY_KIB] = {};
 
-    spec.base  = 10;
-    spec.flags = FORMAT_FLAG_LEADING_ZERO |
-                 FORMAT_FLAG_LEADING_PLUS;
+    Arena arena = pax_arena(memory);
 
-    show_str8_parse_i64(spec, pax_str8("1"));
-    show_str8_parse_i64(spec, pax_str8("+1"));
-    show_str8_parse_i64(spec, pax_str8("0"));
-    show_str8_parse_i64(spec, pax_str8("+0"));
-    show_str8_parse_i64(spec, pax_str8("127"));
-    show_str8_parse_i64(spec, pax_str8("128"));
-    show_str8_parse_i64(spec, pax_str8("-128"));
-    show_str8_parse_i64(spec, pax_str8("-129"));
-    show_str8_parse_i64(spec, pax_str8("32767"));
-    show_str8_parse_i64(spec, pax_str8("32768"));
-    show_str8_parse_i64(spec, pax_str8("-32768"));
-    show_str8_parse_i64(spec, pax_str8("-32769"));
-    show_str8_parse_i64(spec, pax_str8("2147483647"));
-    show_str8_parse_i64(spec, pax_str8("2147483648"));
-    show_str8_parse_i64(spec, pax_str8("-2147483648"));
-    show_str8_parse_i64(spec, pax_str8("-2147483649"));
-    show_str8_parse_i64(spec, pax_str8("9223372036854775807"));
-    show_str8_parse_i64(spec, pax_str8("9223372036854775808"));
-    show_str8_parse_i64(spec, pax_str8("-9223372036854775808"));
-    show_str8_parse_i64(spec, pax_str8("-9223372036854775809"));
-    show_str8_parse_i64(spec, pax_str8("-150"));
+    Format_Options opts = format_options(10, FORMAT_FLAG_LEADING_ZERO |
+        FORMAT_FLAG_LEADING_PLUS);
 
-    printf("\n");
-
-    show_str8_parse_i32(spec, pax_str8("1"));
-    show_str8_parse_i32(spec, pax_str8("+1"));
-    show_str8_parse_i32(spec, pax_str8("0"));
-    show_str8_parse_i32(spec, pax_str8("+0"));
-    show_str8_parse_i32(spec, pax_str8("127"));
-    show_str8_parse_i32(spec, pax_str8("128"));
-    show_str8_parse_i32(spec, pax_str8("-128"));
-    show_str8_parse_i32(spec, pax_str8("-129"));
-    show_str8_parse_i32(spec, pax_str8("32767"));
-    show_str8_parse_i32(spec, pax_str8("32768"));
-    show_str8_parse_i32(spec, pax_str8("-32768"));
-    show_str8_parse_i32(spec, pax_str8("-32769"));
-    show_str8_parse_i32(spec, pax_str8("2147483647"));
-    show_str8_parse_i32(spec, pax_str8("2147483648"));
-    show_str8_parse_i32(spec, pax_str8("-2147483648"));
-    show_str8_parse_i32(spec, pax_str8("-2147483649"));
-    show_str8_parse_i32(spec, pax_str8("9223372036854775807"));
-    show_str8_parse_i32(spec, pax_str8("9223372036854775808"));
-    show_str8_parse_i32(spec, pax_str8("-9223372036854775808"));
-    show_str8_parse_i32(spec, pax_str8("-9223372036854775809"));
-    show_str8_parse_i32(spec, pax_str8("-150"));
+    show_i64_from_str8(opts, pax_str8("1"));
+    show_i64_from_str8(opts, pax_str8("+1"));
+    show_i64_from_str8(opts, pax_str8("0"));
+    show_i64_from_str8(opts, pax_str8("+0"));
+    show_i64_from_str8(opts, pax_str8("127"));
+    show_i64_from_str8(opts, pax_str8("128"));
+    show_i64_from_str8(opts, pax_str8("-128"));
+    show_i64_from_str8(opts, pax_str8("-129"));
+    show_i64_from_str8(opts, pax_str8("32767"));
+    show_i64_from_str8(opts, pax_str8("32768"));
+    show_i64_from_str8(opts, pax_str8("-32768"));
+    show_i64_from_str8(opts, pax_str8("-32769"));
+    show_i64_from_str8(opts, pax_str8("2147483647"));
+    show_i64_from_str8(opts, pax_str8("2147483648"));
+    show_i64_from_str8(opts, pax_str8("-2147483648"));
+    show_i64_from_str8(opts, pax_str8("-2147483649"));
+    show_i64_from_str8(opts, pax_str8("9223372036854775807"));
+    show_i64_from_str8(opts, pax_str8("9223372036854775808"));
+    show_i64_from_str8(opts, pax_str8("-9223372036854775808"));
+    show_i64_from_str8(opts, pax_str8("-9223372036854775809"));
+    show_i64_from_str8(opts, pax_str8("-150"));
 
     printf("\n");
 
-    show_str8_parse_i16(spec, pax_str8("1"));
-    show_str8_parse_i16(spec, pax_str8("+1"));
-    show_str8_parse_i16(spec, pax_str8("0"));
-    show_str8_parse_i16(spec, pax_str8("+0"));
-    show_str8_parse_i16(spec, pax_str8("127"));
-    show_str8_parse_i16(spec, pax_str8("128"));
-    show_str8_parse_i16(spec, pax_str8("-128"));
-    show_str8_parse_i16(spec, pax_str8("-129"));
-    show_str8_parse_i16(spec, pax_str8("32767"));
-    show_str8_parse_i16(spec, pax_str8("32768"));
-    show_str8_parse_i16(spec, pax_str8("-32768"));
-    show_str8_parse_i16(spec, pax_str8("-32769"));
-    show_str8_parse_i16(spec, pax_str8("2147483647"));
-    show_str8_parse_i16(spec, pax_str8("2147483648"));
-    show_str8_parse_i16(spec, pax_str8("-2147483648"));
-    show_str8_parse_i16(spec, pax_str8("-2147483649"));
-    show_str8_parse_i16(spec, pax_str8("9223372036854775807"));
-    show_str8_parse_i16(spec, pax_str8("9223372036854775808"));
-    show_str8_parse_i16(spec, pax_str8("-9223372036854775808"));
-    show_str8_parse_i16(spec, pax_str8("-9223372036854775809"));
-    show_str8_parse_i16(spec, pax_str8("-150"));
+    show_i32_from_str8(opts, pax_str8("1"));
+    show_i32_from_str8(opts, pax_str8("+1"));
+    show_i32_from_str8(opts, pax_str8("0"));
+    show_i32_from_str8(opts, pax_str8("+0"));
+    show_i32_from_str8(opts, pax_str8("127"));
+    show_i32_from_str8(opts, pax_str8("128"));
+    show_i32_from_str8(opts, pax_str8("-128"));
+    show_i32_from_str8(opts, pax_str8("-129"));
+    show_i32_from_str8(opts, pax_str8("32767"));
+    show_i32_from_str8(opts, pax_str8("32768"));
+    show_i32_from_str8(opts, pax_str8("-32768"));
+    show_i32_from_str8(opts, pax_str8("-32769"));
+    show_i32_from_str8(opts, pax_str8("2147483647"));
+    show_i32_from_str8(opts, pax_str8("2147483648"));
+    show_i32_from_str8(opts, pax_str8("-2147483648"));
+    show_i32_from_str8(opts, pax_str8("-2147483649"));
+    show_i32_from_str8(opts, pax_str8("9223372036854775807"));
+    show_i32_from_str8(opts, pax_str8("9223372036854775808"));
+    show_i32_from_str8(opts, pax_str8("-9223372036854775808"));
+    show_i32_from_str8(opts, pax_str8("-9223372036854775809"));
+    show_i32_from_str8(opts, pax_str8("-150"));
 
     printf("\n");
 
-    show_str8_parse_i8(spec, pax_str8("1"));
-    show_str8_parse_i8(spec, pax_str8("+1"));
-    show_str8_parse_i8(spec, pax_str8("0"));
-    show_str8_parse_i8(spec, pax_str8("+0"));
-    show_str8_parse_i8(spec, pax_str8("127"));
-    show_str8_parse_i8(spec, pax_str8("128"));
-    show_str8_parse_i8(spec, pax_str8("-128"));
-    show_str8_parse_i8(spec, pax_str8("-129"));
-    show_str8_parse_i8(spec, pax_str8("32767"));
-    show_str8_parse_i8(spec, pax_str8("32768"));
-    show_str8_parse_i8(spec, pax_str8("-32768"));
-    show_str8_parse_i8(spec, pax_str8("-32769"));
-    show_str8_parse_i8(spec, pax_str8("2147483647"));
-    show_str8_parse_i8(spec, pax_str8("2147483648"));
-    show_str8_parse_i8(spec, pax_str8("-2147483648"));
-    show_str8_parse_i8(spec, pax_str8("-2147483649"));
-    show_str8_parse_i8(spec, pax_str8("9223372036854775807"));
-    show_str8_parse_i8(spec, pax_str8("9223372036854775808"));
-    show_str8_parse_i8(spec, pax_str8("-9223372036854775808"));
-    show_str8_parse_i8(spec, pax_str8("-9223372036854775809"));
-    show_str8_parse_i8(spec, pax_str8("-150"));
+    show_i16_from_str8(opts, pax_str8("1"));
+    show_i16_from_str8(opts, pax_str8("+1"));
+    show_i16_from_str8(opts, pax_str8("0"));
+    show_i16_from_str8(opts, pax_str8("+0"));
+    show_i16_from_str8(opts, pax_str8("127"));
+    show_i16_from_str8(opts, pax_str8("128"));
+    show_i16_from_str8(opts, pax_str8("-128"));
+    show_i16_from_str8(opts, pax_str8("-129"));
+    show_i16_from_str8(opts, pax_str8("32767"));
+    show_i16_from_str8(opts, pax_str8("32768"));
+    show_i16_from_str8(opts, pax_str8("-32768"));
+    show_i16_from_str8(opts, pax_str8("-32769"));
+    show_i16_from_str8(opts, pax_str8("2147483647"));
+    show_i16_from_str8(opts, pax_str8("2147483648"));
+    show_i16_from_str8(opts, pax_str8("-2147483648"));
+    show_i16_from_str8(opts, pax_str8("-2147483649"));
+    show_i16_from_str8(opts, pax_str8("9223372036854775807"));
+    show_i16_from_str8(opts, pax_str8("9223372036854775808"));
+    show_i16_from_str8(opts, pax_str8("-9223372036854775808"));
+    show_i16_from_str8(opts, pax_str8("-9223372036854775809"));
+    show_i16_from_str8(opts, pax_str8("-150"));
 
     printf("\n");
 
-    spec.base = 2;
+    show_i8_from_str8(opts, pax_str8("1"));
+    show_i8_from_str8(opts, pax_str8("+1"));
+    show_i8_from_str8(opts, pax_str8("0"));
+    show_i8_from_str8(opts, pax_str8("+0"));
+    show_i8_from_str8(opts, pax_str8("127"));
+    show_i8_from_str8(opts, pax_str8("128"));
+    show_i8_from_str8(opts, pax_str8("-128"));
+    show_i8_from_str8(opts, pax_str8("-129"));
+    show_i8_from_str8(opts, pax_str8("32767"));
+    show_i8_from_str8(opts, pax_str8("32768"));
+    show_i8_from_str8(opts, pax_str8("-32768"));
+    show_i8_from_str8(opts, pax_str8("-32769"));
+    show_i8_from_str8(opts, pax_str8("2147483647"));
+    show_i8_from_str8(opts, pax_str8("2147483648"));
+    show_i8_from_str8(opts, pax_str8("-2147483648"));
+    show_i8_from_str8(opts, pax_str8("-2147483649"));
+    show_i8_from_str8(opts, pax_str8("9223372036854775807"));
+    show_i8_from_str8(opts, pax_str8("9223372036854775808"));
+    show_i8_from_str8(opts, pax_str8("-9223372036854775808"));
+    show_i8_from_str8(opts, pax_str8("-9223372036854775809"));
+    show_i8_from_str8(opts, pax_str8("-150"));
 
-    show_str8_parse_i8(spec, pax_str8("1101"));
-    show_str8_parse_i8(spec, pax_str8("01111111"));
-    show_str8_parse_i8(spec, pax_str8("10000000"));
-    show_str8_parse_i8(spec, pax_str8("-10000000"));
-    show_str8_parse_i8(spec, pax_str8("-10000001"));
+    printf("\n");
+
+    opts = format_options(2, FORMAT_FLAG_LEADING_ZERO |
+        FORMAT_FLAG_LEADING_PLUS);
+
+    show_i8_from_str8(opts, pax_str8("1101"));
+    show_i8_from_str8(opts, pax_str8("01111111"));
+    show_i8_from_str8(opts, pax_str8("10000000"));
+    show_i8_from_str8(opts, pax_str8("-10000000"));
+    show_i8_from_str8(opts, pax_str8("-10000001"));
+
+    printf("\n");
+
+    show_str8_from_i8(&arena, format_options(10, FORMAT_FLAG_NONE), 5);
+    show_str8_from_i8(&arena, format_options(2,  FORMAT_FLAG_NONE), 5);
+    show_str8_from_i8(&arena, format_options(10, FORMAT_FLAG_NONE), -128);
+    show_str8_from_i8(&arena, format_options(10, FORMAT_FLAG_NONE), -64);
+    show_str8_from_i8(&arena, format_options(16, FORMAT_FLAG_NONE), -128);
 }

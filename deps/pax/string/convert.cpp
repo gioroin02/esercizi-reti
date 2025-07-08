@@ -410,7 +410,7 @@ buffer_from_str32(Arena* arena, str32 value)
 }
 
 b32
-buffer_encode_str8(Buffer* self, str8 value)
+buffer_write_str8(Buffer* self, str8 value)
 {
     uptr start = self->size;
     uptr size  = value.length;
@@ -426,7 +426,7 @@ buffer_encode_str8(Buffer* self, str8 value)
 }
 
 b32
-buffer_encode_str16(Buffer* self, str16 value)
+buffer_write_str16(Buffer* self, str16 value)
 {
     uptr start = self->size;
     uptr size  = utf8_units_from_str16(value);
@@ -450,7 +450,7 @@ buffer_encode_str16(Buffer* self, str16 value)
 }
 
 b32
-buffer_encode_str32(Buffer* self, str32 value)
+buffer_write_str32(Buffer* self, str32 value)
 {
     uptr start = self->size;
     uptr size  = utf8_units_from_str32(value);

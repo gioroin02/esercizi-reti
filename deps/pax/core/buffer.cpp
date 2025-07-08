@@ -58,7 +58,7 @@ buffer_slide(Buffer* self, uptr offset)
 }
 
 b32
-buffer_encode_buffer(Buffer* self, Buffer value)
+buffer_write(Buffer* self, Buffer value)
 {
     uptr start = self->size;
     uptr size  = value.size;
@@ -74,15 +74,15 @@ buffer_encode_buffer(Buffer* self, Buffer value)
 }
 
 b32
-buffer_encode_uptr(Buffer* self, uptr value)
+buffer_write_mem8(Buffer* self, u8* memory, uptr length)
 {
     uptr start = self->size;
-    uptr size  = UPTR_SIZE;
+    uptr size  = length;
 
     if (start < 0 || start + size > self->length)
         return 0;
 
-    mem8_copy(self->memory + start, &value, size);
+    mem8_copy(self->memory + start, memory, size);
 
     self->size += size;
 
@@ -90,145 +90,34 @@ buffer_encode_uptr(Buffer* self, uptr value)
 }
 
 b32
-buffer_encode_u64(Buffer* self, u64 value)
+buffer_read(Buffer* self, uptr index, Buffer* value)
 {
-    uptr start = self->size;
-    uptr size  = U64_SIZE;
+    uptr start = value->size;
+    uptr size  = value->length - value->size;
 
-    if (start < 0 || start + size > self->length)
+    if (index < 0 || index > self->size)
         return 0;
 
-    mem8_copy(self->memory + start, &value, size);
+    size = pax_limit(size, 0, self->size - index);
 
-    self->size += size;
+    mem8_copy(value->memory + start,
+        self->memory + index, size);
+
+    value->size += size;
 
     return 1;
 }
 
 b32
-buffer_encode_u32(Buffer* self, u32 value)
+buffer_read_mem8(Buffer* self, uptr index, u8* memory, uptr length)
 {
-    uptr start = self->size;
-    uptr size  = U32_SIZE;
-
-    if (start < 0 || start + size > self->length)
+    if (index < 0 || index > self->size)
         return 0;
 
-    mem8_copy(self->memory + start, &value, size);
+    uptr size = pax_limit(size, 0, self->size - index);
 
-    self->size += size;
-
-    return 1;
-}
-
-b32
-buffer_encode_u16(Buffer* self, u16 value)
-{
-    uptr start = self->size;
-    uptr size  = U16_SIZE;
-
-    if (start < 0 || start + size > self->length)
-        return 0;
-
-    mem8_copy(self->memory + start, &value, size);
-
-    self->size += size;
-
-    return 1;
-}
-
-b32
-buffer_encode_u8(Buffer* self, u8 value)
-{
-    uptr start = self->size;
-    uptr size  = U8_SIZE;
-
-    if (start < 0 || start + size > self->length)
-        return 0;
-
-    mem8_copy(self->memory + start, &value, size);
-
-    self->size += size;
-
-    return 1;
-}
-
-b32
-buffer_decode_uptr(Buffer* self, uptr* value)
-{
-    uptr size  = UPTR_SIZE;
-    uptr start = self->size - size;
-
-    if (start < 0 || start + size > self->length)
-        return 0;
-
-    mem8_copy(value, self->memory + start, size);
-
-    self->size -= size;
-
-    return 1;
-}
-
-b32
-buffer_decode_u64(Buffer* self, u64* value)
-{
-    uptr size  = U64_SIZE;
-    uptr start = self->size - size;
-
-    if (start < 0 || start + size > self->length)
-        return 0;
-
-    mem8_copy(value, self->memory + start, size);
-
-    self->size -= size;
-
-    return 1;
-}
-
-b32
-buffer_decode_u32(Buffer* self, u32* value)
-{
-    uptr size  = U32_SIZE;
-    uptr start = self->size - size;
-
-    if (start < 0 || start + size > self->length)
-        return 0;
-
-    mem8_copy(value, self->memory + start, size);
-
-    self->size -= size;
-
-    return 1;
-}
-
-b32
-buffer_decode_u16(Buffer* self, u16* value)
-{
-    uptr size  = U16_SIZE;
-    uptr start = self->size - size;
-
-    if (start < 0 || start + size > self->length)
-        return 0;
-
-    mem8_copy(value, self->memory + start, size);
-
-    self->size -= size;
-
-    return 1;
-}
-
-b32
-buffer_decode_u8(Buffer* self, u8* value)
-{
-    uptr size  = U8_SIZE;
-    uptr start = self->size - size;
-
-    if (start < 0 || start + size > self->length)
-        return 0;
-
-    mem8_copy(value, self->memory + start, size);
-
-    self->size -= size;
+    mem8_copy(memory, self->memory + index, size);
+    mem8_zero(memory + size, length - size);
 
     return 1;
 }

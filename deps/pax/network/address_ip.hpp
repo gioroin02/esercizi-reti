@@ -58,7 +58,7 @@ address_ip4_is_equal(Address_IP4 self, Address_IP4 value);
 /* Address_IP4 parsing */
 
 b32
-str8_parse_ip4(str8 self, Address_IP4* value);
+ip4_from_str8(str8 self, Address_IP4* value);
 
 /* Address_IP6 */
 
@@ -71,7 +71,7 @@ address_ip6_is_equal(Address_IP6 self, Address_IP6 value);
 /* Address_IP6 parsing */
 
 b32
-str8_parse_ip6(str8 self, Address_IP6* value);
+ip6_from_str8(str8 self, Address_IP6* value);
 
 } // namespace pax
 

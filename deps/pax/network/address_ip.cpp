@@ -23,15 +23,15 @@ address_ip4_is_equal(Address_IP4 self, Address_IP4 value)
 }
 
 b32
-str8_parse_ip4(str8 self, Address_IP4* value)
+ip4_from_str8(str8 self, Address_IP4* value)
 {
     str8 group = self;
     str8 tail  = self;
 
-    Format_Spec spec = {};
+    Format_Options opts = {};
 
-    spec.flags = FORMAT_FLAG_LEADING_ZERO;
-    spec.base  = 10;
+    opts.flags = FORMAT_FLAG_LEADING_ZERO;
+    opts.base  = 10;
 
     u8 temp[ADDRESS_IP4_GROUPS] = {};
 
@@ -48,7 +48,7 @@ str8_parse_ip4(str8 self, Address_IP4* value)
     for (uptr i = 0; i < ADDRESS_IP4_GROUPS; i += 1) {
         group = str8_split_on(tail, pax_str8("."), &tail);
 
-        if (str8_parse_u8(group, spec, &temp[i]) == 0)
+        if (u8_from_str8(group, opts, &temp[i]) == 0)
             return 0;
     }
 
@@ -75,7 +75,7 @@ address_ip6_is_equal(Address_IP6 self, Address_IP6 value)
 }
 
 b32
-str8_parse_ip6(str8 self, Address_IP6* value)
+ip6_from_str8(str8 self, Address_IP6* value)
 {
     if (str8_is_equal(self, pax_str8("localhost")) != 0) {
         if (value != 0)
@@ -84,10 +84,10 @@ str8_parse_ip6(str8 self, Address_IP6* value)
         return 1;
     }
 
-    Format_Spec spec = {};
+    Format_Options opts = {};
 
-    spec.flags = FORMAT_FLAG_LEADING_ZERO;
-    spec.base  = 16;
+    opts.flags = FORMAT_FLAG_LEADING_ZERO;
+    opts.base  = 16;
 
     u16 temp[ADDRESS_IP6_GROUPS] = {};
 
@@ -102,7 +102,7 @@ str8_parse_ip6(str8 self, Address_IP6* value)
             for (uptr i = 0; i < ADDRESS_IP6_GROUPS; i += 1) {
                 group = str8_split_on(tail, pax_str8(":"), &tail);
 
-                if (str8_parse_u16(group, spec, &temp[i]) == 0)
+                if (u16_from_str8(group, opts, &temp[i]) == 0)
                     return 0;
             }
 
@@ -127,7 +127,7 @@ str8_parse_ip6(str8 self, Address_IP6* value)
 
                 if (group.length == 0) break;
 
-                if (str8_parse_u16(group, spec, &temp[i]) == 0)
+                if (u16_from_str8(group, opts, &temp[i]) == 0)
                     return 0;
             }
 
@@ -143,7 +143,7 @@ str8_parse_ip6(str8 self, Address_IP6* value)
 
                 if (group.length == 0) break;
 
-                if (str8_parse_u16(group, spec, &temp[i]) == 0)
+                if (u16_from_str8(group, opts, &temp[i]) == 0)
                     return 0;
             }
 

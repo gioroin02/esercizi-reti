@@ -24,10 +24,10 @@ main(int argc, const char* argv[])
 
     uptr lifetime = 1;
 
-    Format_Spec spec = {};
+    Format_Options opts = {};
 
-    spec.base  = 10;
-    spec.flags = FORMAT_FLAG_LEADING_ZERO |
+    opts.base  = 10;
+    opts.flags = FORMAT_FLAG_LEADING_ZERO |
                  FORMAT_FLAG_LEADING_PLUS;
 
     if (argc == 2) {
@@ -35,7 +35,7 @@ main(int argc, const char* argv[])
         str8 count = str8_trim_prefix(input, SERVER_COUNT_PFX);
 
         if (str8_starts_with(input, SERVER_COUNT_PFX) != 0)
-            str8_parse_u64(count, spec, &lifetime);
+            str8_parse_u64(count, opts, &lifetime);
     }
 
     Address addr = {};

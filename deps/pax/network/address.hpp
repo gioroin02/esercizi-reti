@@ -42,7 +42,7 @@ address_is_equal(Address self, Address value);
 /* Address parsing */
 
 b32
-str8_parse_address(str8 self, Address_Kind kind, Address* value);
+address_from_str8(str8 self, Address_Kind kind, Address* value);
 
 } // namespace pax
 

@@ -48,7 +48,7 @@ address_is_equal(Address self, Address value)
 }
 
 b32
-str8_parse_address(str8 self, Address_Kind kind, Address *value)
+address_from_str8(str8 self, Address_Kind kind, Address *value)
 {
     if (value == 0) return 0;
 
@@ -56,12 +56,12 @@ str8_parse_address(str8 self, Address_Kind kind, Address *value)
 
     switch (kind) {
         case ADDRESS_KIND_IP4: {
-            if (str8_parse_ip4(self, &value->ip4) == 0)
+            if (ip4_from_str8(self, &value->ip4) == 0)
                 return 0;
         } break;
 
         case ADDRESS_KIND_IP6: {
-            if (str8_parse_ip6(self, &value->ip6) == 0)
+            if (ip6_from_str8(self, &value->ip6) == 0)
                 return 0;
         } break;
 

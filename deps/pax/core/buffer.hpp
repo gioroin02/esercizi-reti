@@ -47,42 +47,21 @@ buffer_clear(Buffer* self);
 void
 buffer_slide(Buffer* self, uptr offset);
 
-/* Encoding */
+/* Buffer writing */
 
 b32
-buffer_encode_buffer(Buffer* self, Buffer value);
+buffer_write(Buffer* self, Buffer value);
 
 b32
-buffer_encode_uptr(Buffer* self, uptr value);
+buffer_write_mem8(Buffer* self, u8* memory, uptr length);
+
+/* Buffer reading */
 
 b32
-buffer_encode_u64(Buffer* self, u64 value);
+buffer_read(Buffer* self, uptr index, Buffer* value);
 
 b32
-buffer_encode_u32(Buffer* self, u32 value);
-
-b32
-buffer_encode_u16(Buffer* self, u16 value);
-
-b32
-buffer_encode_u8(Buffer* self, u8 value);
-
-/* Decoding */
-
-b32
-buffer_decode_uptr(Buffer* self, uptr* value);
-
-b32
-buffer_decode_u64(Buffer* self, u64* value);
-
-b32
-buffer_decode_u32(Buffer* self, u32* value);
-
-b32
-buffer_decode_u16(Buffer* self, u16* value);
-
-b32
-buffer_decode_u8(Buffer* self, u8* value);
+buffer_read_mem8(Buffer* self, uptr index, u8* memory, uptr length);
 
 } // namespace pax
 
