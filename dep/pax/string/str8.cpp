@@ -111,7 +111,7 @@ str8_get_or(str8 self, uptr index, u8 value)
 }
 
 str8
-str8_count(const u8* memory)
+str8_count(u8* memory)
 {
     uptr index = 0;
 
@@ -122,7 +122,7 @@ str8_count(const u8* memory)
 }
 
 str8
-str8_count_max(const u8* memory, uptr limit)
+str8_count_max(u8* memory, uptr limit)
 {
     uptr index = 0;
 

@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 Socket_TCP
-server_start(Arena* arena, u16 port, Address address)
+server_tcp_start(Arena* arena, u16 port, Address address)
 {
     uptr       offset = arena_offset(arena);
     Socket_TCP result = socket_tcp_create(arena, address.kind);
@@ -35,13 +35,13 @@ server_start(Arena* arena, u16 port, Address address)
 }
 
 void
-server_stop(Socket_TCP self)
+server_tcp_stop(Socket_TCP self)
 {
     socket_tcp_destroy(self);
 }
 
 Socket_TCP
-session_open(Socket_TCP self, Arena* arena)
+session_tcp_open(Socket_TCP self, Arena* arena)
 {
     printf(TRACE " Apertura sessione ");
 
@@ -80,13 +80,13 @@ session_open(Socket_TCP self, Arena* arena)
 }
 
 void
-session_close(Socket_TCP self)
+session_tcp_close(Socket_TCP self)
 {
     socket_tcp_destroy(self);
 }
 
 b32
-session_write(Socket_TCP self, Buffer buffer)
+session_tcp_write(Socket_TCP self, Buffer buffer)
 {
     printf(TRACE " Scrittura risposta di " YLW("%lluB") ": ",
         buffer.size);
@@ -99,7 +99,7 @@ session_write(Socket_TCP self, Buffer buffer)
 }
 
 b32
-session_read(Socket_TCP self, Buffer* buffer)
+session_tcp_read(Socket_TCP self, Buffer* buffer)
 {
     printf(TRACE " Lettura richiesta ");
 

@@ -6,19 +6,19 @@
 #include <stdio.h>
 
 Socket_TCP
-client_start(Arena* arena, Address_Kind kind)
+client_tcp_start(Arena* arena, Address_Kind kind)
 {
     return socket_tcp_create(arena, kind);
 }
 
 void
-client_stop(Socket_TCP self)
+client_tcp_stop(Socket_TCP self)
 {
     socket_tcp_destroy(self);
 }
 
 b32
-client_connect(Socket_TCP self, u16 port, Address address)
+client_tcp_connect(Socket_TCP self, u16 port, Address address)
 {
     printf(TRACE " Apertura sessione con {addr = [");
 
@@ -54,7 +54,7 @@ client_connect(Socket_TCP self, u16 port, Address address)
 }
 
 b32
-client_write(Socket_TCP self, Buffer buffer)
+client_tcp_write(Socket_TCP self, Buffer buffer)
 {
     printf(TRACE " Scrittura richiesta di " YLW("%lluB") ": ",
         buffer.size);
@@ -67,7 +67,7 @@ client_write(Socket_TCP self, Buffer buffer)
 }
 
 b32
-client_read(Socket_TCP self, Buffer* buffer)
+client_tcp_read(Socket_TCP self, Buffer* buffer)
 {
     printf(TRACE " Lettura risposta ");
 

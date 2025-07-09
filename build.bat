@@ -2,27 +2,40 @@ echo off
 
 cls
 
-set "core=deps/pax/core/exports.cpp"
-set "string=deps/pax/string/exports.cpp"
-set "format=deps/pax/format/exports.cpp"
-set "memory=deps/pax/memory/exports.cpp"
-set "storage=deps/pax/storage/exports.cpp"
-set "network=deps/pax/network/exports.cpp"
-set "container=deps/pax/container/exports.cpp"
+set "core=dep\pax\core\exports.cpp"
+set "string=dep\pax\string\exports.cpp"
+set "format=dep\pax\format\exports.cpp"
+set "memory=dep\pax\memory\exports.cpp"
+set "storage=dep\pax\storage\exports.cpp"
+set "network=dep\pax\network\exports.cpp"
+set "container=dep\pax\container\exports.cpp"
 
 set "winsock=-lws2_32"
 
-set "tcp=tcp\exports.cpp"
-set "http=http\exports.cpp"
+set "udp=src\udp\exports.cpp"
+set "tcp=src\tcp\exports.cpp"
+set "http=src\http\exports.cpp"
 
-set "src=%core% %string% %format% %memory% %storage% %network% %container% %tcp% %http%"
+set "src=%core% %string% %format% %memory% %storage% %network% %container% %udp% %tcp% %http%"
 set "lib=%winsock%"
-set "dir=."
+set "dir=src"
 
-zig c++ %src% "%dir%\http_server.cpp" %lib% -o http_server.exe
+rem UDP
+
+zig c++ %src% "%dir%\udp_server_first.cpp" %lib% -o udp_server_first.exe
+zig c++ %src% "%dir%\udp_client_first.cpp" %lib% -o udp_client_first.exe
+
+zig c++ %src% "%dir%\udp_server_add.cpp" %lib% -o udp_server_add.exe
+zig c++ %src% "%dir%\udp_client_add.cpp" %lib% -o udp_client_add.exe
+
+rem TCP
 
 zig c++ %src% "%dir%\tcp_server_first.cpp" %lib% -o tcp_server_first.exe
 zig c++ %src% "%dir%\tcp_client_first.cpp" %lib% -o tcp_client_first.exe
 
 zig c++ %src% "%dir%\tcp_server_add.cpp" %lib% -o tcp_server_add.exe
 zig c++ %src% "%dir%\tcp_client_add.cpp" %lib% -o tcp_client_add.exe
+
+rem HTTP
+
+rem zig c++ %src% "%dir%\http_server.cpp" %lib% -o http_server.exe

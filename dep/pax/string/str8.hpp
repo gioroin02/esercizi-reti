@@ -11,6 +11,12 @@
 #define pax_str8(string) \
     str8_make(pax_cast(u8*, string), pax_array_length(string) - 1)
 
+#define pax_str8_cnt(string) \
+    str8_count(pax_cast(u8*, string))
+
+#define pax_str8_max(string, limit) \
+    str8_count_max(pax_cast(u8*, string), limit)
+
 #define pax_to_str8(expr) pax_str8(pax_string(expr))
 
 namespace pax {
@@ -64,10 +70,10 @@ str8_get_or(str8 self, uptr index, u8 value);
 /* str8 counting */
 
 str8
-str8_count(const u8* memory);
+str8_count(u8* memory);
 
 str8
-str8_count_max(const u8* memory, uptr limit);
+str8_count_max(u8* memory, uptr limit);
 
 /* str8 slicing */
 
