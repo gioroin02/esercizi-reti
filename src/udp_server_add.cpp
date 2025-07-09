@@ -45,7 +45,7 @@ main(int argc, const char* argv[])
         Address addr = {};
         u16     port = 0;
 
-        server_udp_read(server, &request, &port, &addr);
+        if (server_udp_read(server, &request, &port, &addr) == 0) break;
 
         if (client_port == 0) {
             client_addr = addr;
@@ -70,7 +70,7 @@ main(int argc, const char* argv[])
                 input, result);
         } else
             printf(ERROR " Indirizzo o porta inaspettati...\n");
-    } while (true);
+    } while (1);
 
     result = u32_net_from_host(result);
 

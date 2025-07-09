@@ -7,7 +7,6 @@
 !/.gitignore
 
 !/src
-!/dep
 !/data
 
 !/README.md

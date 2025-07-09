@@ -33,7 +33,7 @@ main(int argc, const char* argv[])
 
     if (server == 0) return 1;
 
-    Socket_TCP session = session_tcp_open(server, &arena);
+    Socket_TCP session = session_tcp_open(&arena, server);
 
     if (session == 0) return 1;
 
@@ -45,7 +45,7 @@ main(int argc, const char* argv[])
     u32 result = 0;
 
     do {
-        session_tcp_read(session, &request);
+        if (session_tcp_read(session, &request) == 0) break;
 
         u32 input = 0;
 
@@ -62,7 +62,7 @@ main(int argc, const char* argv[])
 
         printf(INFO " input = " YLW("%lu") ", result = " YLW("%lu") "\n",
             input, result);
-    } while (true);
+    } while (1);
 
     result = u32_net_from_host(result);
 

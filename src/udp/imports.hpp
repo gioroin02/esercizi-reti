@@ -1,7 +1,7 @@
 #ifndef UDP_IMPORTS_HPP
 #define UDP_IMPORTS_HPP
 
-#include "../../dep/pax/network/exports.hpp"
+#include "../pax/network/exports.hpp"
 
 using namespace pax;
 

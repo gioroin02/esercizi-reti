@@ -8,8 +8,14 @@
 // Defines
 //
 
-#define pax_str16(string) \
-    str16_make(pax_cast(u16*, string), pax_array_length(string) - 1)
+#define pax_str16(memory) \
+    str16_make(pax_cast(u16*, memory), pax_array_length(memory) - 1)
+
+#define pax_str16_cnt(memory) \
+    str16_count(pax_cast(u16*, memory))
+
+#define pax_str16_max(memory, limit) \
+    str16_count(pax_cast(u16*, memory), limit)
 
 #define pax_to_str16(expr) pax_str16(L pax_string(expr))
 
@@ -32,7 +38,7 @@ struct str16
 /* str16 */
 
 str16
-str16_make(const u16* memory, uptr length);
+str16_make(u16* memory, uptr length);
 
 str16
 str16_reserve(Arena* arena, uptr length);
@@ -41,7 +47,7 @@ str16
 str16_copy(Arena* arena, str16 value);
 
 str16
-str16_copy_mem(Arena* arena, const u16* memory, uptr length);
+str16_copy_mem(Arena* arena, u16* memory, uptr length);
 
 str16
 str16_from_unicode(Arena* arena, u32 value);
@@ -61,10 +67,10 @@ str16_get_or(str16 self, uptr index, u16 value);
 /* str16 counting */
 
 str16
-str16_count(const u16* memory);
+str16_count(u16* memory);
 
 str16
-str16_count_max(const u16* memory, uptr limit);
+str16_count_max(u16* memory, uptr limit);
 
 /* str16 slicing */
 

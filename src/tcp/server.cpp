@@ -41,11 +41,11 @@ server_tcp_stop(Socket_TCP self)
 }
 
 Socket_TCP
-session_tcp_open(Socket_TCP self, Arena* arena)
+session_tcp_open(Arena* arena, Socket_TCP server)
 {
     printf(TRACE " Apertura sessione ");
 
-    Socket_TCP result = socket_tcp_accept(self, arena);
+    Socket_TCP result = socket_tcp_accept(server, arena);
 
     printf("con {addr = [");
 

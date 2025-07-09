@@ -55,13 +55,13 @@ main(int argc, const char* argv[])
     u16     port = 0;
     Address addr = {};
 
-    client_udp_read(client, &response, &port, &addr);
-
-    if (server_port == port && address_is_equal(server_addr, addr) != 0) {
-        printf(INFO " " PRP("'%.*s'") "\n", pax_cast(i16, response.size),
-            response.memory);
-    } else
-        printf(ERROR " Indirizzo o porta inaspettati...\n");
+    if (client_udp_read(client, &response, &port, &addr) != 0) {
+        if (server_port == port && address_is_equal(server_addr, addr) != 0) {
+            printf(INFO " " BLU("'%.*s'") "\n",
+                pax_cast(int, response.size), response.memory);
+        } else
+            printf(ERROR " Indirizzo o porta inaspettati...\n");
+    }
 
     client_udp_stop(client);
 

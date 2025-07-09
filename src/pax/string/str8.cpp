@@ -6,12 +6,12 @@
 namespace pax {
 
 str8
-str8_make(const u8* memory, uptr length)
+str8_make(u8* memory, uptr length)
 {
     str8 result = {};
 
     if (memory != 0 && length != 0) {
-        result.memory = pax_cast(u8*, memory);
+        result.memory = memory;
         result.length = length;
     }
 
@@ -31,11 +31,11 @@ str8_copy(Arena* arena, str8 value)
 }
 
 str8
-str8_copy_mem(Arena* arena, const u8* memory, uptr length)
+str8_copy_mem(Arena* arena, u8* memory, uptr length)
 {
     str8 result = str8_reserve(arena, length);
 
-    mem8_copy(result.memory, pax_cast(u8*, memory), result.length);
+    mem8_copy(result.memory, memory, result.length);
 
     return result;
 }

@@ -47,19 +47,20 @@ main(int argc, const char* argv[])
     uptr offset = arena_offset(&arena);
 
     for (uptr i = 0; i < server_lifetime; i += 1) {
-        Socket_TCP session = session_tcp_open(server, &arena);
+        Socket_TCP session = session_tcp_open(&arena, server);
 
         Buffer request  = buffer_reserve(&arena, MEMORY_KIB);
         Buffer response = buffer_reserve(&arena, MEMORY_KIB);
 
-        session_tcp_read(session, &request);
+        if (session_tcp_read(session, &request) != 0) {
+            printf(INFO " " BLU("'%.*s'") "\n",
+                pax_cast(int, request.size), request.memory);
 
-        printf(INFO " " PRP("'%.*s'") "\n", pax_cast(i16, request.size),
-            request.memory);
+            buffer_write_str8(&response, SERVER_MSG);
 
-        buffer_write_str8(&response, SERVER_MSG);
+            session_tcp_write(session, response);
+        }
 
-        session_tcp_write(session, response);
         session_tcp_close(session);
 
         arena_rewind(&arena, offset);

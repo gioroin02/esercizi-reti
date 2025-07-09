@@ -10,7 +10,7 @@ void
 server_tcp_stop(Socket_TCP self);
 
 Socket_TCP
-session_tcp_open(Socket_TCP self, Arena* arena);
+session_tcp_open(Arena* arena, Socket_TCP server);
 
 void
 session_tcp_close(Socket_TCP self);

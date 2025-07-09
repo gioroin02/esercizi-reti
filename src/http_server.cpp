@@ -1,11 +1,10 @@
 #include "tcp/exports.hpp"
 #include "http/exports.hpp"
-
-#include "deps/pax/storage/exports.hpp"
+#include "pax/storage/exports.hpp"
 
 #include <stdio.h>
 
-static const str8 HTTP_SERVER_DATA = pax_str8("./http_server");
+static const str8 SERVER_DATA_PATH = pax_str8("./data/http_server");
 
 b32
 http_server_on_get(Arena* arena, HTTP_Heading* heading, Buffer* content, HTTP_Response_Writer* writer);
@@ -29,13 +28,14 @@ main()
 
     if (system_network_start() == 0) return 1;
 
-    Socket_TCP server = server_start(&arena, 8000, address_any(ADDRESS_KIND_IP4));
-    uptr       offset = arena_offset(&arena);
+    Socket_TCP server = server_tcp_start(&arena, 8000, address_any(ADDRESS_KIND_IP4));
 
     if (server == 0) return 1;
 
+    uptr offset = arena_offset(&arena);
+
     while (1) {
-        Socket_TCP session = session_open(server, &arena);
+        Socket_TCP session = session_tcp_open(&arena, server);
 
         HTTP_Request_Reader  reader = http_request_reader_init(&arena, MEMORY_KIB);
         HTTP_Response_Writer writer = http_response_writer_init(&arena);
@@ -56,7 +56,7 @@ main()
             str8 key   = array_get_or(&heading.key,   i, pax_str8(""));
             str8 value = array_get_or(&heading.value, i, pax_str8(""));
 
-            printf(DEBUG "     - " YLW("'%.*s'") " => " PRP("'%.*s'") "\n",
+            printf(DEBUG "     - " YLW("'%.*s'") " => " BLU("'%.*s'") "\n",
                 pax_cast(int, key.length), key.memory,
                 pax_cast(int, value.length), value.memory);
         }
@@ -78,12 +78,12 @@ main()
 
         http_response_write(&writer, session);
 
-        session_close(session);
+        session_tcp_close(session);
 
         arena_rewind(&arena, offset);
     }
 
-    server_stop(server);
+    server_tcp_stop(server);
 
     system_network_stop();
 }
@@ -103,17 +103,17 @@ http_server_on_get(Arena* arena, HTTP_Heading* heading, Buffer* content, HTTP_Re
 
     File_Props properties = {};
 
-    if (file_props(&properties, arena, HTTP_SERVER_DATA, resource) == 0) {
+    if (file_props(&properties, arena, SERVER_DATA_PATH, resource) == 0) {
         resource = fallback;
 
-        if (file_props(&properties, arena, HTTP_SERVER_DATA, resource) == 0)
-            printf(ERROR " Unable to locate resource or fallback\n");
+        if (file_props(&properties, arena, SERVER_DATA_PATH, resource) == 0)
+            printf(ERROR " Unable to locate resource and fallback\n");
     }
 
     Buffer buffer = buffer_reserve(arena, file_size(&properties));
 
     if (buffer.length != 0) {
-        File file = file_open(arena, HTTP_SERVER_DATA, resource, FILE_PERM_READ);
+        File file = file_open(arena, SERVER_DATA_PATH, resource, FILE_PERM_READ);
 
         if (file != 0) {
             if (file_read(file, &buffer) != 0) {
@@ -149,7 +149,7 @@ http_server_on_post(Arena* arena, HTTP_Heading* heading, Buffer* content, HTTP_R
         str8 key   = array_get_or(&content_args.key,   i, pax_str8(""));
         str8 value = array_get_or(&content_args.value, i, pax_str8(""));
 
-        printf(DEBUG "     - " YLW("'%.*s'") " => " PRP("'%.*s'") "\n",
+        printf(DEBUG "     - " YLW("'%.*s'") " => " BLU("'%.*s'") "\n",
             pax_cast(int, key.length), key.memory,
             pax_cast(int, value.length), value.memory);
     }
@@ -203,7 +203,7 @@ http_server_on_multipart_form_data(Arena* arena, HTTP_Heading* heading, str8 mul
         str8 key   = array_get_or(&multipart_args.key,   i, pax_str8(""));
         str8 value = array_get_or(&multipart_args.value, i, pax_str8(""));
 
-        printf(DEBUG "     - " YLW("'%.*s'") " => " PRP("'%.*s'") "\n",
+        printf(DEBUG "     - " YLW("'%.*s'") " => " BLU("'%.*s'") "\n",
             pax_cast(int, key.length), key.memory,
             pax_cast(int, value.length), value.memory);
     }
@@ -229,7 +229,7 @@ http_server_on_multipart_form_data(Arena* arena, HTTP_Heading* heading, str8 mul
         str8 key   = array_get_or(&contdisp_args.key,   i, pax_str8(""));
         str8 value = array_get_or(&contdisp_args.value, i, pax_str8(""));
 
-        printf(DEBUG "     - " YLW("'%.*s'") " => " PRP("'%.*s'") "\n",
+        printf(DEBUG "     - " YLW("'%.*s'") " => " BLU("'%.*s'") "\n",
             pax_cast(int, key.length), key.memory,
             pax_cast(int, value.length), value.memory);
     }
@@ -249,7 +249,7 @@ http_server_on_multipart_form_data(Arena* arena, HTTP_Heading* heading, str8 mul
     name = str8_slice_until_first(name, pax_str8("\""));
     name = str8_trim_spaces(name);
 
-    File file = file_open_new(arena, HTTP_SERVER_DATA, name, FILE_PERM_WRITE);
+    File file = file_open_new(arena, SERVER_DATA_PATH, name, FILE_PERM_WRITE);
 
     if (file != 0) {
         Buffer buffer = buffer_make_full(multipart.memory, multipart.length);

@@ -2,13 +2,13 @@ echo off
 
 cls
 
-set "core=dep\pax\core\exports.cpp"
-set "string=dep\pax\string\exports.cpp"
-set "format=dep\pax\format\exports.cpp"
-set "memory=dep\pax\memory\exports.cpp"
-set "storage=dep\pax\storage\exports.cpp"
-set "network=dep\pax\network\exports.cpp"
-set "container=dep\pax\container\exports.cpp"
+set "core=src\pax\core\exports.cpp"
+set "string=src\pax\string\exports.cpp"
+set "format=src\pax\format\exports.cpp"
+set "memory=src\pax\memory\exports.cpp"
+set "storage=src\pax\storage\exports.cpp"
+set "network=src\pax\network\exports.cpp"
+set "container=src\pax\container\exports.cpp"
 
 set "winsock=-lws2_32"
 
@@ -36,6 +36,9 @@ zig c++ %src% "%dir%\tcp_client_first.cpp" %lib% -o tcp_client_first.exe
 zig c++ %src% "%dir%\tcp_server_add.cpp" %lib% -o tcp_server_add.exe
 zig c++ %src% "%dir%\tcp_client_add.cpp" %lib% -o tcp_client_add.exe
 
+zig c++ %src% "%dir%\tcp_server_file.cpp" %lib% -o tcp_server_file.exe
+rem zig c++ %src% "%dir%\tcp_client_file.cpp" %lib% -o tcp_client_file.exe
+
 rem HTTP
 
-rem zig c++ %src% "%dir%\http_server.cpp" %lib% -o http_server.exe
+zig c++ %src% "%dir%\http_server.cpp" %lib% -o http_server.exe

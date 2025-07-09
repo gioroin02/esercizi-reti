@@ -87,16 +87,16 @@ main(int argc, const char* argv[])
         arena_rewind(&arena, offset);
     } while (number != 0);
 
-    client_tcp_read(client, &response);
+    if (client_tcp_read(client, &response) != 0) {
+        u32 result = 0;
 
-    u32 result = 0;
+        buffer_read_mem8(&response, 0, pax_cast(u8*, &result),
+            pax_size_of(u32));
 
-    buffer_read_mem8(&response, 0, pax_cast(u8*, &result),
-        pax_size_of(u32));
+        result = u32_host_from_net(result);
 
-    result = u32_host_from_net(result);
-
-    printf(INFO " result = " YLW("%lu")  "\n", result);
+        printf(INFO " result = " YLW("%lu")  "\n", result);
+    }
 
     client_tcp_stop(client);
 

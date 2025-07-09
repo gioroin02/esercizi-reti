@@ -1,7 +1,7 @@
 #ifndef TCP_IMPORTS_HPP
 #define TCP_IMPORTS_HPP
 
-#include "../../dep/pax/network/exports.hpp"
+#include "../pax/network/exports.hpp"
 
 using namespace pax;
 

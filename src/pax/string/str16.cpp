@@ -6,12 +6,12 @@
 namespace pax {
 
 str16
-str16_make(const u16* memory, uptr length)
+str16_make(u16* memory, uptr length)
 {
     str16 result = {};
 
     if (memory != 0 && length != 0) {
-        result.memory = pax_cast(u16*, memory);
+        result.memory = memory;
         result.length = length;
     }
 
@@ -31,11 +31,11 @@ str16_copy(Arena* arena, str16 value)
 }
 
 str16
-str16_copy_mem(Arena* arena, const u16* memory, uptr length)
+str16_copy_mem(Arena* arena, u16* memory, uptr length)
 {
     str16 result = str16_reserve(arena, length);
 
-    mem16_copy(result.memory, pax_cast(u16*, memory), result.length);
+    mem16_copy(result.memory, memory, result.length);
 
     return result;
 }
@@ -98,7 +98,7 @@ str16_get_or(str16 self, uptr index, u16 value)
 }
 
 str16
-str16_count(const u16* memory)
+str16_count(u16* memory)
 {
     uptr index = 0;
 
@@ -109,7 +109,7 @@ str16_count(const u16* memory)
 }
 
 str16
-str16_count_max(const u16* memory, uptr limit)
+str16_count_max(u16* memory, uptr limit)
 {
     uptr index = 0;
 

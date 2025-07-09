@@ -23,7 +23,7 @@ struct str32
 /* str32 */
 
 str32
-str32_make(const u32* memory, uptr length);
+str32_make(u32* memory, uptr length);
 
 str32
 str32_reserve(Arena* arena, uptr length);
@@ -32,7 +32,7 @@ str32
 str32_copy(Arena* arena, str32 value);
 
 str32
-str32_copy_mem(Arena* arena, const u32* memory, uptr length);
+str32_copy_mem(Arena* arena, u32* memory, uptr length);
 
 str32
 str32_from_unicode(Arena* arena, u32 value);
@@ -52,10 +52,10 @@ str32_get_or(str32 self, uptr index, u32 value);
 /* str32 counting */
 
 str32
-str32_count(const u32* memory);
+str32_count(u32* memory);
 
 str32
-str32_count_max(const u32* memory, uptr limit);
+str32_count_max(u32* memory, uptr limit);
 
 /* str32 slicing */
 

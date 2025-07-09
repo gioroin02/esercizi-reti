@@ -1235,6 +1235,186 @@ str32_from_u8(Arena* arena, Format_Options opts, u8 value)
     return result;
 }
 
+b32
+buffer_write_uptr(Buffer* self, Format_Options opts, uptr value)
+{
+    uptr start = self->size;
+    uptr index = 0;
+    uptr base  = opts.base;
+
+    for (uptr temp = value; temp != 0; temp /= base)
+        index += 1;
+
+    if (value == 0) index = 1;
+
+    if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
+        index += 1;
+
+    if (start < 0 || start + index > self->length)
+        return 0;
+
+    while (index > 0) {
+        u32 ascii = ascii_from_digit(value, base);
+
+        if (ascii != ASCII_NULL) {
+            value /= base;
+            index -= 1;
+
+            self->memory[start + index] = ascii;
+        } else
+            return 0;
+    }
+
+    if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
+        self->memory[start] = ASCII_PLUS;
+
+    return 1;
+}
+
+b32
+buffer_write_u64(Buffer* self, Format_Options opts, u64 value)
+{
+    uptr start = self->size;
+    uptr index = 0;
+    u64  base  = opts.base;
+
+    for (u64 temp = value; temp != 0; temp /= base)
+        index += 1;
+
+    if (value == 0) index = 1;
+
+    if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
+        index += 1;
+
+    if (start < 0 || start + index > self->length)
+        return 0;
+
+    while (index > 0) {
+        u32 ascii = ascii_from_digit(value, base);
+
+        if (ascii != ASCII_NULL) {
+            value /= base;
+            index -= 1;
+
+            self->memory[start + index] = ascii;
+        } else
+            return 0;
+    }
+
+    if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
+        self->memory[start] = ASCII_PLUS;
+
+    return 1;
+}
+
+b32
+buffer_write_u32(Buffer* self, Format_Options opts, u32 value)
+{
+    uptr start = self->size;
+    uptr index = 0;
+    u32  base  = opts.base;
+
+    for (u32 temp = value; temp != 0; temp /= base)
+        index += 1;
+
+    if (value == 0) index = 1;
+
+    if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
+        index += 1;
+
+    if (start < 0 || start + index > self->length)
+        return 0;
+
+    while (index > 0) {
+        u32 ascii = ascii_from_digit(value, base);
+
+        if (ascii != ASCII_NULL) {
+            value /= base;
+            index -= 1;
+
+            self->memory[start + index] = ascii;
+        } else
+            return 0;
+    }
+
+    if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
+        self->memory[start] = ASCII_PLUS;
+
+    return 1;
+}
+
+b32
+buffer_write_u16(Buffer* self, Format_Options opts, u16 value)
+{
+    uptr start = self->size;
+    uptr index = 0;
+    u16  base  = opts.base;
+
+    for (u16 temp = value; temp != 0; temp /= base)
+        index += 1;
+
+    if (value == 0) index = 1;
+
+    if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
+        index += 1;
+
+    if (start < 0 || start + index > self->length)
+        return 0;
+
+    while (index > 0) {
+        u32 ascii = ascii_from_digit(value, base);
+
+        if (ascii != ASCII_NULL) {
+            value /= base;
+            index -= 1;
+
+            self->memory[start + index] = ascii;
+        } else
+            return 0;
+    }
+
+    if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
+        self->memory[start] = ASCII_PLUS;
+
+    return 1;
+}
+
+b32
+buffer_write_u8(Buffer* self, Format_Options opts, u8 value)
+{
+    uptr start = self->size;
+    uptr index = 0;
+    u8   base  = opts.base;
+
+    for (u8 temp = value; temp != 0; temp /= base)
+        index += 1;
+
+    if (value == 0) index = 1;
+
+    if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
+        index += 1;
+
+    if (start < 0 || start + index > self->length)
+        return 0;
+
+    while (index > 0) {
+        u32 ascii = ascii_from_digit(value, base);
+
+        if (ascii != ASCII_NULL) {
+            value /= base;
+            index -= 1;
+
+            self->memory[start + index] = ascii;
+        } else
+            return 0;
+    }
+
+    if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
+        self->memory[start] = ASCII_PLUS;
+
+    return 1;
+}
+
 } // namespace pax
 
 #endif // PAX_FORMAT_UNSIGNED_CPP

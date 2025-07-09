@@ -87,19 +87,19 @@ main(int argc, const char* argv[])
     Address addr = {};
     u16     port = 0;
 
-    client_udp_read(client, &response, &port, &addr);
+    if (client_udp_read(client, &response, &port, &addr) != 0) {
+        if (server_port == port && address_is_equal(server_addr, addr) != 0) {
+            u32 result = 0;
 
-    if (server_port == port && address_is_equal(server_addr, addr) != 0) {
-        u32 result = 0;
+            buffer_read_mem8(&response, 0, pax_cast(u8*, &result),
+                pax_size_of(u32));
 
-        buffer_read_mem8(&response, 0, pax_cast(u8*, &result),
-            pax_size_of(u32));
+            result = u32_host_from_net(result);
 
-        result = u32_host_from_net(result);
-
-        printf(INFO " result = " YLW("%lu")  "\n", result);
-    } else
-        printf(ERROR " Indirizzo o porta inaspettati...\n");
+            printf(INFO " result = " YLW("%lu")  "\n", result);
+        } else
+            printf(ERROR " Indirizzo o porta inaspettati...\n");
+    }
 
     client_udp_stop(client);
 

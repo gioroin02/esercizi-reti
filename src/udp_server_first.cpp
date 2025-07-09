@@ -53,14 +53,14 @@ main(int argc, const char* argv[])
         Address addr = {};
         u16     port = 0;
 
-        server_udp_read(server, &request, &port, &addr);
+        if (server_udp_read(server, &request, &port, &addr) != 0) {
+            printf(INFO " " BLU("'%.*s'") "\n",
+                pax_cast(int, request.size), request.memory);
 
-        printf(INFO " " PRP("'%.*s'") "\n", pax_cast(i16, request.size),
-            request.memory);
+            buffer_write_str8(&response, SERVER_MSG);
 
-        buffer_write_str8(&response, SERVER_MSG);
-
-        server_udp_write(server, response, port, addr);
+            server_udp_write(server, response, port, addr);
+        }
 
         arena_rewind(&arena, offset);
     }

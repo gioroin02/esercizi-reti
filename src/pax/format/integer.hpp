@@ -128,6 +128,23 @@ str32_from_i16(Arena* arena, Format_Options opts, i16 value);
 str32
 str32_from_i8(Arena* arena, Format_Options opts, i8 value);
 
+/* Buffer printing */
+
+b32
+buffer_write_iptr(Buffer* self, Format_Options opts, iptr value);
+
+b32
+buffer_write_i64(Buffer* self, Format_Options opts, i64 value);
+
+b32
+buffer_write_i32(Buffer* self, Format_Options opts, i32 value);
+
+b32
+buffer_write_i16(Buffer* self, Format_Options opts, i16 value);
+
+b32
+buffer_write_i8(Buffer* self, Format_Options opts, i8 value);
+
 } // namespace pax
 
 #endif // PAX_FORMAT_INTEGER_HPP

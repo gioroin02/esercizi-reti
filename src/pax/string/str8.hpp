@@ -8,14 +8,14 @@
 // Defines
 //
 
-#define pax_str8(string) \
-    str8_make(pax_cast(u8*, string), pax_array_length(string) - 1)
+#define pax_str8(memory) \
+    str8_make(pax_cast(u8*, memory), pax_array_length(memory) - 1)
 
-#define pax_str8_cnt(string) \
-    str8_count(pax_cast(u8*, string))
+#define pax_str8_cnt(memory) \
+    str8_count(pax_cast(u8*, memory))
 
-#define pax_str8_max(string, limit) \
-    str8_count_max(pax_cast(u8*, string), limit)
+#define pax_str8_max(memory, limit) \
+    str8_count_max(pax_cast(u8*, memory), limit)
 
 #define pax_to_str8(expr) pax_str8(pax_string(expr))
 
@@ -38,7 +38,7 @@ struct str8
 /* str8 */
 
 str8
-str8_make(const u8* memory, uptr length);
+str8_make(u8* memory, uptr length);
 
 str8
 str8_reserve(Arena* arena, uptr length);
@@ -47,7 +47,7 @@ str8
 str8_copy(Arena* arena, str8 value);
 
 str8
-str8_copy_mem(Arena* arena, const u8* memory, uptr length);
+str8_copy_mem(Arena* arena, u8* memory, uptr length);
 
 str8
 str8_append(Arena* arena, str8 self, str8 value);

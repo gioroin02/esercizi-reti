@@ -76,7 +76,7 @@ main()
                 char* memory = pax_cast(char*, name.memory);
                 int   length = pax_cast(int, name.length);
 
-                printf(INFO " Scrittura in " PRP("'%.*s'") "\n", length, memory);
+                printf(INFO " Scrittura in " BLU("'%.*s'") "\n", length, memory);
 
                 FILE* file = fopen(memory, "wb");
 

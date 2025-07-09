@@ -54,10 +54,11 @@ main(int argc, const char* argv[])
     buffer_write_str8(&request, CLIENT_MSG);
 
     client_tcp_write(client, request);
-    client_tcp_read(client, &response);
 
-    printf(INFO " " PRP("'%.*s'") "\n", pax_cast(i16, response.size),
-        response.memory);
+    if (client_tcp_read(client, &response) != 0) {
+        printf(INFO " " BLU("'%.*s'") "\n",
+            pax_cast(int, response.size), response.memory);
+    }
 
     client_tcp_stop(client);
 

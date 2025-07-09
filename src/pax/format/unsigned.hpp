@@ -128,6 +128,23 @@ str32_from_u16(Arena* arena, Format_Options opts, u16 value);
 str32
 str32_from_u8(Arena* arena, Format_Options opts, u8 value);
 
+/* Buffer printing */
+
+b32
+buffer_write_uptr(Buffer* self, Format_Options opts, uptr value);
+
+b32
+buffer_write_u64(Buffer* self, Format_Options opts, u64 value);
+
+b32
+buffer_write_u32(Buffer* self, Format_Options opts, u32 value);
+
+b32
+buffer_write_u16(Buffer* self, Format_Options opts, u16 value);
+
+b32
+buffer_write_u8(Buffer* self, Format_Options opts, u8 value);
+
 } // namespace pax
 
 #endif // PAX_FORMAT_UNSIGNED_HPP

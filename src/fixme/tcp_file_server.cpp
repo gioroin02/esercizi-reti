@@ -17,7 +17,7 @@ main()
 
     if (server == 0) return 1;
 
-    Socket_TCP session = session_open(server, &arena);
+    Socket_TCP session = session_tcp_open(&arena, server);
 
     if (session == 0) return 1;
 
@@ -43,7 +43,7 @@ main()
             char* memory = pax_cast(char*, name.memory);
             int   length = pax_cast(int, name.length);
 
-            printf(INFO " File richiesto = " PRP("'%.*s'") "\n", length, memory);
+            printf(INFO " File richiesto = " BLU("'%.*s'") "\n", length, memory);
 
             FILE* file = fopen(memory, "rb");
             uptr  size = 0;
