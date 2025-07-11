@@ -668,33 +668,29 @@ u8_from_buffer(Buffer self, Format_Options opts, u8* value)
 str8
 str8_from_uptr(Arena* arena, Format_Options opts, uptr value)
 {
-    uptr index = 0;
-    uptr base  = opts.base;
+    uptr size = 0;
+    uptr base = opts.base;
 
-    for (uptr temp = value; temp != 0; temp /= base)
-        index += 1;
-
-    if (value == 0) index = 1;
+    if (value == 0) size = 1;
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        index += 1;
+        size += 1;
+
+    for (uptr temp = value; temp != 0; temp /= base)
+        size += 1;
 
     uptr offset = arena_offset(arena);
-    str8 result = str8_reserve(arena, index);
+    str8 result = str8_reserve(arena, size);
 
-    while (index > 0) {
+    for (uptr i = size; i > 0; i -= 1) {
         u32 ascii = ascii_from_digit(value, base);
 
-        if (ascii != ASCII_NULL) {
-            value /= base;
-            index -= 1;
+        if (ascii != ASCII_NULL)
+            result.memory[i] = pax_cast(u8, ascii);
+        else
+            break;
 
-            result.memory[index] = pax_cast(u8, ascii);
-        } else {
-            arena_rewind(arena, offset);
-
-            return {};
-        }
+        value /= base;
     }
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
@@ -706,33 +702,29 @@ str8_from_uptr(Arena* arena, Format_Options opts, uptr value)
 str8
 str8_from_u64(Arena* arena, Format_Options opts, u64 value)
 {
-    uptr index = 0;
-    u64  base  = opts.base;
+    uptr size = 0;
+    u64  base = opts.base;
 
-    for (u64 temp = value; temp != 0; temp /= base)
-        index += 1;
-
-    if (value == 0) index = 1;
+    if (value == 0) size = 1;
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        index += 1;
+        size += 1;
+
+    for (u64 temp = value; temp != 0; temp /= base)
+        size += 1;
 
     uptr offset = arena_offset(arena);
-    str8 result = str8_reserve(arena, index);
+    str8 result = str8_reserve(arena, size);
 
-    while (index > 0) {
+    for (uptr i = size; i > 0; i -= 1) {
         u32 ascii = ascii_from_digit(value, base);
 
-        if (ascii != ASCII_NULL) {
-            value /= base;
-            index -= 1;
+        if (ascii != ASCII_NULL)
+            result.memory[i] = pax_cast(u8, ascii);
+        else
+            break;
 
-            result.memory[index] = pax_cast(u8, ascii);
-        } else {
-            arena_rewind(arena, offset);
-
-            return {};
-        }
+        value /= base;
     }
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
@@ -744,33 +736,29 @@ str8_from_u64(Arena* arena, Format_Options opts, u64 value)
 str8
 str8_from_u32(Arena* arena, Format_Options opts, u32 value)
 {
-    uptr index = 0;
-    u32  base  = opts.base;
+    uptr size = 0;
+    u32  base = opts.base;
 
-    for (u32 temp = value; temp != 0; temp /= base)
-        index += 1;
-
-    if (value == 0) index = 1;
+    if (value == 0) size = 1;
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        index += 1;
+        size += 1;
+
+    for (u32 temp = value; temp != 0; temp /= base)
+        size += 1;
 
     uptr offset = arena_offset(arena);
-    str8 result = str8_reserve(arena, index);
+    str8 result = str8_reserve(arena, size);
 
-    while (index > 0) {
+    for (uptr i = size; i > 0; i -= 1) {
         u32 ascii = ascii_from_digit(value, base);
 
-        if (ascii != ASCII_NULL) {
-            value /= base;
-            index -= 1;
+        if (ascii != ASCII_NULL)
+            result.memory[i] = pax_cast(u8, ascii);
+        else
+            break;
 
-            result.memory[index] = pax_cast(u8, ascii);
-        } else {
-            arena_rewind(arena, offset);
-
-            return {};
-        }
+        value /= base;
     }
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
@@ -782,33 +770,29 @@ str8_from_u32(Arena* arena, Format_Options opts, u32 value)
 str8
 str8_from_u16(Arena* arena, Format_Options opts, u16 value)
 {
-    uptr index = 0;
-    u16  base  = opts.base;
+    uptr size = 0;
+    u16  base = opts.base;
 
-    for (u16 temp = value; temp != 0; temp /= base)
-        index += 1;
-
-    if (value == 0) index = 1;
+    if (value == 0) size = 1;
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        index += 1;
+        size += 1;
+
+    for (u16 temp = value; temp != 0; temp /= base)
+        size += 1;
 
     uptr offset = arena_offset(arena);
-    str8 result = str8_reserve(arena, index);
+    str8 result = str8_reserve(arena, size);
 
-    while (index > 0) {
+    for (uptr i = size; i > 0; i -= 1) {
         u32 ascii = ascii_from_digit(value, base);
 
-        if (ascii != ASCII_NULL) {
-            value /= base;
-            index -= 1;
+        if (ascii != ASCII_NULL)
+            result.memory[i] = pax_cast(u8, ascii);
+        else
+            break;
 
-            result.memory[index] = pax_cast(u8, ascii);
-        } else {
-            arena_rewind(arena, offset);
-
-            return {};
-        }
+        value /= base;
     }
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
@@ -820,33 +804,29 @@ str8_from_u16(Arena* arena, Format_Options opts, u16 value)
 str8
 str8_from_u8(Arena* arena, Format_Options opts, u8 value)
 {
-    uptr index = 0;
-    u8   base  = opts.base;
+    uptr size = 0;
+    u8   base = opts.base;
 
-    for (u8 temp = value; temp != 0; temp /= base)
-        index += 1;
-
-    if (value == 0) index = 1;
+    if (value == 0) size = 1;
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        index += 1;
+        size += 1;
+
+    for (u8 temp = value; temp != 0; temp /= base)
+        size += 1;
 
     uptr offset = arena_offset(arena);
-    str8 result = str8_reserve(arena, index);
+    str8 result = str8_reserve(arena, size);
 
-    while (index > 0) {
+    for (uptr i = size; i > 0; i -= 1) {
         u32 ascii = ascii_from_digit(value, base);
 
-        if (ascii != ASCII_NULL) {
-            value /= base;
-            index -= 1;
+        if (ascii != ASCII_NULL)
+            result.memory[i] = pax_cast(u8, ascii);
+        else
+            break;
 
-            result.memory[index] = pax_cast(u8, ascii);
-        } else {
-            arena_rewind(arena, offset);
-
-            return {};
-        }
+        value /= base;
     }
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
@@ -858,33 +838,29 @@ str8_from_u8(Arena* arena, Format_Options opts, u8 value)
 str16
 str16_from_uptr(Arena* arena, Format_Options opts, uptr value)
 {
-    uptr index = 0;
-    uptr base  = opts.base;
+    uptr size = 0;
+    uptr base = opts.base;
 
-    for (uptr temp = value; temp != 0; temp /= base)
-        index += 1;
-
-    if (value == 0) index = 1;
+    if (value == 0) size = 1;
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        index += 1;
+        size += 1;
+
+    for (uptr temp = value; temp != 0; temp /= base)
+        size += 1;
 
     uptr  offset = arena_offset(arena);
-    str16 result = str16_reserve(arena, index);
+    str16 result = str16_reserve(arena, size);
 
-    while (index > 0) {
+    for (uptr i = size; i > 0; i -= 1) {
         u32 ascii = ascii_from_digit(value, base);
 
-        if (ascii != ASCII_NULL) {
-            value /= base;
-            index -= 1;
+        if (ascii != ASCII_NULL)
+            result.memory[i] = pax_cast(u16, ascii);
+        else
+            break;
 
-            result.memory[index] = pax_cast(u16, ascii);
-        } else {
-            arena_rewind(arena, offset);
-
-            return {};
-        }
+        value /= base;
     }
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
@@ -896,33 +872,29 @@ str16_from_uptr(Arena* arena, Format_Options opts, uptr value)
 str16
 str16_from_u64(Arena* arena, Format_Options opts, u64 value)
 {
-    uptr index = 0;
-    u64  base  = opts.base;
+    uptr size = 0;
+    u64  base = opts.base;
 
-    for (u64 temp = value; temp != 0; temp /= base)
-        index += 1;
-
-    if (value == 0) index = 1;
+    if (value == 0) size = 1;
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        index += 1;
+        size += 1;
+
+    for (u64 temp = value; temp != 0; temp /= base)
+        size += 1;
 
     uptr  offset = arena_offset(arena);
-    str16 result = str16_reserve(arena, index);
+    str16 result = str16_reserve(arena, size);
 
-    while (index > 0) {
+    for (uptr i = size; i > 0; i -= 1) {
         u32 ascii = ascii_from_digit(value, base);
 
-        if (ascii != ASCII_NULL) {
-            value /= base;
-            index -= 1;
+        if (ascii != ASCII_NULL)
+            result.memory[i] = pax_cast(u16, ascii);
+        else
+            break;
 
-            result.memory[index] = pax_cast(u16, ascii);
-        } else {
-            arena_rewind(arena, offset);
-
-            return {};
-        }
+        value /= base;
     }
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
@@ -934,33 +906,29 @@ str16_from_u64(Arena* arena, Format_Options opts, u64 value)
 str16
 str16_from_u32(Arena* arena, Format_Options opts, u32 value)
 {
-    uptr index = 0;
-    u32  base  = opts.base;
+    uptr size = 0;
+    u32  base = opts.base;
 
-    for (u32 temp = value; temp != 0; temp /= base)
-        index += 1;
-
-    if (value == 0) index = 1;
+    if (value == 0) size = 1;
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        index += 1;
+        size += 1;
+
+    for (u32 temp = value; temp != 0; temp /= base)
+        size += 1;
 
     uptr  offset = arena_offset(arena);
-    str16 result = str16_reserve(arena, index);
+    str16 result = str16_reserve(arena, size);
 
-    while (index > 0) {
+    for (uptr i = size; i > 0; i -= 1) {
         u32 ascii = ascii_from_digit(value, base);
 
-        if (ascii != ASCII_NULL) {
-            value /= base;
-            index -= 1;
+        if (ascii != ASCII_NULL)
+            result.memory[i] = pax_cast(u16, ascii);
+        else
+            break;
 
-            result.memory[index] = pax_cast(u16, ascii);
-        } else {
-            arena_rewind(arena, offset);
-
-            return {};
-        }
+        value /= base;
     }
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
@@ -972,33 +940,29 @@ str16_from_u32(Arena* arena, Format_Options opts, u32 value)
 str16
 str16_from_u16(Arena* arena, Format_Options opts, u16 value)
 {
-    uptr index = 0;
-    u16  base  = opts.base;
+    uptr size = 0;
+    u16  base = opts.base;
 
-    for (u16 temp = value; temp != 0; temp /= base)
-        index += 1;
-
-    if (value == 0) index = 1;
+    if (value == 0) size = 1;
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        index += 1;
+        size += 1;
+
+    for (u16 temp = value; temp != 0; temp /= base)
+        size += 1;
 
     uptr  offset = arena_offset(arena);
-    str16 result = str16_reserve(arena, index);
+    str16 result = str16_reserve(arena, size);
 
-    while (index > 0) {
+    for (uptr i = size; i > 0; i -= 1) {
         u32 ascii = ascii_from_digit(value, base);
 
-        if (ascii != ASCII_NULL) {
-            value /= base;
-            index -= 1;
+        if (ascii != ASCII_NULL)
+            result.memory[i] = pax_cast(u16, ascii);
+        else
+            break;
 
-            result.memory[index] = pax_cast(u16, ascii);
-        } else {
-            arena_rewind(arena, offset);
-
-            return {};
-        }
+        value /= base;
     }
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
@@ -1010,33 +974,29 @@ str16_from_u16(Arena* arena, Format_Options opts, u16 value)
 str16
 str16_from_u8(Arena* arena, Format_Options opts, u8 value)
 {
-    uptr index = 0;
-    u8   base  = opts.base;
+    uptr size = 0;
+    u8   base = opts.base;
 
-    for (u8 temp = value; temp != 0; temp /= base)
-        index += 1;
-
-    if (value == 0) index = 1;
+    if (value == 0) size = 1;
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        index += 1;
+        size += 1;
+
+    for (u8 temp = value; temp != 0; temp /= base)
+        size += 1;
 
     uptr  offset = arena_offset(arena);
-    str16 result = str16_reserve(arena, index);
+    str16 result = str16_reserve(arena, size);
 
-    while (index > 0) {
+    for (uptr i = size; i > 0; i -= 1) {
         u32 ascii = ascii_from_digit(value, base);
 
-        if (ascii != ASCII_NULL) {
-            value /= base;
-            index -= 1;
+        if (ascii != ASCII_NULL)
+            result.memory[i] = pax_cast(u16, ascii);
+        else
+            break;
 
-            result.memory[index] = pax_cast(u16, ascii);
-        } else {
-            arena_rewind(arena, offset);
-
-            return {};
-        }
+        value /= base;
     }
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
@@ -1048,33 +1008,29 @@ str16_from_u8(Arena* arena, Format_Options opts, u8 value)
 str32
 str32_from_uptr(Arena* arena, Format_Options opts, uptr value)
 {
-    uptr index = 0;
-    uptr base  = opts.base;
+    uptr size = 0;
+    uptr base = opts.base;
 
-    for (uptr temp = value; temp != 0; temp /= base)
-        index += 1;
-
-    if (value == 0) index = 1;
+    if (value == 0) size = 1;
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        index += 1;
+        size += 1;
+
+    for (uptr temp = value; temp != 0; temp /= base)
+        size += 1;
 
     uptr  offset = arena_offset(arena);
-    str32 result = str32_reserve(arena, index);
+    str32 result = str32_reserve(arena, size);
 
-    while (index > 0) {
+    for (uptr i = size; i > 0; i -= 1) {
         u32 ascii = ascii_from_digit(value, base);
 
-        if (ascii != ASCII_NULL) {
-            value /= base;
-            index -= 1;
+        if (ascii != ASCII_NULL)
+            result.memory[i] = ascii;
+        else
+            break;
 
-            result.memory[index] = ascii;
-        } else {
-            arena_rewind(arena, offset);
-
-            return {};
-        }
+        value /= base;
     }
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
@@ -1086,33 +1042,29 @@ str32_from_uptr(Arena* arena, Format_Options opts, uptr value)
 str32
 str32_from_u64(Arena* arena, Format_Options opts, u64 value)
 {
-    uptr index = 0;
-    u64  base  = opts.base;
+    uptr size = 0;
+    u64  base = opts.base;
 
-    for (u64 temp = value; temp != 0; temp /= base)
-        index += 1;
-
-    if (value == 0) index = 1;
+    if (value == 0) size = 1;
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        index += 1;
+        size += 1;
+
+    for (u64 temp = value; temp != 0; temp /= base)
+        size += 1;
 
     uptr  offset = arena_offset(arena);
-    str32 result = str32_reserve(arena, index);
+    str32 result = str32_reserve(arena, size);
 
-    while (index > 0) {
+    for (uptr i = size; i > 0; i -= 1) {
         u32 ascii = ascii_from_digit(value, base);
 
-        if (ascii != ASCII_NULL) {
-            value /= base;
-            index -= 1;
+        if (ascii != ASCII_NULL)
+            result.memory[i] = ascii;
+        else
+            break;
 
-            result.memory[index] = ascii;
-        } else {
-            arena_rewind(arena, offset);
-
-            return {};
-        }
+        value /= base;
     }
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
@@ -1124,33 +1076,29 @@ str32_from_u64(Arena* arena, Format_Options opts, u64 value)
 str32
 str32_from_u32(Arena* arena, Format_Options opts, u32 value)
 {
-    uptr index = 0;
-    u32  base  = opts.base;
+    uptr size = 0;
+    u32  base = opts.base;
 
-    for (u32 temp = value; temp != 0; temp /= base)
-        index += 1;
-
-    if (value == 0) index = 1;
+    if (value == 0) size = 1;
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        index += 1;
+        size += 1;
+
+    for (u32 temp = value; temp != 0; temp /= base)
+        size += 1;
 
     uptr  offset = arena_offset(arena);
-    str32 result = str32_reserve(arena, index);
+    str32 result = str32_reserve(arena, size);
 
-    while (index > 0) {
+    for (uptr i = size; i > 0; i -= 1) {
         u32 ascii = ascii_from_digit(value, base);
 
-        if (ascii != ASCII_NULL) {
-            value /= base;
-            index -= 1;
+        if (ascii != ASCII_NULL)
+            result.memory[i] = ascii;
+        else
+            break;
 
-            result.memory[index] = ascii;
-        } else {
-            arena_rewind(arena, offset);
-
-            return {};
-        }
+        value /= base;
     }
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
@@ -1162,33 +1110,29 @@ str32_from_u32(Arena* arena, Format_Options opts, u32 value)
 str32
 str32_from_u16(Arena* arena, Format_Options opts, u16 value)
 {
-    uptr index = 0;
-    u16  base  = opts.base;
+    uptr size = 0;
+    u16  base = opts.base;
 
-    for (u16 temp = value; temp != 0; temp /= base)
-        index += 1;
-
-    if (value == 0) index = 1;
+    if (value == 0) size = 1;
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        index += 1;
+        size += 1;
+
+    for (u16 temp = value; temp != 0; temp /= base)
+        size += 1;
 
     uptr  offset = arena_offset(arena);
-    str32 result = str32_reserve(arena, index);
+    str32 result = str32_reserve(arena, size);
 
-    while (index > 0) {
+    for (uptr i = size; i > 0; i -= 1) {
         u32 ascii = ascii_from_digit(value, base);
 
-        if (ascii != ASCII_NULL) {
-            value /= base;
-            index -= 1;
+        if (ascii != ASCII_NULL)
+            result.memory[i] = ascii;
+        else
+            break;
 
-            result.memory[index] = ascii;
-        } else {
-            arena_rewind(arena, offset);
-
-            return {};
-        }
+        value /= base;
     }
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
@@ -1200,33 +1144,29 @@ str32_from_u16(Arena* arena, Format_Options opts, u16 value)
 str32
 str32_from_u8(Arena* arena, Format_Options opts, u8 value)
 {
-    uptr index = 0;
-    u8   base  = opts.base;
+    uptr size = 0;
+    u8   base = opts.base;
 
-    for (u8 temp = value; temp != 0; temp /= base)
-        index += 1;
-
-    if (value == 0) index = 1;
+    if (value == 0) size = 1;
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        index += 1;
+        size += 1;
+
+    for (u8 temp = value; temp != 0; temp /= base)
+        size += 1;
 
     uptr  offset = arena_offset(arena);
-    str32 result = str32_reserve(arena, index);
+    str32 result = str32_reserve(arena, size);
 
-    while (index > 0) {
+    for (uptr i = size; i > 0; i -= 1) {
         u32 ascii = ascii_from_digit(value, base);
 
-        if (ascii != ASCII_NULL) {
-            value /= base;
-            index -= 1;
+        if (ascii != ASCII_NULL)
+            result.memory[i] = ascii;
+        else
+            break;
 
-            result.memory[index] = ascii;
-        } else {
-            arena_rewind(arena, offset);
-
-            return {};
-        }
+        value /= base;
     }
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
@@ -1239,34 +1179,35 @@ b32
 buffer_write_uptr(Buffer* self, Format_Options opts, uptr value)
 {
     uptr start = self->size;
-    uptr index = 0;
+    uptr size  = 0;
     uptr base  = opts.base;
 
-    for (uptr temp = value; temp != 0; temp /= base)
-        index += 1;
-
-    if (value == 0) index = 1;
+    if (value == 0) size = 1;
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        index += 1;
+        size += 1;
 
-    if (start < 0 || start + index > self->length)
+    for (uptr temp = value; temp != 0; temp /= base)
+        size += 1;
+
+    if (start < 0 || start + size > self->length)
         return 0;
 
-    while (index > 0) {
+    for (uptr i = size; i > 0; i -= 1) {
         u32 ascii = ascii_from_digit(value, base);
 
-        if (ascii != ASCII_NULL) {
-            value /= base;
-            index -= 1;
-
-            self->memory[start + index] = ascii;
-        } else
+        if (ascii != ASCII_NULL)
+            self->memory[start + i] = pax_cast(u8, ascii);
+        else
             return 0;
+
+        value /= base;
     }
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
         self->memory[start] = ASCII_PLUS;
+
+    self->size += size;
 
     return 1;
 }
@@ -1275,34 +1216,35 @@ b32
 buffer_write_u64(Buffer* self, Format_Options opts, u64 value)
 {
     uptr start = self->size;
-    uptr index = 0;
+    uptr size  = 0;
     u64  base  = opts.base;
 
-    for (u64 temp = value; temp != 0; temp /= base)
-        index += 1;
-
-    if (value == 0) index = 1;
+    if (value == 0) size = 1;
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        index += 1;
+        size += 1;
 
-    if (start < 0 || start + index > self->length)
+    for (u64 temp = value; temp != 0; temp /= base)
+        size += 1;
+
+    if (start < 0 || start + size > self->length)
         return 0;
 
-    while (index > 0) {
+    for (uptr i = size; i > 0; i -= 1) {
         u32 ascii = ascii_from_digit(value, base);
 
         if (ascii != ASCII_NULL) {
-            value /= base;
-            index -= 1;
-
-            self->memory[start + index] = ascii;
+            self->memory[start + i] = pax_cast(u8, ascii);
         } else
             return 0;
+
+        value /= base;
     }
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
         self->memory[start] = ASCII_PLUS;
+
+    self->size += size;
 
     return 1;
 }
@@ -1311,34 +1253,35 @@ b32
 buffer_write_u32(Buffer* self, Format_Options opts, u32 value)
 {
     uptr start = self->size;
-    uptr index = 0;
+    uptr size  = 0;
     u32  base  = opts.base;
 
-    for (u32 temp = value; temp != 0; temp /= base)
-        index += 1;
-
-    if (value == 0) index = 1;
+    if (value == 0) size = 1;
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        index += 1;
+        size += 1;
 
-    if (start < 0 || start + index > self->length)
+    for (u32 temp = value; temp != 0; temp /= base)
+        size += 1;
+
+    if (start < 0 || start + size > self->length)
         return 0;
 
-    while (index > 0) {
+    for (uptr i = size; i > 0; i -= 1) {
         u32 ascii = ascii_from_digit(value, base);
 
         if (ascii != ASCII_NULL) {
-            value /= base;
-            index -= 1;
-
-            self->memory[start + index] = ascii;
+            self->memory[start + i] = pax_cast(u8, ascii);
         } else
             return 0;
+
+        value /= base;
     }
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
         self->memory[start] = ASCII_PLUS;
+
+    self->size += size;
 
     return 1;
 }
@@ -1347,34 +1290,35 @@ b32
 buffer_write_u16(Buffer* self, Format_Options opts, u16 value)
 {
     uptr start = self->size;
-    uptr index = 0;
+    uptr size  = 0;
     u16  base  = opts.base;
 
-    for (u16 temp = value; temp != 0; temp /= base)
-        index += 1;
-
-    if (value == 0) index = 1;
+    if (value == 0) size = 1;
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        index += 1;
+        size += 1;
 
-    if (start < 0 || start + index > self->length)
+    for (u16 temp = value; temp != 0; temp /= base)
+        size += 1;
+
+    if (start < 0 || start + size > self->length)
         return 0;
 
-    while (index > 0) {
+    for (uptr i = size; i > 0; i -= 1) {
         u32 ascii = ascii_from_digit(value, base);
 
         if (ascii != ASCII_NULL) {
-            value /= base;
-            index -= 1;
-
-            self->memory[start + index] = ascii;
+            self->memory[start + i] = pax_cast(u8, ascii);
         } else
             return 0;
+
+        value /= base;
     }
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
         self->memory[start] = ASCII_PLUS;
+
+    self->size += size;
 
     return 1;
 }
@@ -1383,34 +1327,35 @@ b32
 buffer_write_u8(Buffer* self, Format_Options opts, u8 value)
 {
     uptr start = self->size;
-    uptr index = 0;
+    uptr size  = 0;
     u8   base  = opts.base;
 
-    for (u8 temp = value; temp != 0; temp /= base)
-        index += 1;
-
-    if (value == 0) index = 1;
+    if (value == 0) size = 1;
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        index += 1;
+        size += 1;
 
-    if (start < 0 || start + index > self->length)
+    for (u8 temp = value; temp != 0; temp /= base)
+        size += 1;
+
+    if (start < 0 || start + size > self->length)
         return 0;
 
-    while (index > 0) {
+    for (uptr i = size; i > 0; i -= 1) {
         u32 ascii = ascii_from_digit(value, base);
 
         if (ascii != ASCII_NULL) {
-            value /= base;
-            index -= 1;
-
-            self->memory[start + index] = ascii;
+            self->memory[start + i] = pax_cast(u8, ascii);
         } else
             return 0;
+
+        value /= base;
     }
 
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
         self->memory[start] = ASCII_PLUS;
+
+    self->size += size;
 
     return 1;
 }

@@ -54,12 +54,14 @@ main(int argc, const char* argv[])
         u16     port = 0;
 
         if (server_udp_read(server, &request, &port, &addr) != 0) {
+            buffer_normalize(&request);
+
             printf(INFO " " BLU("'%.*s'") "\n",
                 pax_cast(int, request.size), request.memory);
 
-            buffer_write_str8(&response, SERVER_MSG);
+            buffer_write_str8_tail(&response, SERVER_MSG);
 
-            server_udp_write(server, response, port, addr);
+            server_udp_write(server, &response, port, addr);
         }
 
         arena_rewind(&arena, offset);

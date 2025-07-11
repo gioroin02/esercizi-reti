@@ -12,6 +12,8 @@
 #include "str16.hpp"
 #include "str32.hpp"
 
+#include "buffer.hpp"
+
 #include "convert.hpp"
 #include "builder.hpp"
 

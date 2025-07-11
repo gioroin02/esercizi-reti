@@ -51,11 +51,13 @@ main(int argc, const char* argv[])
     Buffer request  = buffer_reserve(&arena, MEMORY_KIB);
     Buffer response = buffer_reserve(&arena, MEMORY_KIB);
 
-    buffer_write_str8(&request, CLIENT_MSG);
+    buffer_write_str8_tail(&request, CLIENT_MSG);
 
-    client_tcp_write(client, request);
+    client_tcp_write(client, &request);
 
     if (client_tcp_read(client, &response) != 0) {
+        buffer_normalize(&response);
+
         printf(INFO " " BLU("'%.*s'") "\n",
             pax_cast(int, response.size), response.memory);
     }

@@ -20,7 +20,7 @@
 
 #endif
 
-#define PAX_LOCK(self) pax_cast(__Lock__*, self)
+#define pax_lock(self) pax_cast(__Lock__*, self)
 
 namespace pax {
 
@@ -33,19 +33,19 @@ lock_create(Arena* arena)
 void
 lock_destroy(Lock self)
 {
-    __lock_destroy__(PAX_LOCK(self));
+    __lock_destroy__(pax_lock(self));
 }
 
 b32
 lock_enter(Lock self)
 {
-    return __lock_enter__(PAX_LOCK(self));
+    return __lock_enter__(pax_lock(self));
 }
 
 b32
 lock_leave(Lock self)
 {
-    return __lock_leave__(PAX_LOCK(self));
+    return __lock_leave__(pax_lock(self));
 }
 
 } // namespace pax

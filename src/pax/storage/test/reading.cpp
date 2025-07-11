@@ -30,6 +30,8 @@ main(int argc, const char* argv[])
 
     file_rewind(file, 0);
 
+    buffer_clear(&reading);
+
     file_read(file, &reading);
 
     ptr = pax_cast(char*, reading.memory);

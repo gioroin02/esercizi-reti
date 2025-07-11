@@ -24,7 +24,7 @@ show_str8(str8 string)
     printf("str8 forward:\n");
 
     while (str8_next(string, index, &units, &value) != 0) {
-        printf("%2lli: %6lx ", index, value);
+        printf("%2lli: %6x ", index, value);
 
         for (uptr i = 0; i < units; i += 1)
             printf("[%02x] ", string.memory[i + index]);
@@ -39,7 +39,7 @@ show_str8(str8 string)
     index = string.length - 1;
 
     while (str8_prev(string, index, &units, &value) != 0) {
-        printf("%2lli: %6lx ", index, value);
+        printf("%2lli: %6x ", index, value);
 
         index -= units;
 
@@ -60,7 +60,7 @@ show_str16(str16 string)
     printf("str16 forward:\n");
 
     while (str16_next(string, index, &units, &value) != 0) {
-        printf("%2lli: %6lx ", index, value);
+        printf("%2lli: %6x ", index, value);
 
         for (uptr i = 0; i < units; i += 1)
             printf("[%04x] ", string.memory[i + index]);
@@ -75,7 +75,7 @@ show_str16(str16 string)
     index = string.length - 1;
 
     while (str16_prev(string, index, &units, &value) != 0) {
-        printf("%2lli: %6lx ", index, value);
+        printf("%2lli: %6x ", index, value);
 
         index -= units;
 

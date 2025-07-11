@@ -16,6 +16,16 @@ format_options(uptr base, uptr flags)
     return result;
 }
 
+Format_Options
+format_options_base(uptr base)
+{
+    Format_Options result = {};
+
+    result.base = base;
+
+    return result;
+}
+
 } // namespace pax
 
 #endif // PAX_FORMAT_OPTIONS_CPP

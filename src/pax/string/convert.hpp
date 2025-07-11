@@ -44,16 +44,10 @@ uptr
 utf16_units_from_str32(str32 value);
 
 uptr
-utf16_units_from_buffer(Buffer value);
-
-uptr
 utf32_units_from_str8(str8 value);
 
 uptr
 utf32_units_from_str16(str16 value);
-
-uptr
-utf32_units_from_buffer(Buffer value);
 
 /* str8 */
 
@@ -74,9 +68,6 @@ str16_from_str8(Arena* arena, str8 value);
 str16
 str16_from_str32(Arena* arena, str32 value);
 
-str16
-str16_from_buffer(Arena* arena, Buffer value);
-
 /* str32 */
 
 str32
@@ -85,28 +76,10 @@ str32_from_str8(Arena* arena, str8 value);
 str32
 str32_from_str16(Arena* arena, str16 value);
 
-str32
-str32_from_buffer(Arena* arena, Buffer value);
-
 /* Buffer */
 
 Buffer
 buffer_from_str8(Arena* arena, str8 value);
-
-Buffer
-buffer_from_str16(Arena* arena, str16 value);
-
-Buffer
-buffer_from_str32(Arena* arena, str32 value);
-
-b32
-buffer_write_str8(Buffer* self, str8 value);
-
-b32
-buffer_write_str16(Buffer* self, str16 value);
-
-b32
-buffer_write_str32(Buffer* self, str32 value);
 
 } // namespace pax
 

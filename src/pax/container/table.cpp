@@ -11,8 +11,6 @@ table_make(Val* memory, uptr length)
 {
     Table<Val> result = {};
 
-    result.arena = 0;
-
     if (memory != 0 && length != 0) {
         result.memory = memory;
         result.length = length;

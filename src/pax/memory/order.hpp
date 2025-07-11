@@ -18,16 +18,16 @@ b32
 mem_is_upper_first();
 
 addr
-mem_host_from_net(const addr memory, uptr length);
+mem_host_from_net(addr memory, uptr length);
 
 addr
-mem_copy_host_from_net(const addr memory, const addr value, uptr length);
+mem_copy_host_from_net(addr memory, addr value, uptr length);
 
 addr
-mem_net_from_host(const addr memory, uptr length);
+mem_net_from_host(addr memory, uptr length);
 
 addr
-mem_copy_net_from_host(const addr memory, const addr value, uptr length);
+mem_copy_net_from_host(addr memory, addr value, uptr length);
 
 /* 64 bits */
 

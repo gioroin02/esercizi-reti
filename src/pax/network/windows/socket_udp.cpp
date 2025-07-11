@@ -127,6 +127,7 @@ b32
 windows_socket_udp_bind(Windows_Socket_UDP* self, u16 port, Address address)
 {
     Sock_Storage storage = {};
+    i32          payload = 0;
 
     switch (address.kind) {
         case ADDRESS_KIND_IP4: {
@@ -138,11 +139,7 @@ windows_socket_udp_bind(Windows_Socket_UDP* self, u16 port, Address address)
                 ADDRESS_IP4_GROUPS);
 
             storage.ss_family = AF_INET;
-
-            if (bind(self->handle, SOCK(&storage), SOCK4_SIZE) == SOCKET_ERROR)
-                return 0;
-
-            self->address = storage;
+            payload           = SOCK4_SIZE;
         } break;
 
         case ADDRESS_KIND_IP6: {
@@ -154,15 +151,16 @@ windows_socket_udp_bind(Windows_Socket_UDP* self, u16 port, Address address)
                 ADDRESS_IP6_GROUPS);
 
             storage.ss_family = AF_INET6;
-
-            if (bind(self->handle, SOCK(&storage), SOCK6_SIZE) == SOCKET_ERROR)
-                return 0;
-
-            self->address = storage;
+            payload           = SOCK6_SIZE;
         } break;
 
         default: return 0;
     }
+
+    if (bind(self->handle, SOCK(&storage), payload) == SOCKET_ERROR)
+        return 0;
+
+    self->address = storage;
 
     return 1;
 }
@@ -180,6 +178,7 @@ b32
 windows_socket_udp_connect(Windows_Socket_UDP* self, u16 port, Address address)
 {
     Sock_Storage storage = {};
+    i32          payload = 0;
 
     switch (address.kind) {
         case ADDRESS_KIND_IP4: {
@@ -191,9 +190,7 @@ windows_socket_udp_connect(Windows_Socket_UDP* self, u16 port, Address address)
                 ADDRESS_IP4_GROUPS);
 
             storage.ss_family = AF_INET;
-
-            if (connect(self->handle, SOCK(&storage), SOCK4_SIZE) == SOCKET_ERROR)
-                return 0;
+            payload           = SOCK4_SIZE;
         } break;
 
         case ADDRESS_KIND_IP6: {
@@ -205,13 +202,14 @@ windows_socket_udp_connect(Windows_Socket_UDP* self, u16 port, Address address)
                 ADDRESS_IP6_GROUPS);
 
             storage.ss_family = AF_INET6;
-
-            if (connect(self->handle, SOCK(&storage), SOCK6_SIZE) == SOCKET_ERROR)
-                return 0;
+            payload           = SOCK6_SIZE;
         } break;
 
         default: return 0;
     }
+
+    if (connect(self->handle, SOCK(&storage), payload) == SOCKET_ERROR)
+        return 0;
 
     return 1;
 }
@@ -225,9 +223,9 @@ windows_socket_udp_accept(Windows_Socket_UDP* self, Arena* arena)
 
     if (result != 0) {
         Sock_Storage storage = {};
-        int          size    = SOCK_SIZE;
+        i32          payload = SOCK_SIZE;
 
-        result->handle  = accept(self->handle, SOCK(&storage), &size);
+        result->handle  = accept(self->handle, SOCK(&storage), &payload);
         result->address = storage;
 
         if (result->handle != INVALID_SOCKET)
@@ -240,22 +238,102 @@ windows_socket_udp_accept(Windows_Socket_UDP* self, Arena* arena)
 }
 
 b32
-windows_socket_udp_write(Windows_Socket_UDP* self, Buffer buffer)
+windows_socket_udp_write(Windows_Socket_UDP* self, Buffer* buffer)
 {
-    char* memory = pax_cast(char*, buffer.memory);
-    int   length = pax_cast(int,   buffer.size);
+    u8*  memory = buffer->memory + buffer->head;
+    uptr length = buffer->size;
 
-    uptr result = send(self->handle, memory ,length, 0);
+    b32 state = 0;
 
-    if (result == length) return 1;
+    if (buffer->head > buffer->tail) {
+        memory = buffer->memory + buffer->head;
+        length = buffer->length - buffer->head;
 
-    return 0;
+        state = windows_socket_udp_write_mem8(self, memory, length);
+
+        if (state != 0) {
+            buffer->size -= length;
+            buffer->head  = (buffer->head + length) % buffer->length;
+        } else
+            return 0;
+
+        memory = buffer->memory + buffer->head;
+        length = buffer->size;
+   }
+
+    if (length != 0) {
+        state = windows_socket_udp_write_mem8(self, memory, length);
+
+        if (state != 0) {
+            buffer->size = 0;
+            buffer->head = 0;
+            buffer->tail = 0;
+        }
+    }
+
+    return state;
 }
 
 b32
-windows_socket_udp_write_to(Windows_Socket_UDP* self, Buffer buffer, u16 port, Address address)
+windows_socket_udp_write_to(Windows_Socket_UDP* self, Buffer* buffer, u16 port, Address address)
+{
+    u8*  memory = buffer->memory + buffer->head;
+    uptr length = buffer->size;
+
+    b32 state = 0;
+
+    if (buffer->head > buffer->tail) {
+        memory = buffer->memory + buffer->head;
+        length = buffer->length - buffer->head;
+
+        state = windows_socket_udp_write_mem8_to(self, memory, length, port, address);
+
+        if (state != 0) {
+            buffer->size -= length;
+            buffer->head  = (buffer->head + length) % buffer->length;
+        } else
+            return 0;
+
+        memory = buffer->memory + buffer->head;
+        length = buffer->size;
+   }
+
+    if (length != 0) {
+        state = windows_socket_udp_write_mem8_to(self, memory, length, port, address);
+
+        if (state != 0) {
+            buffer->size = 0;
+            buffer->head = 0;
+            buffer->tail = 0;
+        }
+    }
+
+    return state;
+}
+
+b32
+windows_socket_udp_write_mem8(Windows_Socket_UDP* self, u8* memory, uptr length)
+{
+    uptr result = 0;
+    uptr temp   = 0;
+
+    for (uptr i = 0; i < length; i += temp) {
+        i8* mem = pax_cast(i8*, memory + i);
+        i32 len = pax_cast(i32, length - i);
+
+        temp = send(self->handle, mem, len, 0);
+
+        if (temp == 0) return 0;
+    }
+
+    return 1;
+}
+
+b32
+windows_socket_udp_write_mem8_to(Windows_Socket_UDP* self, u8* memory, uptr length, u16 port, Address address)
 {
     Sock_Storage storage = {};
+    i32          payload = 0;
 
     switch (address.kind) {
         case ADDRESS_KIND_IP4: {
@@ -267,14 +345,7 @@ windows_socket_udp_write_to(Windows_Socket_UDP* self, Buffer buffer, u16 port, A
                 ADDRESS_IP4_GROUPS);
 
             storage.ss_family = AF_INET;
-
-            char* memory = pax_cast(char*, buffer.memory);
-            int   length = pax_cast(int,   buffer.size);
-
-            uptr result = sendto(self->handle, memory, length, 0,
-                SOCK(&storage), SOCK4_SIZE);
-
-            if (result == length) return 1;
+            payload           = SOCK4_SIZE;
         } break;
 
         case ADDRESS_KIND_IP6: {
@@ -286,33 +357,62 @@ windows_socket_udp_write_to(Windows_Socket_UDP* self, Buffer buffer, u16 port, A
                 ADDRESS_IP6_GROUPS);
 
             storage.ss_family = AF_INET6;
-
-            char* memory = pax_cast(char*, buffer.memory);
-            int   length = pax_cast(int,   buffer.size);
-
-            uptr result = sendto(self->handle, memory, length, 0,
-                SOCK(&storage), SOCK6_SIZE);
-
-            if (result == length) return 1;
+            payload           = SOCK6_SIZE;
         } break;
 
-        default: break;
+        default: return 0;
     }
 
-    return 0;
+    uptr result = 0;
+    uptr temp   = 0;
+
+    for (uptr i = 0; i < length; i += temp) {
+        i8* mem = pax_cast(i8*, memory + i);
+        i32 len = pax_cast(i32, length - i);
+
+        temp = sendto(self->handle, mem, len, 0, SOCK(&storage), payload);
+
+        if (temp == 0) return 0;
+    }
+
+    return 1;
 }
 
 b32
 windows_socket_udp_read(Windows_Socket_UDP* self, Buffer* buffer)
 {
-    char* memory = pax_cast(char*, buffer->memory + buffer->size);
-    int   length = pax_cast(int,   buffer->length - buffer->size);
+    u8*  memory = buffer->memory + buffer->tail;
+    uptr length = buffer->length - buffer->size;
 
-    uptr result = recv(self->handle, memory, length, 0);
+    b32  state = 0;
+    uptr size  = 0;
 
-    if (result > length) return 0;
+    if (buffer->head < buffer->tail) {
+        memory = buffer->memory + buffer->tail;
+        length = buffer->length - buffer->tail;
 
-    buffer->size += result;
+        state = windows_socket_udp_read_mem8(self, memory, length, &size);
+
+        if (state != 0) {
+            buffer->size += size;
+            buffer->tail  = (buffer->tail + size) % buffer->length;
+        } else
+            return 0;
+
+        if (size < length) return 1;
+
+        memory = buffer->memory + buffer->tail;
+        length = buffer->length - buffer->size;
+    }
+
+    if (length != 0) {
+        state = windows_socket_udp_read_mem8(self, memory, length, &size);
+
+        if (state != 0) {
+            buffer->size += size;
+            buffer->tail  = (buffer->tail + size) % buffer->length;
+        }
+    }
 
     return 1;
 }
@@ -320,14 +420,54 @@ windows_socket_udp_read(Windows_Socket_UDP* self, Buffer* buffer)
 b32
 windows_socket_udp_read_from(Windows_Socket_UDP* self, Buffer* buffer, u16* port, Address* address)
 {
+    u8*  memory = buffer->memory + buffer->tail;
+    uptr length = buffer->length - buffer->size;
+
+    b32  state = 0;
+    uptr size  = 0;
+
+    if (buffer->head > buffer->tail) buffer_normalize(buffer);
+
+    if (length != 0) {
+        state = windows_socket_udp_read_mem8_from(self, memory, length, &size, port, address);
+
+        if (state != 0) {
+            buffer->size += size;
+            buffer->tail  = (buffer->tail + size) % buffer->length;
+        }
+    }
+
+    return 1;
+}
+
+b32
+windows_socket_udp_read_mem8(Windows_Socket_UDP* self, u8* memory, uptr length, uptr* size)
+{
+    i8* mem = pax_cast(i8*, memory);
+    i32 len = pax_cast(i32, length);
+
+    uptr result = recv(self->handle, mem, len, 0);
+
+    if (result <= length) {
+        if (size != 0)
+            *size = result;
+
+        return 1;
+    }
+
+    return 0;
+}
+
+b32
+windows_socket_udp_read_mem8_from(Windows_Socket_UDP* self, u8* memory, uptr length, uptr* size, u16* port, Address* address)
+{
     Sock_Storage storage = {};
-    int          size    = SOCK_SIZE;
+    i32          payload = SOCK_SIZE;
 
-    char* memory = pax_cast(char*, buffer->memory + buffer->size);
-    int   length = pax_cast(int,   buffer->length - buffer->size);
+    i8* mem = pax_cast(i8*, memory);
+    i32 len = pax_cast(i32, length);
 
-    uptr result = recvfrom(self->handle, memory, length, 0,
-        SOCK(&storage), &size);
+    uptr result = recvfrom(self->handle, mem, len, 0, SOCK(&storage), &payload);
 
     if (result > length) return 0;
 
@@ -356,10 +496,10 @@ windows_socket_udp_read_from(Windows_Socket_UDP* self, Buffer* buffer, u16* port
             }
         } break;
 
-        default: break;
+        default: return 0;
     }
 
-    buffer->size += result;
+    if (size != 0) *size = result;
 
     return 1;
 }

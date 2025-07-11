@@ -42,16 +42,28 @@ Windows_Socket_UDP*
 windows_socket_udp_accept(Windows_Socket_UDP* self, Arena* arena);
 
 b32
-windows_socket_udp_write(Windows_Socket_UDP* self, Buffer buffer);
+windows_socket_udp_write(Windows_Socket_UDP* self, Buffer* buffer);
 
 b32
-windows_socket_udp_write_to(Windows_Socket_UDP* self, Buffer buffer, u16 port, Address address);
+windows_socket_udp_write_to(Windows_Socket_UDP* self, Buffer* buffer, u16 port, Address address);
+
+b32
+windows_socket_udp_write_mem8(Windows_Socket_UDP* self, u8* memory, uptr length);
+
+b32
+windows_socket_udp_write_mem8_to(Windows_Socket_UDP* self, u8* memory, uptr length, u16 port, Address address);
 
 b32
 windows_socket_udp_read(Windows_Socket_UDP* self, Buffer* buffer);
 
 b32
 windows_socket_udp_read_from(Windows_Socket_UDP* self, Buffer* buffer, u16* port, Address* address);
+
+b32
+windows_socket_udp_read_mem8(Windows_Socket_UDP* self, u8* memory, uptr length, uptr* size);
+
+b32
+windows_socket_udp_read_mem8_from(Windows_Socket_UDP* self, u8* memory, uptr length, uptr* size, u16* port, Address* address);
 
 } // namespace pax
 

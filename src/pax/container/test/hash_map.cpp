@@ -17,11 +17,11 @@ main()
 
     Hash_Map<u32, u32> map = hash_map_reserve<u32, u32>(&arena, 22, &u32_hash);
 
-    printf("insert = %lu\n", hash_map_insert(&map, pax_cast(u32,       5), pax_cast(u32,        16)));
-    printf("insert = %lu\n", hash_map_insert(&map, pax_cast(u32,    3453), pax_cast(u32,        1)));
-    printf("insert = %lu\n", hash_map_insert(&map, pax_cast(u32, 3453453), pax_cast(u32, 13453453)));
+    printf("insert = %u\n", hash_map_insert(&map, pax_cast(u32,       5), pax_cast(u32,        16)));
+    printf("insert = %u\n", hash_map_insert(&map, pax_cast(u32,    3453), pax_cast(u32,        1)));
+    printf("insert = %u\n", hash_map_insert(&map, pax_cast(u32, 3453453), pax_cast(u32, 13453453)));
 
-    printf("get    = %lu\n", hash_map_get_or(&map, pax_cast(u32, 5), U32_MAX));
+    printf("get    = %u\n", hash_map_get_or(&map, pax_cast(u32, 5), U32_MAX));
 
     printf("Map {\n");
 
@@ -35,7 +35,7 @@ main()
             u32  key   = array_get_or(&map.key, i, U32_MAX);
             u32  value = array_get_or(&map.value, i, U32_MAX);
 
-            printf("[%3llu] %lu => %lu", inner, key, value);
+            printf("[%3llu] %u => %u", inner, key, value);
         } else
             printf("[  0]");
 
@@ -50,7 +50,7 @@ main()
     hash_map_update(&map, pax_cast(u32,    5), U32_MAX, &updated);
     hash_map_remove(&map, pax_cast(u32, 3453),          &removed);
 
-    printf("updated = %lu, removed = %lu\n", updated, removed);
+    printf("updated = %u, removed = %u\n", updated, removed);
 
     printf("\n");
     printf("Map {\n");
@@ -65,7 +65,7 @@ main()
             u32  key   = array_get_or(&map.key, i, U32_MAX);
             u32  value = array_get_or(&map.value, i, U32_MAX);
 
-            printf("[%3llu] %lu => %lu", inner, key, value);
+            printf("[%3llu] %u => %u", inner, key, value);
         } else
             printf("[  0]");
 

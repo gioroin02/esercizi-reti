@@ -16,7 +16,7 @@ void
 session_tcp_close(Socket_TCP self);
 
 b32
-session_tcp_write(Socket_TCP self, Buffer buffer);
+session_tcp_write(Socket_TCP self, Buffer* buffer);
 
 b32
 session_tcp_read(Socket_TCP self, Buffer* buffer);

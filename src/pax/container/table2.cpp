@@ -11,8 +11,6 @@ table2_make(Val* memory, uptr length, uptr height)
 {
     Table2<Val> result = {};
 
-    result.arena = 0;
-
     if (memory != 0 && length != 0 && height != 0) {
         result.memory = memory;
         result.length = length;

@@ -48,15 +48,17 @@ main(int argc, const char* argv[])
     Buffer request  = buffer_reserve(&arena, MEMORY_KIB);
     Buffer response = buffer_reserve(&arena, MEMORY_KIB);
 
-    buffer_write_str8(&request, CLIENT_MSG);
+    buffer_write_str8_tail(&request, CLIENT_MSG);
 
-    client_udp_write(client, request, server_port, server_addr);
+    client_udp_write(client, &request, server_port, server_addr);
 
     u16     port = 0;
     Address addr = {};
 
     if (client_udp_read(client, &response, &port, &addr) != 0) {
         if (server_port == port && address_is_equal(server_addr, addr) != 0) {
+            buffer_normalize(&response);
+
             printf(INFO " " BLU("'%.*s'") "\n",
                 pax_cast(int, response.size), response.memory);
         } else

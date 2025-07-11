@@ -31,6 +31,9 @@ struct Format_Options
 Format_Options
 format_options(uptr base, uptr flags);
 
+Format_Options
+format_options_base(uptr base);
+
 } // namespace pax
 
 #endif // PAX_FORMAT_OPTIONS_HPP

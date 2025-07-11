@@ -10,7 +10,7 @@
 
 struct HTTP_Response_Writer
 {
-    Str_Builder builder = {};
+    Buffer buffer = {};
 
     uptr line = 0;
     uptr body = 0;
@@ -20,10 +20,8 @@ struct HTTP_Response_Reader
 {
     Buffer buffer = {};
 
-    uptr length = 0;
-    uptr offset = 0;
-    uptr line   = 0;
-    uptr body   = 0;
+    uptr line = 0;
+    uptr body = 0;
 };
 
 //
@@ -33,7 +31,7 @@ struct HTTP_Response_Reader
 /* HTTP_Response_Writer */
 
 HTTP_Response_Writer
-http_response_writer_init(Arena* arena);
+http_response_writer_init(Arena* arena, uptr length);
 
 void
 http_response_writer_clear(HTTP_Response_Writer* self);
@@ -48,7 +46,7 @@ b32
 http_response_write_header(HTTP_Response_Writer* self, str8 key, str8 value);
 
 b32
-http_response_write_content(HTTP_Response_Writer* self, Buffer content);
+http_response_write_content(HTTP_Response_Writer* self, Buffer* content);
 
 /* HTTP_Response_Reader */
 

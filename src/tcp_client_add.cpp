@@ -77,12 +77,10 @@ main(int argc, const char* argv[])
 
         number = u32_net_from_host(number);
 
-        buffer_clear(&request);
-
-        buffer_write_mem8(&request, pax_cast(u8*, &number),
+        buffer_write_mem8_tail(&request, pax_cast(u8*, &number),
             pax_size_of(u32));
 
-        client_tcp_write(client, request);
+        client_tcp_write(client, &request);
 
         arena_rewind(&arena, offset);
     } while (number != 0);
@@ -90,12 +88,12 @@ main(int argc, const char* argv[])
     if (client_tcp_read(client, &response) != 0) {
         u32 result = 0;
 
-        buffer_read_mem8(&response, 0, pax_cast(u8*, &result),
+        buffer_read_mem8_head(&response, pax_cast(u8*, &result),
             pax_size_of(u32));
 
         result = u32_host_from_net(result);
 
-        printf(INFO " result = " YLW("%lu")  "\n", result);
+        printf(INFO " result = " YLW("%u")  "\n", result);
     }
 
     client_tcp_stop(client);

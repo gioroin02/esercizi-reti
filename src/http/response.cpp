@@ -4,15 +4,11 @@
 #include "response.hpp"
 
 HTTP_Response_Writer
-http_response_writer_init(Arena* arena)
+http_response_writer_init(Arena* arena, uptr length)
 {
     HTTP_Response_Writer result = {};
 
-    result.builder =
-        str_builder_make(arena);
-
-    result.body = 0;
-    result.line = 0;
+    result.buffer = buffer_reserve(arena, length);
 
     return result;
 }
@@ -20,7 +16,7 @@ http_response_writer_init(Arena* arena)
 void
 http_response_writer_clear(HTTP_Response_Writer* self)
 {
-    str_builder_clear(&self->builder);
+    buffer_clear(&self->buffer);
 
     self->line = 0;
     self->body = 0;
@@ -29,11 +25,7 @@ http_response_writer_clear(HTTP_Response_Writer* self)
 b32
 http_response_write(HTTP_Response_Writer* self, Socket_TCP session)
 {
-    Buffer buffer = buffer_from_str_builder(&self->builder);
-
-    str_builder_clear(&self->builder);
-
-    return socket_tcp_write(session, buffer);
+    return socket_tcp_write(session, &self->buffer);
 }
 
 b32
@@ -41,12 +33,12 @@ http_response_write_start(HTTP_Response_Writer* self, str8 version, str8 status,
 {
     if (self->line != 0) return 0;
 
-    str_builder_str8(&self->builder, version);
-    str_builder_str8(&self->builder, SPACE);
-    str_builder_str8(&self->builder, status);
-    str_builder_str8(&self->builder, SPACE);
-    str_builder_str8(&self->builder, message);
-    str_builder_str8(&self->builder, CRLF);
+    buffer_write_str8_tail(&self->buffer, version);
+    buffer_write_str8_tail(&self->buffer, SPACE);
+    buffer_write_str8_tail(&self->buffer, status);
+    buffer_write_str8_tail(&self->buffer, SPACE);
+    buffer_write_str8_tail(&self->buffer, message);
+    buffer_write_str8_tail(&self->buffer, CRLF);
 
     self->line += 1;
 
@@ -58,11 +50,11 @@ http_response_write_header(HTTP_Response_Writer* self, str8 key, str8 value)
 {
     if (self->body != 0) return 0;
 
-    str_builder_str8(&self->builder, key);
-    str_builder_str8(&self->builder, COLON);
-    str_builder_str8(&self->builder, SPACE);
-    str_builder_str8(&self->builder, value);
-    str_builder_str8(&self->builder, CRLF);
+    buffer_write_str8_tail(&self->buffer, key);
+    buffer_write_str8_tail(&self->buffer, COLON);
+    buffer_write_str8_tail(&self->buffer, SPACE);
+    buffer_write_str8_tail(&self->buffer, value);
+    buffer_write_str8_tail(&self->buffer, CRLF);
 
     self->line += 1;
 
@@ -70,12 +62,17 @@ http_response_write_header(HTTP_Response_Writer* self, str8 key, str8 value)
 }
 
 b32
-http_response_write_content(HTTP_Response_Writer* self, Buffer buffer)
+http_response_write_content(HTTP_Response_Writer* self, Buffer* buffer)
 {
     if (self->body == 0)
-        str_builder_str8(&self->builder, CRLF);
+        buffer_write_str8_tail(&self->buffer, CRLF);
 
-    str_builder_buffer(&self->builder, buffer);
+    buffer_normalize(buffer);
+
+    buffer_write_mem8_tail(&self->buffer,
+        buffer->memory, buffer->size);
+
+    buffer_clear(buffer);
 
     self->body  = 1;
     self->line += 1;
@@ -88,13 +85,7 @@ http_response_reader_init(Arena* arena, uptr length)
 {
     HTTP_Response_Reader result = {};
 
-    result.buffer =
-        buffer_reserve(arena, length);
-
-    result.length = 0;
-    result.offset = 0;
-    result.line   = 0;
-    result.body   = 0;
+    result.buffer = buffer_reserve(arena, length);
 
     return result;
 }
@@ -104,41 +95,34 @@ http_response_reader_clear(HTTP_Response_Reader* self)
 {
     buffer_clear(&self->buffer);
 
-    self->length = 0;
-    self->offset = 0;
-    self->line   = 0;
-    self->body   = 0;
+    self->line = 0;
+    self->body = 0;
 }
 
 b32
 http_response_read(HTTP_Response_Reader* self, Socket_TCP session)
 {
-    if (self->offset < self->buffer.size)
-        buffer_slide(&self->buffer, self->offset);
-
-    self->offset = 0;
-
     return socket_tcp_read(session, &self->buffer);
 }
 
 b32
 http_response_read_start(HTTP_Response_Reader* self, str8* version, str8* status, str8* message)
 {
-    u8*  memory = self->buffer.memory + self->offset;
-    uptr length = self->buffer.size   - self->offset;
+    buffer_normalize(&self->buffer);
 
-    str8 string = str8_make(memory, length);
+    str8 string = str8_make(self->buffer.memory, self->buffer.size);
 
-    if (self->line != 0 || str8_contains(string, CRLF) == 0) return 0;
+    if (self->line != 0 || str8_contains(string, CRLF) == 0)
+        return 0;
 
     str8 line   = str8_split_on(string, CRLF, &string);
     str8 left   = {};
     str8 center = {};
     str8 right  = {};
 
-    self->length += line.length + CRLF.length;
-    self->offset += line.length + CRLF.length;
-    self->line   += 1;
+    buffer_drop_head(&self->buffer, line.length + CRLF.length);
+
+    self->line += 1;
 
     left   = str8_split_on(line, SPACE, &line);
     center = str8_split_on(line, SPACE, &right);
@@ -153,20 +137,20 @@ http_response_read_start(HTTP_Response_Reader* self, str8* version, str8* status
 b32
 http_response_read_header(HTTP_Response_Reader* self, str8* key, str8* value)
 {
-    u8*  memory = self->buffer.memory + self->offset;
-    uptr length = self->buffer.size   - self->offset;
+    buffer_normalize(&self->buffer);
 
-    str8 string = str8_make(memory, length);
+    str8 string = str8_make(self->buffer.memory, self->buffer.size);
 
-    if (self->body != 0 || str8_contains(string, CRLF) == 0) return 0;
+    if (self->body != 0 || str8_contains(string, CRLF) == 0)
+        return 0;
 
     str8 line  = str8_split_on(string, CRLF, &string);
     str8 left  = {};
     str8 right = {};
 
-    self->length += line.length + CRLF.length;
-    self->offset += line.length + CRLF.length;
-    self->line   += 1;
+    buffer_drop_head(&self->buffer, line.length + CRLF.length);
+
+    self->line += 1;
 
     switch (line.length) {
         case 0: { self->body = 1; } break;
@@ -210,7 +194,7 @@ http_response_heading(HTTP_Response_Reader* self, Arena* arena, Socket_TCP sessi
                 str8_copy(arena, message));
         }
 
-        while (self->offset < self->buffer.size) {
+        while (self->buffer.size > 0) {
             str8 key   = {};
             str8 value = {};
 
@@ -231,19 +215,24 @@ http_response_content(HTTP_Response_Reader* self, Arena* arena, uptr length, Soc
     Buffer result = buffer_reserve(arena, length);
 
     if (result.length != 0) {
-        buffer_slide(&self->buffer, self->offset);
+        buffer_normalize(&self->buffer);
 
         length -= self->buffer.size;
 
-        buffer_write(&result, self->buffer);
+        buffer_write_mem8_tail(&result,
+            self->buffer.memory, self->buffer.size);
+
         buffer_clear(&self->buffer);
 
         while (length > 0) {
-            if (http_response_read(self, session) == 0) break;
+            if (http_response_read(self, session) == 0)
+                break;
 
             length -= self->buffer.size;
 
-            buffer_write(&result, self->buffer);
+            buffer_write_mem8_tail(&result,
+                self->buffer.memory, self->buffer.size);
+
             buffer_clear(&self->buffer);
         }
     }

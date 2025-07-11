@@ -165,22 +165,6 @@ str_builder_str32(Str_Builder* self, str32 value)
     return 0;
 }
 
-b32
-str_builder_buffer(Str_Builder* self, Buffer value)
-{
-    uptr  offset = arena_offset(self->arena);
-    str32 string = str32_from_buffer(self->arena, value);
-
-    if (string.length != 0) {
-        if (str_builder_append(self, string) != 0)
-            return 1;
-    }
-
-    arena_rewind(self->arena, offset);
-
-    return 0;
-}
-
 str8
 str8_from_str_builder(Str_Builder* builder)
 {

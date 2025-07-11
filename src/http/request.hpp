@@ -10,7 +10,7 @@
 
 struct HTTP_Request_Writer
 {
-    Str_Builder builder = {};
+    Buffer buffer = {};
 
     uptr line = 0;
     uptr body = 0;
@@ -20,10 +20,8 @@ struct HTTP_Request_Reader
 {
     Buffer buffer = {};
 
-    uptr length = 0;
-    uptr offset = 0;
-    uptr line   = 0;
-    uptr body   = 0;
+    uptr line = 0;
+    uptr body = 0;
 };
 
 //
@@ -33,7 +31,7 @@ struct HTTP_Request_Reader
 /* HTTP_Request_Writer */
 
 HTTP_Request_Writer
-http_request_writer_init(Arena* arena);
+http_request_writer_init(Arena* arena, uptr length);
 
 void
 http_request_writer_clear(HTTP_Request_Writer* self);
@@ -48,7 +46,7 @@ b32
 http_request_write_header(HTTP_Request_Writer* self, str8 key, str8 value);
 
 b32
-http_request_write_content(HTTP_Request_Writer* self, Buffer content);
+http_request_write_content(HTTP_Request_Writer* self, Buffer* content);
 
 /* HTTP_Request_Reader */
 

@@ -23,7 +23,7 @@ main(int argc, const char* argv[])
 
     buffer_write_str8(&writing, content);
 
-    file_write(file, writing);
+    file_write(file, &writing);
     file_rewind(file, 0);
     file_read(file, &reading);
 

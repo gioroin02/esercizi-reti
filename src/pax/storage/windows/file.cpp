@@ -252,17 +252,51 @@ windows_file_rewind(Windows_File* self, uptr offset)
 }
 
 b32
-windows_file_write(Windows_File* self, Buffer buffer)
+windows_file_write(Windows_File* self, Buffer* buffer)
 {
-    char* memory = pax_cast(char*, buffer.memory);
-    int   length = pax_cast(int,   buffer.size);
+    u8*  memory = buffer->memory + buffer->head;
+    uptr length = buffer->size;
 
-    DWORD result = 0;
+    b32 state = 0;
 
-    b32 state = WriteFile(self->handle, memory, length,
-        &result, 0);
+    if (buffer->head > buffer->tail) {
+        memory = buffer->memory + buffer->head;
+        length = buffer->length - buffer->head;
 
-    if (state != 0 && result == length) return 1;
+        state = windows_file_write_mem8(self, memory, length);
+
+        if (state != 0) {
+            buffer->size -= length;
+            buffer->head  = (buffer->head + length) % buffer->length;
+        } else
+            return 0;
+
+        memory = buffer->memory + buffer->head;
+        length = buffer->size;
+   }
+
+    if (length != 0) {
+        state = windows_file_write_mem8(self, memory, length);
+
+        if (state != 0) {
+            buffer->size = 0;
+            buffer->head = 0;
+            buffer->tail = 0;
+        }
+    }
+
+    return state;
+}
+
+b32
+windows_file_write_mem8(Windows_File* self, u8* memory, uptr length)
+{
+    DWORD size = 0;
+
+    b32 state = WriteFile(self->handle, memory, length, &size, 0);
+
+    if (state != 0 && length == size)
+        return 1;
 
     return 0;
 }
@@ -270,19 +304,57 @@ windows_file_write(Windows_File* self, Buffer buffer)
 b32
 windows_file_read(Windows_File* self, Buffer* buffer)
 {
-    char* memory = pax_cast(char*, buffer->memory + buffer->size);
-    int   length = pax_cast(int,   buffer->length - buffer->size);
+    u8*  memory = buffer->memory + buffer->tail;
+    uptr length = buffer->length - buffer->size;
 
-    DWORD result = 0;
+    b32  state = 0;
+    uptr size  = 0;
 
-    b32 state = ReadFile(self->handle, memory, length,
-        &result, 0);
+    if (buffer->head < buffer->tail) {
+        memory = buffer->memory + buffer->tail;
+        length = buffer->length - buffer->tail;
 
-    if (state == 0 || result > length) return 0;
+        state = windows_file_read_mem8(self, memory, length, &size);
 
-    buffer->size += result;
+        if (state != 0) {
+            buffer->size += size;
+            buffer->tail  = (buffer->tail + size) % buffer->length;
+        } else
+            return 0;
+
+        if (size < length) return 1;
+
+        memory = buffer->memory + buffer->tail;
+        length = buffer->length - buffer->size;
+    }
+
+    if (length != 0) {
+        state = windows_file_read_mem8(self, memory, length, &size);
+
+        if (state != 0) {
+            buffer->size += size;
+            buffer->tail  = (buffer->tail + size) % buffer->length;
+        }
+    }
 
     return 1;
+}
+
+b32
+windows_file_read_mem8(Windows_File* self, u8* memory, uptr length, uptr* size)
+{
+    DWORD result = 0;
+
+    b32 state = ReadFile(self->handle, memory, length, &result, 0);
+
+    if (state != 0 && result <= length) {
+        if (size != 0)
+            *size = result;
+
+        return 1;
+    }
+
+    return 0;
 }
 
 } // namespace pax

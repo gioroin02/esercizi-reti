@@ -31,7 +31,7 @@ show_i32_from_str8(Format_Options opts, str8 string)
     i32 value = 0;
     b32 state = i32_from_str8(string, opts, &value);
 
-    printf("i32(" PRP("'%24.*s'") ") -> %s | %li\n",
+    printf("i32(" PRP("'%24.*s'") ") -> %s | %i\n",
         pax_cast(int, string.length), string.memory,
         state ? TRUE : FALSE, value);
 }

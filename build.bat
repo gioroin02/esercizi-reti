@@ -22,21 +22,21 @@ set "dir=src"
 
 rem UDP
 
-zig c++ %src% "%dir%\udp_server_first.cpp" %lib% -o udp_server_first.exe
-zig c++ %src% "%dir%\udp_client_first.cpp" %lib% -o udp_client_first.exe
+rem zig c++ %src% "%dir%\udp_server_first.cpp" %lib% -o udp_server_first.exe
+rem zig c++ %src% "%dir%\udp_client_first.cpp" %lib% -o udp_client_first.exe
 
-zig c++ %src% "%dir%\udp_server_add.cpp" %lib% -o udp_server_add.exe
-zig c++ %src% "%dir%\udp_client_add.cpp" %lib% -o udp_client_add.exe
+rem zig c++ %src% "%dir%\udp_server_add.cpp" %lib% -o udp_server_add.exe
+rem zig c++ %src% "%dir%\udp_client_add.cpp" %lib% -o udp_client_add.exe
 
 rem TCP
 
-zig c++ %src% "%dir%\tcp_server_first.cpp" %lib% -o tcp_server_first.exe
-zig c++ %src% "%dir%\tcp_client_first.cpp" %lib% -o tcp_client_first.exe
+rem zig c++ %src% "%dir%\tcp_server_first.cpp" %lib% -o tcp_server_first.exe
+rem zig c++ %src% "%dir%\tcp_client_first.cpp" %lib% -o tcp_client_first.exe
+rem
+rem zig c++ %src% "%dir%\tcp_server_add.cpp" %lib% -o tcp_server_add.exe
+rem zig c++ %src% "%dir%\tcp_client_add.cpp" %lib% -o tcp_client_add.exe
 
-zig c++ %src% "%dir%\tcp_server_add.cpp" %lib% -o tcp_server_add.exe
-zig c++ %src% "%dir%\tcp_client_add.cpp" %lib% -o tcp_client_add.exe
-
-zig c++ %src% "%dir%\tcp_server_file.cpp" %lib% -o tcp_server_file.exe
+rem zig c++ %src% "%dir%\tcp_server_file.cpp" %lib% -o tcp_server_file.exe
 rem zig c++ %src% "%dir%\tcp_client_file.cpp" %lib% -o tcp_client_file.exe
 
 rem HTTP

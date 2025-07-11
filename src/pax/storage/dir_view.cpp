@@ -18,7 +18,7 @@
 
 #endif
 
-#define PAX_DIR_VIEW(self) pax_cast(__Dir_View__*, self)
+#define pax_dir_view(self) pax_cast(__Dir_View__*, self)
 
 namespace pax {
 
@@ -31,7 +31,7 @@ dir_view(Arena* arena, str8 path)
 b32
 dir_next(Dir_View self, Arena* arena, File_Props* value)
 {
-    return __dir_next__(PAX_DIR_VIEW(self), arena, value);
+    return __dir_next__(pax_dir_view(self), arena, value);
 }
 
 } // namespace pax

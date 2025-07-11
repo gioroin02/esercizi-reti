@@ -86,10 +86,10 @@ session_tcp_close(Socket_TCP self)
 }
 
 b32
-session_tcp_write(Socket_TCP self, Buffer buffer)
+session_tcp_write(Socket_TCP self, Buffer* buffer)
 {
     printf(TRACE " Scrittura risposta di " YLW("%lluB") ": ",
-        buffer.size);
+        buffer->size);
 
     b32 state = socket_tcp_write(self, buffer);
 

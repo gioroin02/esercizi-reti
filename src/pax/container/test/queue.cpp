@@ -25,19 +25,19 @@ main()
     printf("head = %llu, tail = %llu\n", queue.head, queue.tail);
 
     for (uptr i = 0; i < queue.size; i += 1)
-        printf("%llu: %lu\n", i, queue_get_or(&queue, i, U32_MAX));
+        printf("%llu: %u\n", i, queue_get_or(&queue, i, U32_MAX));
 
     Queue copy = queue_copy(&arena, &queue);
 
     printf("head = %llu, tail = %llu\n", copy.head, copy.tail);
 
     for (uptr i = 0; i < copy.size; i += 1)
-        printf("%llu: %lu\n", i, queue_get_or(&queue, i, U32_MAX));
+        printf("%llu: %u\n", i, queue_get_or(&queue, i, U32_MAX));
 
     queue = queue_copy(&arena, &copy);
 
     printf("head = %llu, tail = %llu\n", queue.head, queue.tail);
 
     for (uptr i = 0; i < queue.size; i += 1)
-        printf("%llu: %lu\n", i, queue_get_or(&queue, i, U32_MAX));
+        printf("%llu: %u\n", i, queue_get_or(&queue, i, U32_MAX));
 }

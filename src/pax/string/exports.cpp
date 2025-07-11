@@ -13,6 +13,8 @@
 #include "str16.cpp"
 #include "str32.cpp"
 
+#include "buffer.cpp"
+
 #include "convert.cpp"
 #include "builder.cpp"
 

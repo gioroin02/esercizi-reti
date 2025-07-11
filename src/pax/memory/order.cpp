@@ -28,7 +28,7 @@ mem_is_upper_first()
 }
 
 addr
-mem_host_from_net(const addr memory, uptr length)
+mem_host_from_net(addr memory, uptr length)
 {
     if (mem_is_lower_first())
         return mem8_reverse(memory, length);
@@ -37,7 +37,7 @@ mem_host_from_net(const addr memory, uptr length)
 }
 
 addr
-mem_copy_host_from_net(const addr memory, const addr value, uptr length)
+mem_copy_host_from_net(addr memory, addr value, uptr length)
 {
     if (mem_is_lower_first())
         return mem8_copy_rev(memory, value, length);
@@ -46,7 +46,7 @@ mem_copy_host_from_net(const addr memory, const addr value, uptr length)
 }
 
 addr
-mem_net_from_host(const addr memory, uptr length)
+mem_net_from_host(addr memory, uptr length)
 {
     if (mem_is_lower_first())
         return mem8_reverse(memory, length);
@@ -55,7 +55,7 @@ mem_net_from_host(const addr memory, uptr length)
 }
 
 addr
-mem_copy_net_from_host(const addr memory, const addr value, uptr length)
+mem_copy_net_from_host(addr memory, addr value, uptr length)
 {
     if (mem_is_lower_first())
         return mem8_copy_rev(memory, value, length);

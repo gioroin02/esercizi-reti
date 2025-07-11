@@ -18,7 +18,9 @@
     #define __socket_tcp_connect__     windows_socket_tcp_connect
     #define __socket_tcp_accept__      windows_socket_tcp_accept
     #define __socket_tcp_write__       windows_socket_tcp_write
+    #define __socket_tcp_write_mem8__  windows_socket_tcp_write_mem8
     #define __socket_tcp_read__        windows_socket_tcp_read
+    #define __socket_tcp_read_mem8__   windows_socket_tcp_read_mem8
 
 #else
 
@@ -26,7 +28,7 @@
 
 #endif
 
-#define PAX_SOCKET_TCP(self) pax_cast(__Socket_TCP__*, self)
+#define pax_socket_tcp(self) pax_cast(__Socket_TCP__*, self)
 
 namespace pax {
 
@@ -39,55 +41,67 @@ socket_tcp_create(Arena* arena, Address_Kind kind)
 void
 socket_tcp_destroy(Socket_TCP self)
 {
-    __socket_tcp_destroy__(PAX_SOCKET_TCP(self));
+    __socket_tcp_destroy__(pax_socket_tcp(self));
 }
 
 Address
 socket_tcp_get_address(Socket_TCP self)
 {
-    return __socket_tcp_get_address__(PAX_SOCKET_TCP(self));
+    return __socket_tcp_get_address__(pax_socket_tcp(self));
 }
 
 u16
 socket_tcp_get_port(Socket_TCP self)
 {
-    return __socket_tcp_get_port__(PAX_SOCKET_TCP(self));
+    return __socket_tcp_get_port__(pax_socket_tcp(self));
 }
 
 b32
 socket_tcp_bind(Socket_TCP self, u16 port, Address address)
 {
-    return __socket_tcp_bind__(PAX_SOCKET_TCP(self), port, address);
+    return __socket_tcp_bind__(pax_socket_tcp(self), port, address);
 }
 
 b32
 socket_tcp_listen(Socket_TCP self)
 {
-    return __socket_tcp_listen__(PAX_SOCKET_TCP(self));
+    return __socket_tcp_listen__(pax_socket_tcp(self));
 }
 
 b32
 socket_tcp_connect(Socket_TCP self, u16 port, Address address)
 {
-    return __socket_tcp_connect__(PAX_SOCKET_TCP(self), port, address);
+    return __socket_tcp_connect__(pax_socket_tcp(self), port, address);
 }
 
 Socket_TCP
 socket_tcp_accept(Socket_TCP self, Arena* arena)
 {
-    return __socket_tcp_accept__(PAX_SOCKET_TCP(self), arena);
+    return __socket_tcp_accept__(pax_socket_tcp(self), arena);
 }
 
 b32
-socket_tcp_write(Socket_TCP self, Buffer buffer)
+socket_tcp_write(Socket_TCP self, Buffer* buffer)
 {
-    return __socket_tcp_write__(PAX_SOCKET_TCP(self), buffer);
+    return __socket_tcp_write__(pax_socket_tcp(self), buffer);
+}
+
+b32
+socket_tcp_write_mem8(Socket_TCP self, u8* memory, uptr length)
+{
+    return __socket_tcp_write_mem8__(pax_socket_tcp(self), memory, length);
 }
 
 b32
 socket_tcp_read(Socket_TCP self, Buffer* buffer)
 {
-    return __socket_tcp_read__(PAX_SOCKET_TCP(self), buffer);
+    return __socket_tcp_read__(pax_socket_tcp(self), buffer);
+}
+
+b32
+socket_tcp_read_mem8(Socket_TCP self, u8* memory, uptr length, uptr* size)
+{
+    return __socket_tcp_read_mem8__(pax_socket_tcp(self), memory, length, size);
 }
 
 } // namespace pax

@@ -6,14 +6,12 @@
 namespace pax {
 
 Buffer
-buffer_make(const u8* memory, uptr length)
+buffer_make(u8* memory, uptr length)
 {
     Buffer result = {};
 
-    result.size = 0;
-
     if (memory != 0 && length != 0) {
-        result.memory = pax_cast(u8*, memory);
+        result.memory = memory;
         result.length = length;
     }
 
@@ -21,12 +19,12 @@ buffer_make(const u8* memory, uptr length)
 }
 
 Buffer
-buffer_make_full(const u8* memory, uptr length)
+buffer_make_full(u8* memory, uptr length)
 {
     Buffer result = {};
 
     if (memory != 0 && length != 0) {
-        result.memory = pax_cast(u8*, memory);
+        result.memory = memory;
         result.length = length;
         result.size   = length;
     }
@@ -40,86 +38,139 @@ buffer_reserve(Arena* arena, uptr length)
     return buffer_make(arena_reserve_arr<u8>(arena, length), length);
 }
 
+Buffer
+buffer_copy_normalized(Arena* arena, Buffer value)
+{
+    Buffer result = buffer_reserve(arena, value.size);
+
+    for (uptr i = 0; i < value.size; i += 1)
+        result.memory[i] = value.memory[(value.head + i) % value.length];
+
+    result.size = value.size;
+    result.tail = value.size;
+
+    return result;
+}
+
 void
 buffer_clear(Buffer* self)
 {
     self->size = 0;
+    self->head = 0;
+    self->tail = 0;
 }
 
 void
-buffer_slide(Buffer* self, uptr offset)
+buffer_normalize(Buffer* self)
 {
-    offset = pax_limit(offset, 0, self->size);
+    u8*  memory = self->memory;
+    uptr length = self->tail;
+    uptr shift  = self->head;
 
-    self->size = self->size - offset;
+    if (self->head > self->tail) {
+        memory = self->memory + self->length - self->head;
+        shift  = self->head - self->tail;
 
-    for (uptr i = 0; i < self->size; i += 1)
-        self->memory[i] = self->memory[i + offset];
+        mem8_reverse(self->memory + self->head,
+            self->length - self->head);
+
+        mem8_reverse(self->memory, self->tail);
+        mem8_reverse(self->memory, self->length);
+    }
+
+    if (shift != 0)
+        mem8_move_back(memory, length, shift);
+
+    self->head = 0;
+    self->tail = self->size;
+}
+
+uptr
+buffer_drop_head(Buffer* self, uptr offset)
+{
+    uptr size = pax_limit(offset, 0, self->size);
+    uptr next = self->head + size;
+
+    self->size -= size;
+    self->head  = next % self->length;
+
+    return size;
+}
+
+uptr
+buffer_drop_tail(Buffer* self, uptr offset)
+{
+    uptr size = pax_limit(offset, 0, self->size);
+    uptr prev = self->tail + self->length - size;
+
+    self->size -= size;
+    self->tail  = prev % self->length;
+
+    return size;
 }
 
 b32
-buffer_write(Buffer* self, Buffer value)
+buffer_write_mem8_head(Buffer* self, u8* memory, uptr length)
 {
-    uptr start = self->size;
-    uptr size  = value.size;
+    uptr prev = self->head + self->length - length;
 
-    if (start < 0 || start + size > self->length)
+    if (self->size < 0 || self->size + length > self->length)
         return 0;
 
-    mem8_copy(self->memory + start, value.memory, size);
+    self->size += length;
+    self->head  = prev % self->length;
 
-    self->size += size;
+    for (uptr i = 0; i < length; i += 1)
+        self->memory[(self->head + i) % self->length] = memory[i];
 
     return 1;
 }
 
 b32
-buffer_write_mem8(Buffer* self, u8* memory, uptr length)
+buffer_write_mem8_tail(Buffer* self, u8* memory, uptr length)
 {
-    uptr start = self->size;
-    uptr size  = length;
+    uptr next = self->tail + length;
 
-    if (start < 0 || start + size > self->length)
+    if (self->size < 0 || self->size + length > self->length)
         return 0;
 
-    mem8_copy(self->memory + start, memory, size);
+    for (uptr i = 0; i < length; i += 1)
+        self->memory[(self->tail + i) % self->length] = memory[i];
 
-    self->size += size;
+    self->size += length;
+    self->tail  = next % self->length;
 
     return 1;
 }
 
-b32
-buffer_read(Buffer* self, uptr index, Buffer* value)
+uptr
+buffer_read_mem8_head(Buffer* self, u8* memory, uptr length)
 {
-    uptr start = value->size;
-    uptr size  = value->length - value->size;
+    uptr size = pax_min(self->size, length);
+    uptr next = self->head + size;
 
-    if (index < 0 || index > self->size)
-        return 0;
+    for (uptr i = 0; i < size; i += 1)
+        memory[i] = self->memory[(self->head + i) % self->length];
 
-    size = pax_limit(size, 0, self->size - index);
+    self->size -= size;
+    self->head  = next % self->length;
 
-    mem8_copy(value->memory + start,
-        self->memory + index, size);
-
-    value->size += size;
-
-    return 1;
+    return size;
 }
 
-b32
-buffer_read_mem8(Buffer* self, uptr index, u8* memory, uptr length)
+uptr
+buffer_read_mem8_tail(Buffer* self, u8* memory, uptr length)
 {
-    if (index < 0 || index > self->size)
-        return 0;
+    uptr size = pax_min(self->size, length);
+    uptr prev = self->tail + self->length - size;
 
-    uptr size = pax_limit(size, 0, self->size - index);
+    self->size -= size;
+    self->tail  = prev % self->length;
 
-    mem8_copy(memory, self->memory + index, size);
-    mem8_zero(memory + size, length - size);
+    for (uptr i = 0; i < size; i += 1)
+        memory[i] = self->memory[(self->tail + i) % self->length];
 
-    return 1;
+    return size;
 }
 
 } // namespace pax

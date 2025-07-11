@@ -11,9 +11,6 @@ array_make(Val* memory, uptr length)
 {
     Array<Val> result = {};
 
-    result.arena = 0;
-    result.size  = 0;
-
     if (memory != 0 && length != 0) {
         result.memory = memory;
         result.length = length;
@@ -31,7 +28,6 @@ array_reserve(Arena* arena, uptr length)
     Val* memory = arena_reserve_arr<Val>(arena, length);
 
     result.arena = arena;
-    result.size  = 0;
 
     if (memory != 0 && length != 0) {
         result.memory = memory;

@@ -74,12 +74,10 @@ main(int argc, const char* argv[])
 
         number = u32_net_from_host(number);
 
-        buffer_clear(&request);
-
-        buffer_write_mem8(&request, pax_cast(u8*, &number),
+        buffer_write_mem8_tail(&request, pax_cast(u8*, &number),
             pax_size_of(u32));
 
-        client_udp_write(client, request, server_port, server_addr);
+        client_udp_write(client, &request, server_port, server_addr);
 
         arena_rewind(&arena, offset);
     } while (number != 0);
@@ -91,12 +89,12 @@ main(int argc, const char* argv[])
         if (server_port == port && address_is_equal(server_addr, addr) != 0) {
             u32 result = 0;
 
-            buffer_read_mem8(&response, 0, pax_cast(u8*, &result),
+            buffer_read_mem8_head(&response, pax_cast(u8*, &result),
                 pax_size_of(u32));
 
             result = u32_host_from_net(result);
 
-            printf(INFO " result = " YLW("%lu")  "\n", result);
+            printf(INFO " result = " YLW("%u")  "\n", result);
         } else
             printf(ERROR " Indirizzo o porta inaspettati...\n");
     }

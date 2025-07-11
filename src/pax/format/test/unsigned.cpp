@@ -31,7 +31,7 @@ show_u32_from_str8(Format_Options opts, str8 string)
     u32 value = 0;
     b32 state = u32_from_str8(string, opts, &value);
 
-    printf("u32(" PRP("'%24.*s'") ") -> %s | %lu\n",
+    printf("u32(" PRP("'%24.*s'") ") -> %s | %u\n",
         pax_cast(int, string.length), string.memory,
         state ? TRUE : FALSE, value);
 }

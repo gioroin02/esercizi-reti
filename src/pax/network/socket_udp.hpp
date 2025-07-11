@@ -36,16 +36,28 @@ Socket_UDP
 socket_udp_accept(Socket_UDP self, Arena* arena);
 
 b32
-socket_udp_write(Socket_UDP self, Buffer buffer);
+socket_udp_write(Socket_UDP self, Buffer* buffer);
 
 b32
-socket_udp_write_to(Socket_UDP self, Buffer buffer, u16 port, Address address);
+socket_udp_write_to(Socket_UDP self, Buffer* buffer, u16 port, Address address);
+
+b32
+socket_udp_write_mem8(Socket_UDP self, u8* memory, uptr length);
+
+b32
+socket_udp_write_mem8_to(Socket_UDP self, u8* memory, uptr length, u16 port, Address address);
 
 b32
 socket_udp_read(Socket_UDP self, Buffer* buffer);
 
 b32
 socket_udp_read_from(Socket_UDP self, Buffer* buffer, u16* port, Address *address);
+
+b32
+socket_udp_read_mem8(Socket_UDP* self, u8* memory, uptr length, uptr* size);
+
+b32
+socket_udp_read_mem8_from(Socket_UDP self, u8* memory, uptr length, uptr* size, u16* port, Address* address);
 
 } // namespace pax
 

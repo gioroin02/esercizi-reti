@@ -11,11 +11,6 @@ queue_make(Val* memory, uptr length)
 {
     Queue<Val> result = {};
 
-    result.arena = 0;
-    result.size  = 0;
-    result.head  = 0;
-    result.tail  = 0;
-
     if (memory != 0 && length != 0) {
         result.memory = memory;
         result.length = length;
@@ -33,9 +28,6 @@ queue_reserve(Arena* arena, uptr length)
     Val* memory = arena_reserve_arr<Val>(arena, length);
 
     result.arena = arena;
-    result.size  = 0;
-    result.head  = 0;
-    result.tail  = 0;
 
     if (memory != 0 && length != 0) {
         result.memory = memory;

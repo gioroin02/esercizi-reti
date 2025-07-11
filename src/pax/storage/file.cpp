@@ -17,7 +17,9 @@
     #define __file_offset__      windows_file_offset
     #define __file_rewind__      windows_file_rewind
     #define __file_write__       windows_file_write
+    #define __file_write_mem8__  windows_file_write_mem8
     #define __file_read__        windows_file_read
+    #define __file_read_mem8__   windows_file_read_mem8
 
 #else
 
@@ -25,7 +27,7 @@
 
 #endif
 
-#define PAX_FILE(self) pax_cast(__File__*, self)
+#define pax_file(self) pax_cast(__File__*, self)
 
 namespace pax {
 
@@ -56,31 +58,43 @@ file_open_new(Arena* arena, str8 path, str8 name, File_Perm perm)
 void
 file_close(File self)
 {
-    __file_close__(PAX_FILE(self));
+    __file_close__(pax_file(self));
 }
 
 uptr
 file_offset(File self)
 {
-    return __file_offset__(PAX_FILE(self));
+    return __file_offset__(pax_file(self));
 }
 
 b32
 file_rewind(File self, uptr offset)
 {
-    return __file_rewind__(PAX_FILE(self), offset);
+    return __file_rewind__(pax_file(self), offset);
 }
 
 b32
-file_write(File self, Buffer buffer)
+file_write(File self, Buffer* buffer)
 {
-    return __file_write__(PAX_FILE(self), buffer);
+    return __file_write__(pax_file(self), buffer);
+}
+
+b32
+file_write_mem8(File self, u8* memory, uptr length)
+{
+    return __file_write_mem8__(pax_file(self), memory, length);
 }
 
 b32
 file_read(File self, Buffer* buffer)
 {
-    return __file_read__(PAX_FILE(self), buffer);
+    return __file_read__(pax_file(self), buffer);
+}
+
+b32
+file_read_mem8(File self, u8* memory, uptr length, uptr* size)
+{
+    return __file_read_mem8__(pax_file(self), memory, length, size);
 }
 
 } // namespace pax

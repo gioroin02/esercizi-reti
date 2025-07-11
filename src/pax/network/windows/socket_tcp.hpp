@@ -42,10 +42,16 @@ Windows_Socket_TCP*
 windows_socket_tcp_accept(Windows_Socket_TCP* self, Arena* arena);
 
 b32
-windows_socket_tcp_write(Windows_Socket_TCP* self, Buffer buffer);
+windows_socket_tcp_write(Windows_Socket_TCP* self, Buffer* buffer);
+
+b32
+windows_socket_tcp_write_mem8(Windows_Socket_TCP* self, u8* memory, uptr length);
 
 b32
 windows_socket_tcp_read(Windows_Socket_TCP* self, Buffer* buffer);
+
+b32
+windows_socket_tcp_read_mem8(Windows_Socket_TCP* self, u8* memory, uptr length, uptr* size);
 
 } // namespace pax
 

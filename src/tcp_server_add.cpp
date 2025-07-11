@@ -49,10 +49,8 @@ main(int argc, const char* argv[])
 
         u32 input = 0;
 
-        buffer_read_mem8(&request, 0, pax_cast(u8*, &input),
+        buffer_read_mem8_head(&request, pax_cast(u8*, &input),
             pax_size_of(u32));
-
-        buffer_clear(&request);
 
         input = u32_host_from_net(input);
 
@@ -60,16 +58,16 @@ main(int argc, const char* argv[])
 
         result += input;
 
-        printf(INFO " input = " YLW("%lu") ", result = " YLW("%lu") "\n",
+        printf(INFO " input = " YLW("%u") ", result = " YLW("%u") "\n",
             input, result);
     } while (1);
 
     result = u32_net_from_host(result);
 
-    buffer_write_mem8(&response, pax_cast(u8*, &result),
+    buffer_write_mem8_tail(&response, pax_cast(u8*, &result),
         pax_size_of(u32));
 
-    session_tcp_write(session, response);
+    session_tcp_write(session, &response);
     session_tcp_close(session);
 
     system_network_stop();

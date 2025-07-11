@@ -60,9 +60,6 @@ str_builder_str16(Str_Builder* self, str16 value);
 b32
 str_builder_str32(Str_Builder* self, str32 value);
 
-b32
-str_builder_buffer(Str_Builder* self, Buffer value);
-
 str8
 str8_from_str_builder(Str_Builder* builder);
 

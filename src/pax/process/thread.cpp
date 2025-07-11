@@ -22,39 +22,39 @@
 
 #endif
 
-#define PAX_ROUTINE(self) pax_cast(__Routine__*, self)
-#define PAX_THREAD(self)  pax_cast(__Thread__*, self)
+#define pax_routine(self) pax_cast(__Routine__*, self)
+#define pax_thread(self)  pax_cast(__Thread__*, self)
 
 namespace pax {
 
 Thread
 thread_create(Arena* arena, Routine* routine, addr argumns)
 {
-    return __thread_create__(arena, PAX_ROUTINE(routine), argumns);
+    return __thread_create__(arena, pax_routine(routine), argumns);
 }
 
 void
 thread_destroy(Thread self)
 {
-    __thread_destroy__(PAX_THREAD(self));
+    __thread_destroy__(pax_thread(self));
 }
 
 void
 thread_wait(Thread self)
 {
-    __thread_wait__(PAX_THREAD(self));
+    __thread_wait__(pax_thread(self));
 }
 
 void
 thread_detach(Thread self)
 {
-    __thread_detach__(PAX_THREAD(self));
+    __thread_detach__(pax_thread(self));
 }
 
 b32
 thread_is_running(Thread self)
 {
-    return __thread_is_running__(PAX_THREAD(self));
+    return __thread_is_running__(pax_thread(self));
 }
 
 } // namespace pax

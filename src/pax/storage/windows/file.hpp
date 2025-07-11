@@ -39,10 +39,16 @@ b32
 windows_file_rewind(Windows_File* self, uptr offset);
 
 b32
-windows_file_write(Windows_File* self, Buffer buffer);
+windows_file_write(Windows_File* self, Buffer* buffer);
+
+b32
+windows_file_write_mem8(Windows_File* self, u8* memory, uptr length);
 
 b32
 windows_file_read(Windows_File* self, Buffer* buffer);
+
+b32
+windows_file_read_mem8(Windows_File* self, u8* memory, uptr length, uptr* size);
 
 } // namespace pax
 

@@ -6,7 +6,7 @@
 namespace pax {
 
 addr
-mem8_zero(const addr memory, uptr length)
+mem8_zero(addr memory, uptr length)
 {
     u8* mem = pax_cast(u8*, memory);
 
@@ -17,7 +17,7 @@ mem8_zero(const addr memory, uptr length)
 }
 
 addr
-mem8_copy(const addr memory, const addr value, uptr length)
+mem8_copy(addr memory, addr value, uptr length)
 {
     u8* mem = pax_cast(u8*, memory);
     u8* val = pax_cast(u8*, value);
@@ -29,7 +29,7 @@ mem8_copy(const addr memory, const addr value, uptr length)
 }
 
 addr
-mem8_copy_rev(const addr memory, const addr value, uptr length)
+mem8_copy_rev(addr memory, addr value, uptr length)
 {
     u8* mem = pax_cast(u8*, memory);
     u8* val = pax_cast(u8*, value);
@@ -41,7 +41,7 @@ mem8_copy_rev(const addr memory, const addr value, uptr length)
 }
 
 addr
-mem8_move_back(const addr memory, uptr length, uptr offset)
+mem8_move_back(addr memory, uptr length, uptr offset)
 {
     u8* mem = pax_cast(u8*, memory);
 
@@ -52,7 +52,7 @@ mem8_move_back(const addr memory, uptr length, uptr offset)
 }
 
 addr
-mem8_move_forw(const addr memory, uptr length, uptr offset)
+mem8_move_forw(addr memory, uptr length, uptr offset)
 {
     u8* mem = pax_cast(u8*, memory);
 
@@ -63,7 +63,7 @@ mem8_move_forw(const addr memory, uptr length, uptr offset)
 }
 
 addr
-mem8_reverse(const addr memory, uptr length)
+mem8_reverse(addr memory, uptr length)
 {
     u8* mem = pax_cast(u8*, memory);
 
@@ -82,7 +82,7 @@ mem8_reverse(const addr memory, uptr length)
 }
 
 b32
-mem8_is_equal(const addr memory, const addr value, uptr length)
+mem8_is_equal(addr memory, addr value, uptr length)
 {
     u8* mem = pax_cast(u8*, memory);
     u8* val = pax_cast(u8*, value);
@@ -95,7 +95,7 @@ mem8_is_equal(const addr memory, const addr value, uptr length)
 }
 
 addr
-mem16_zero(const addr memory, uptr length)
+mem16_zero(addr memory, uptr length)
 {
     u16* mem = pax_cast(u16*, memory);
 
@@ -106,7 +106,7 @@ mem16_zero(const addr memory, uptr length)
 }
 
 addr
-mem16_copy(const addr memory, const addr value, uptr length)
+mem16_copy(addr memory, addr value, uptr length)
 {
     u16* mem = pax_cast(u16*, memory);
     u16* val = pax_cast(u16*, value);
@@ -118,7 +118,7 @@ mem16_copy(const addr memory, const addr value, uptr length)
 }
 
 addr
-mem16_copy_rev(const addr memory, const addr value, uptr length)
+mem16_copy_rev(addr memory, addr value, uptr length)
 {
     u16* mem = pax_cast(u16*, memory);
     u16* val = pax_cast(u16*, value);
@@ -130,7 +130,7 @@ mem16_copy_rev(const addr memory, const addr value, uptr length)
 }
 
 addr
-mem16_reverse(const addr memory, uptr length)
+mem16_reverse(addr memory, uptr length)
 {
     u16* mem = pax_cast(u16*, memory);
 
@@ -149,7 +149,7 @@ mem16_reverse(const addr memory, uptr length)
 }
 
 b32
-mem16_is_equal(const addr memory, const addr value, uptr length)
+mem16_is_equal(addr memory, addr value, uptr length)
 {
     u16* mem = pax_cast(u16*, memory);
     u16* val = pax_cast(u16*, value);
@@ -162,7 +162,7 @@ mem16_is_equal(const addr memory, const addr value, uptr length)
 }
 
 addr
-mem32_zero(const addr memory, uptr length)
+mem32_zero(addr memory, uptr length)
 {
     u32* mem = pax_cast(u32*, memory);
 
@@ -173,7 +173,7 @@ mem32_zero(const addr memory, uptr length)
 }
 
 addr
-mem32_copy(const addr memory, const addr value, uptr length)
+mem32_copy(addr memory, addr value, uptr length)
 {
     u32* mem = pax_cast(u32*, memory);
     u32* val = pax_cast(u32*, value);
@@ -185,7 +185,7 @@ mem32_copy(const addr memory, const addr value, uptr length)
 }
 
 addr
-mem32_copy_rev(const addr memory, const addr value, uptr length)
+mem32_copy_rev(addr memory, addr value, uptr length)
 {
     u32* mem = pax_cast(u32*, memory);
     u32* val = pax_cast(u32*, value);
@@ -197,7 +197,7 @@ mem32_copy_rev(const addr memory, const addr value, uptr length)
 }
 
 addr
-mem32_reverse(const addr memory, uptr length)
+mem32_reverse(addr memory, uptr length)
 {
     u32* mem = pax_cast(u32*, memory);
 
@@ -216,7 +216,7 @@ mem32_reverse(const addr memory, uptr length)
 }
 
 b32
-mem32_is_equal(const addr memory, const addr value, uptr length)
+mem32_is_equal(addr memory, addr value, uptr length)
 {
     u32* mem = pax_cast(u32*, memory);
     u32* val = pax_cast(u32*, value);
@@ -229,7 +229,7 @@ mem32_is_equal(const addr memory, const addr value, uptr length)
 }
 
 addr
-mem64_zero(const addr memory, uptr length)
+mem64_zero(addr memory, uptr length)
 {
     u64* mem = pax_cast(u64*, memory);
 
@@ -240,7 +240,7 @@ mem64_zero(const addr memory, uptr length)
 }
 
 addr
-mem64_copy(const addr memory, const addr value, uptr length)
+mem64_copy(addr memory, addr value, uptr length)
 {
     u64* mem = pax_cast(u64*, memory);
     u64* val = pax_cast(u64*, value);
@@ -252,7 +252,7 @@ mem64_copy(const addr memory, const addr value, uptr length)
 }
 
 addr
-mem64_copy_rev(const addr memory, const addr value, uptr length)
+mem64_copy_rev(addr memory, addr value, uptr length)
 {
     u64* mem = pax_cast(u64*, memory);
     u64* val = pax_cast(u64*, value);
@@ -264,7 +264,7 @@ mem64_copy_rev(const addr memory, const addr value, uptr length)
 }
 
 addr
-mem64_reverse(const addr memory, uptr length)
+mem64_reverse(addr memory, uptr length)
 {
     u64* mem = pax_cast(u64*, memory);
 
@@ -283,7 +283,7 @@ mem64_reverse(const addr memory, uptr length)
 }
 
 b32
-mem64_is_equal(const addr memory, const addr value, uptr length)
+mem64_is_equal(addr memory, addr value, uptr length)
 {
     u64* mem = pax_cast(u64*, memory);
     u64* val = pax_cast(u64*, value);
@@ -308,14 +308,13 @@ align_forward(uptr value, uptr align)
 }
 
 Arena
-arena_make(const addr memory, uptr length)
+arena_make(u8* memory, uptr length)
 {
     Arena result = {};
 
     if (memory != 0 && length != 0) {
-        result.memory = pax_cast(u8*, memory);
+        result.memory = memory;
         result.length = length;
-        result.offset = 0;
     }
 
     return result;

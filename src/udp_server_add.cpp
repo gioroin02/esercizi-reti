@@ -55,10 +55,8 @@ main(int argc, const char* argv[])
         if (client_port == port && address_is_equal(client_addr, addr) != 0) {
             u32 input = 0;
 
-            buffer_read_mem8(&request, 0, pax_cast(u8*, &input),
+            buffer_read_mem8_head(&request, pax_cast(u8*, &input),
                 pax_size_of(u32));
-
-            buffer_clear(&request);
 
             input = u32_host_from_net(input);
 
@@ -66,7 +64,7 @@ main(int argc, const char* argv[])
 
             result += input;
 
-            printf(INFO " input = " YLW("%lu") ", result = " YLW("%lu") "\n",
+            printf(INFO " input = " YLW("%u") ", result = " YLW("%u") "\n",
                 input, result);
         } else
             printf(ERROR " Indirizzo o porta inaspettati...\n");
@@ -74,10 +72,10 @@ main(int argc, const char* argv[])
 
     result = u32_net_from_host(result);
 
-    buffer_write_mem8(&response, pax_cast(u8*, &result),
+    buffer_write_mem8_tail(&response, pax_cast(u8*, &result),
         pax_size_of(u32));
 
-    server_udp_write(server, response, client_port, client_addr);
+    server_udp_write(server, &response, client_port, client_addr);
     server_udp_stop(server);
 
     system_network_stop();

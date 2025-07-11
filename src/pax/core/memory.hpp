@@ -42,70 +42,70 @@ struct Arena
 /* Memory */
 
 addr
-mem8_zero(const addr memory, uptr length);
+mem8_zero(addr memory, uptr length);
 
 addr
-mem8_copy(const addr memory, const addr value, uptr length);
+mem8_copy(addr memory, addr value, uptr length);
 
 addr
-mem8_copy_rev(const addr memory, const addr value, uptr length);
+mem8_copy_rev(addr memory, addr value, uptr length);
 
 addr
-mem8_move_back(const addr memory, uptr length, uptr offset);
+mem8_move_back(addr memory, uptr length, uptr offset);
 
 addr
-mem8_move_forw(const addr memory, uptr length, uptr offset);
+mem8_move_forw(addr memory, uptr length, uptr offset);
 
 addr
-mem8_reverse(const addr memory, uptr length);
+mem8_reverse(addr memory, uptr length);
 
 b32
-mem8_is_equal(const addr memory, const addr value, uptr length);
+mem8_is_equal(addr memory, addr value, uptr length);
 
 addr
-mem16_zero(const addr memory, uptr length);
+mem16_zero(addr memory, uptr length);
 
 addr
-mem16_copy(const addr memory, const addr value, uptr length);
+mem16_copy(addr memory, addr value, uptr length);
 
 addr
-mem16_copy_rev(const addr memory, const addr value, uptr length);
+mem16_copy_rev(addr memory, addr value, uptr length);
 
 addr
-mem16_reverse(const addr memory, uptr length);
+mem16_reverse(addr memory, uptr length);
 
 b32
-mem16_is_equal(const addr memory, const addr value, uptr length);
+mem16_is_equal(addr memory, addr value, uptr length);
 
 addr
-mem32_zero(const addr memory, uptr length);
+mem32_zero(addr memory, uptr length);
 
 addr
-mem32_copy(const addr memory, const addr value, uptr length);
+mem32_copy(addr memory, addr value, uptr length);
 
 addr
-mem32_copy_rev(const addr memory, const addr value, uptr length);
+mem32_copy_rev(addr memory, addr value, uptr length);
 
 addr
-mem32_reverse(const addr memory, uptr length);
+mem32_reverse(addr memory, uptr length);
 
 b32
-mem32_is_equal(const addr memory, const addr value, uptr length);
+mem32_is_equal(addr memory, addr value, uptr length);
 
 addr
-mem64_zero(const addr memory, uptr length);
+mem64_zero(addr memory, uptr length);
 
 addr
-mem64_copy(const addr memory, const addr value, uptr length);
+mem64_copy(addr memory, addr value, uptr length);
 
 addr
-mem64_copy_rev(const addr memory, const addr value, uptr length);
+mem64_copy_rev(addr memory, addr value, uptr length);
 
 addr
-mem64_reverse(const addr memory, uptr length);
+mem64_reverse(addr memory, uptr length);
 
 b32
-mem64_is_equal(const addr memory, const addr value, uptr length);
+mem64_is_equal(addr memory, addr value, uptr length);
 
 uptr
 align_forward(uptr value, uptr align);
@@ -113,7 +113,7 @@ align_forward(uptr value, uptr align);
 /* Arena */
 
 Arena
-arena_make(const addr memory, uptr length);
+arena_make(u8* memory, uptr length);
 
 Arena
 arena_reserve(Arena* self, uptr size);

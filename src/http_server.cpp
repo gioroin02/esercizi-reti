@@ -1,10 +1,9 @@
 #include "tcp/exports.hpp"
 #include "http/exports.hpp"
+
 #include "pax/storage/exports.hpp"
 
 #include <stdio.h>
-
-static const str8 SERVER_DATA_PATH = pax_str8("./data/http_server");
 
 b32
 http_server_on_get(Arena* arena, HTTP_Heading* heading, Buffer* content, HTTP_Response_Writer* writer);
@@ -21,14 +20,36 @@ http_server_on_application_form_url_encoded(Arena* arena, HTTP_Heading* heading,
 b32
 http_server_fallback(Arena* arena, HTTP_Heading* heading, Buffer* content, HTTP_Response_Writer* writer);
 
+static const str8 SERVER_DATA_PATH = pax_str8("./data/http_server");
+
+static const str8 SERVER_ARG_PORT = pax_str8("--port=");
+
 int
-main()
+main(int argc, const char* argv[])
 {
     Arena arena = system_reserve(128);
 
     if (system_network_start() == 0) return 1;
 
-    Socket_TCP server = server_tcp_start(&arena, 8000, address_any(ADDRESS_KIND_IP4));
+    u16 server_port = 8000;
+
+    if (argc != 1) {
+        Format_Options opts = format_options(10, FORMAT_FLAG_NONE);
+
+        for (uptr i = 1; i < argc; i += 1) {
+            str8 arg = pax_str8_max(argv[i], 128);
+
+            if (str8_starts_with(arg, SERVER_ARG_PORT) != 0) {
+                arg = str8_trim_prefix(arg, SERVER_ARG_PORT);
+                arg = str8_trim_spaces(arg);
+
+                u16_from_str8(arg, opts, &server_port);
+            }
+        }
+    }
+
+    Socket_TCP server = server_tcp_start(&arena,
+        server_port, address_any(ADDRESS_KIND_IP4));
 
     if (server == 0) return 1;
 
@@ -37,8 +58,8 @@ main()
     while (1) {
         Socket_TCP session = session_tcp_open(&arena, server);
 
-        HTTP_Request_Reader  reader = http_request_reader_init(&arena, MEMORY_KIB);
-        HTTP_Response_Writer writer = http_response_writer_init(&arena);
+        HTTP_Request_Reader  reader = http_request_reader_init(&arena, 4 * MEMORY_KIB);
+        HTTP_Response_Writer writer = http_response_writer_init(&arena, 4 * MEMORY_KIB);
 
         HTTP_Heading heading = http_request_heading(&reader, &arena, session);
         Buffer       content = {};
@@ -129,7 +150,7 @@ http_server_on_get(Arena* arena, HTTP_Heading* heading, Buffer* content, HTTP_Re
     http_response_write_start(writer, HTTP_VERSION_1_1,
         HTTP_STATUS_OK, HTTP_MESSAGE_OK);
 
-    http_response_write_content(writer, buffer);
+    http_response_write_content(writer, &buffer);
 
     return 1;
 }
@@ -254,7 +275,7 @@ http_server_on_multipart_form_data(Arena* arena, HTTP_Heading* heading, str8 mul
     if (file != 0) {
         Buffer buffer = buffer_make_full(multipart.memory, multipart.length);
 
-        if (file_write(file, buffer) != 0) {
+        if (file_write(file, &buffer) != 0) {
             printf(INFO " Wrote content to " BLU("'%.*s'") "\n",
                 pax_cast(int, name.length), name.memory);
 

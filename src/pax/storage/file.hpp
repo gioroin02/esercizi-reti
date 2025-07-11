@@ -39,10 +39,16 @@ b32
 file_rewind(File self, uptr offset);
 
 b32
-file_write(File self, Buffer buffer);
+file_write(File self, Buffer* buffer);
+
+b32
+file_write_mem8(File self, u8* memory, uptr length);
 
 b32
 file_read(File self, Buffer* buffer);
+
+b32
+file_read_mem8(File self, u8* memory, uptr length, uptr* size);
 
 } // namespace pax
 

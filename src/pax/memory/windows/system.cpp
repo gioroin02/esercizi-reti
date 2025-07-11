@@ -33,7 +33,7 @@ windows_reserve(uptr pages)
         addr memory = VirtualAlloc(0, pax_cast(DWORD, length),
             MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 
-        result = arena_make(memory, length);
+        result = arena_make(pax_cast(u8*, memory), length);
     }
 
     return result;

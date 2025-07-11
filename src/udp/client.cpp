@@ -18,10 +18,10 @@ client_udp_stop(Socket_UDP self)
 }
 
 b32
-client_udp_write(Socket_UDP self, Buffer buffer, u16 port, Address address)
+client_udp_write(Socket_UDP self, Buffer* buffer, u16 port, Address address)
 {
     printf(TRACE " Scrittura richiesta di " YLW("%lluB") " a {addr = [",
-        buffer.size);
+        buffer->size);
 
     switch (address.kind) {
         case ADDRESS_KIND_IP4: {
