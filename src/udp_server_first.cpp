@@ -47,19 +47,19 @@ main(int argc, const char* argv[])
     uptr offset = arena_offset(&arena);
 
     for (uptr i = 0; i < server_lifetime; i += 1) {
-        Buffer request  = buffer_reserve(&arena, MEMORY_KIB);
-        Buffer response = buffer_reserve(&arena, MEMORY_KIB);
+        buf8 request  = buf8_reserve(&arena, MEMORY_KIB);
+        buf8 response = buf8_reserve(&arena, MEMORY_KIB);
 
         Address addr = {};
         u16     port = 0;
 
         if (server_udp_read(server, &request, &port, &addr) != 0) {
-            buffer_normalize(&request);
+            buf8_normalize(&request);
 
             printf(INFO " " BLU("'%.*s'") "\n",
                 pax_cast(int, request.size), request.memory);
 
-            buffer_write_str8_tail(&response, SERVER_MSG);
+            buf8_write_str8_tail(&response, SERVER_MSG);
 
             server_udp_write(server, &response, port, addr);
         }

@@ -8,7 +8,7 @@ http_request_writer_init(Arena* arena, uptr length)
 {
     HTTP_Request_Writer result = {};
 
-    result.buffer = buffer_reserve(arena, length);
+    result.buffer = buf8_reserve(arena, length);
 
     return result;
 }
@@ -16,7 +16,7 @@ http_request_writer_init(Arena* arena, uptr length)
 void
 http_request_writer_clear(HTTP_Request_Writer* self)
 {
-    buffer_clear(&self->buffer);
+    buf8_clear(&self->buffer);
 
     self->line = 0;
     self->body = 0;
@@ -33,12 +33,12 @@ http_request_write_start(HTTP_Request_Writer* self, str8 method, str8 resource, 
 {
     if (self->line != 0) return 0;
 
-    buffer_write_str8_tail(&self->buffer, method);
-    buffer_write_str8_tail(&self->buffer, SPACE);
-    buffer_write_str8_tail(&self->buffer, resource);
-    buffer_write_str8_tail(&self->buffer, SPACE);
-    buffer_write_str8_tail(&self->buffer, version);
-    buffer_write_str8_tail(&self->buffer, CRLF);
+    buf8_write_str8_tail(&self->buffer, method);
+    buf8_write_str8_tail(&self->buffer, SPACE);
+    buf8_write_str8_tail(&self->buffer, resource);
+    buf8_write_str8_tail(&self->buffer, SPACE);
+    buf8_write_str8_tail(&self->buffer, version);
+    buf8_write_str8_tail(&self->buffer, CRLF);
 
     self->line += 1;
 
@@ -50,11 +50,11 @@ http_request_write_header(HTTP_Request_Writer* self, str8 key, str8 value)
 {
     if (self->body != 0) return 0;
 
-    buffer_write_str8_tail(&self->buffer, key);
-    buffer_write_str8_tail(&self->buffer, COLON);
-    buffer_write_str8_tail(&self->buffer, SPACE);
-    buffer_write_str8_tail(&self->buffer, value);
-    buffer_write_str8_tail(&self->buffer, CRLF);
+    buf8_write_str8_tail(&self->buffer, key);
+    buf8_write_str8_tail(&self->buffer, COLON);
+    buf8_write_str8_tail(&self->buffer, SPACE);
+    buf8_write_str8_tail(&self->buffer, value);
+    buf8_write_str8_tail(&self->buffer, CRLF);
 
     self->line += 1;
 
@@ -62,17 +62,17 @@ http_request_write_header(HTTP_Request_Writer* self, str8 key, str8 value)
 }
 
 b32
-http_request_write_content(HTTP_Request_Writer* self, Buffer* buffer)
+http_request_write_content(HTTP_Request_Writer* self, buf8* buffer)
 {
     if (self->body == 0)
-        buffer_write_str8_tail(&self->buffer, CRLF);
+        buf8_write_str8_tail(&self->buffer, CRLF);
 
-    buffer_normalize(buffer);
+    buf8_normalize(buffer);
 
-    buffer_write_mem8_tail(&self->buffer,
+    buf8_write_mem8_tail(&self->buffer,
         buffer->memory, buffer->size);
 
-    buffer_clear(buffer);
+    buf8_clear(buffer);
 
     self->body  = 1;
     self->line += 1;
@@ -85,7 +85,7 @@ http_request_reader_init(Arena* arena, uptr length)
 {
     HTTP_Request_Reader result = {};
 
-    result.buffer = buffer_reserve(arena, length);
+    result.buffer = buf8_reserve(arena, length);
 
     return result;
 }
@@ -93,7 +93,7 @@ http_request_reader_init(Arena* arena, uptr length)
 void
 http_request_reader_clear(HTTP_Request_Reader* self)
 {
-    buffer_clear(&self->buffer);
+    buf8_clear(&self->buffer);
 
     self->line = 0;
     self->body = 0;
@@ -108,7 +108,7 @@ http_request_read(HTTP_Request_Reader* self, Socket_TCP session)
 b32
 http_request_read_start(HTTP_Request_Reader* self, str8* method, str8* resource, str8* version)
 {
-    buffer_normalize(&self->buffer);
+    buf8_normalize(&self->buffer);
 
     str8 string = str8_make(self->buffer.memory, self->buffer.size);
 
@@ -120,7 +120,7 @@ http_request_read_start(HTTP_Request_Reader* self, str8* method, str8* resource,
     str8 center = {};
     str8 right  = {};
 
-    buffer_drop_head(&self->buffer, line.length + CRLF.length);
+    buf8_drop_head(&self->buffer, line.length + CRLF.length);
 
     self->line += 1;
 
@@ -137,7 +137,7 @@ http_request_read_start(HTTP_Request_Reader* self, str8* method, str8* resource,
 b32
 http_request_read_header(HTTP_Request_Reader* self, str8* key, str8* value)
 {
-    buffer_normalize(&self->buffer);
+    buf8_normalize(&self->buffer);
 
     str8 string = str8_make(self->buffer.memory, self->buffer.size);
 
@@ -148,7 +148,7 @@ http_request_read_header(HTTP_Request_Reader* self, str8* key, str8* value)
     str8 left  = {};
     str8 right = {};
 
-    buffer_drop_head(&self->buffer, line.length + CRLF.length);
+    buf8_drop_head(&self->buffer, line.length + CRLF.length);
 
     self->line += 1;
 
@@ -209,20 +209,20 @@ http_request_heading(HTTP_Request_Reader* self, Arena* arena, Socket_TCP session
     return result;
 }
 
-Buffer
+buf8
 http_request_content(HTTP_Request_Reader* self, Arena* arena, uptr length, Socket_TCP session)
 {
-    Buffer result = buffer_reserve(arena, length);
+    buf8 result = buf8_reserve(arena, length);
 
     if (result.length != 0) {
-        buffer_normalize(&self->buffer);
+        buf8_normalize(&self->buffer);
 
         length -= self->buffer.size;
 
-        buffer_write_mem8_tail(&result,
+        buf8_write_mem8_tail(&result,
             self->buffer.memory, self->buffer.size);
 
-        buffer_clear(&self->buffer);
+        buf8_clear(&self->buffer);
 
         while (length > 0) {
             if (http_request_read(self, session) == 0)
@@ -230,10 +230,10 @@ http_request_content(HTTP_Request_Reader* self, Arena* arena, uptr length, Socke
 
             length -= self->buffer.size;
 
-            buffer_write_mem8_tail(&result,
+            buf8_write_mem8_tail(&result,
                 self->buffer.memory, self->buffer.size);
 
-            buffer_clear(&self->buffer);
+            buf8_clear(&self->buffer);
         }
     }
 

@@ -10,7 +10,7 @@
 
 struct HTTP_Request_Writer
 {
-    Buffer buffer = {};
+    buf8 buffer = {};
 
     uptr line = 0;
     uptr body = 0;
@@ -18,7 +18,7 @@ struct HTTP_Request_Writer
 
 struct HTTP_Request_Reader
 {
-    Buffer buffer = {};
+    buf8 buffer = {};
 
     uptr line = 0;
     uptr body = 0;
@@ -46,7 +46,7 @@ b32
 http_request_write_header(HTTP_Request_Writer* self, str8 key, str8 value);
 
 b32
-http_request_write_content(HTTP_Request_Writer* self, Buffer* content);
+http_request_write_content(HTTP_Request_Writer* self, buf8* content);
 
 /* HTTP_Request_Reader */
 
@@ -70,7 +70,7 @@ http_request_read_header(HTTP_Request_Reader* self, str8* key, str8* value);
 HTTP_Heading
 http_request_heading(HTTP_Request_Reader* self, Arena* arena, Socket_TCP session);
 
-Buffer
+buf8
 http_request_content(HTTP_Request_Reader* self, Arena* arena, uptr length, Socket_TCP session);
 
 #endif // HTTP_REQUEST_HPP

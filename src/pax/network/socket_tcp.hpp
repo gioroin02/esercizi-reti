@@ -42,13 +42,13 @@ Socket_TCP
 socket_tcp_accept(Socket_TCP self, Arena* arena);
 
 b32
-socket_tcp_write(Socket_TCP self, Buffer* buffer);
+socket_tcp_write(Socket_TCP self, buf8* buffer);
 
 b32
 socket_tcp_write_mem8(Socket_TCP self, u8* memory, uptr length);
 
 b32
-socket_tcp_read(Socket_TCP self, Buffer* buffer);
+socket_tcp_read(Socket_TCP self, buf8* buffer);
 
 b32
 socket_tcp_read_mem8(Socket_TCP self, u8* memory, uptr length, uptr* size);

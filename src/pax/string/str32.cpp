@@ -35,7 +35,8 @@ str32_copy_mem(Arena* arena, u32* memory, uptr length)
 {
     str32 result = str32_reserve(arena, length);
 
-    mem32_copy(result.memory, memory, result.length);
+    if (result.length != 0)
+        mem32_copy(result.memory, memory, result.length);
 
     return result;
 }
@@ -43,12 +44,60 @@ str32_copy_mem(Arena* arena, u32* memory, uptr length)
 str32
 str32_from_unicode(Arena* arena, u32 value)
 {
-    uptr  length = utf32_units_to_write(value);
-    str32 result = str32_reserve(arena, length);
+    str32 result = str32_reserve(arena,
+        utf32_units_to_write(value));
 
-    utf32_encode_to(result.memory, result.length, 0, value);
+    if (result.length == 0) return result;
+
+    utf32_encode_forw(result.memory, result.length, 0, value);
 
     return result;
+}
+
+b32
+str32_get(str32 self, uptr index, u32* value)
+{
+    if (index < 0 || index >= self.length)
+        return 0;
+
+    if (value != 0) *value = self.memory[index];
+
+    return 1;
+}
+
+u32
+str32_get_or(str32 self, uptr index, u32 value)
+{
+    if (index < 0 || index >= self.length)
+        return value;
+
+    return self.memory[index];
+}
+
+str32
+str32_count(u32* memory)
+{
+    uptr index = 0;
+
+    while (memory[index] != 0)
+        index += 1;
+
+    return str32_make(memory, index);
+}
+
+str32
+str32_count_max(u32* memory, uptr limit)
+{
+    uptr index = 0;
+
+    while (memory[index] != 0) {
+        index += 1;
+
+        if (index > limit)
+            return {};
+    }
+
+    return str32_make(memory, index);
 }
 
 b32
@@ -88,48 +137,13 @@ str32_ends_with(str32 self, str32 value)
     return 0;
 }
 
-u32
-str32_get_or(str32 self, uptr index, u32 value)
-{
-    if (index < 0 || index >= self.length)
-        return value;
-
-    return self.memory[index];
-}
-
-str32
-str32_count(u32* memory)
-{
-    uptr index = 0;
-
-    while (memory[index] != 0)
-        index += 1;
-
-    return str32_make(memory, index);
-}
-
-str32
-str32_count_max(u32* memory, uptr limit)
-{
-    uptr index = 0;
-
-    while (memory[index] != 0) {
-        index += 1;
-
-        if (index > limit)
-            return {};
-    }
-
-    return str32_make(memory, index);
-}
-
 str32
 str32_slice(str32 self, uptr start, uptr stop)
 {
     str32 result = {};
 
-    start = pax_limit(start, 0, self.length);
-    stop  = pax_limit(stop, 0, self.length);
+    start = pax_min(start, self.length);
+    stop  = pax_min(stop, self.length);
 
     uptr length = stop - start;
 
@@ -187,6 +201,21 @@ str32_slice_since_last(str32 self, str32 value)
     str32_find_last(self, value, &start);
 
     return str32_slice(self, start + value.length, stop);
+}
+
+str32
+str32_chain(Arena* arena, str32 value, str32 other)
+{
+    str32 result = str32_reserve(arena, value.length + other.length);
+
+    if (result.length == 0) return result;
+
+    mem32_copy(result.memory, value.memory, value.length);
+
+    mem32_copy(result.memory + value.length, other.memory,
+        other.length);
+
+    return result;
 }
 
 str32
@@ -271,7 +300,7 @@ str32_find_first(str32 self, str32 value, uptr* index)
 b32
 str32_find_first_since(str32 self, str32 value, uptr start, uptr* index)
 {
-    start = pax_limit(start, 0, self.length);
+    start = pax_min(start, self.length);
 
     for (uptr i = start; i < self.length; i += 1) {
         str32 slice = str32_slice_len(self, i, value.length);
@@ -296,7 +325,7 @@ str32_find_last(str32 self, str32 value, uptr* index)
 b32
 str32_find_last_until(str32 self, str32 value, uptr start, uptr* index)
 {
-    start = pax_limit(start, 0, self.length);
+    start = pax_min(start, self.length);
 
     for (uptr i = start; i > 0; i -= 1) {
         str32 slice = str32_slice_len(self, i - value.length, value.length);

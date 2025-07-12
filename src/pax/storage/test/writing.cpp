@@ -11,8 +11,8 @@ main(int argc, const char* argv[])
 
     Arena arena = arena_make(memory, pax_array_length(memory));
 
-    Buffer writing = buffer_reserve(&arena, 2 * MEMORY_KIB);
-    Buffer reading = buffer_reserve(&arena, 2 * MEMORY_KIB);
+    buf8 writing = buf8_reserve(&arena, 2 * MEMORY_KIB);
+    buf8 reading = buf8_reserve(&arena, 2 * MEMORY_KIB);
 
     if (argc != 2) return 1;
 
@@ -21,7 +21,7 @@ main(int argc, const char* argv[])
 
     if (file == 0) return 1;
 
-    buffer_write_str8(&writing, content);
+    buf8_write_str8_tail(&writing, content);
 
     file_write(file, &writing);
     file_rewind(file, 0);

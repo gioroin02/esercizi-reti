@@ -15,7 +15,7 @@
     str16_count(pax_cast(u16*, memory))
 
 #define pax_str16_max(memory, limit) \
-    str16_count(pax_cast(u16*, memory), limit)
+    str16_count_max(pax_cast(u16*, memory), limit)
 
 #define pax_to_str16(expr) pax_str16(L pax_string(expr))
 
@@ -53,13 +53,7 @@ str16
 str16_from_unicode(Arena* arena, u32 value);
 
 b32
-str16_is_equal(str16 self, str16 value);
-
-b32
-str16_starts_with(str16 self, str16 value);
-
-b32
-str16_ends_with(str16 self, str16 value);
+str16_get(str16 self, uptr index, u16* value);
 
 u16
 str16_get_or(str16 self, uptr index, u16 value);
@@ -71,6 +65,17 @@ str16_count(u16* memory);
 
 str16
 str16_count_max(u16* memory, uptr limit);
+
+/* str16 comparison */
+
+b32
+str16_is_equal(str16 self, str16 value);
+
+b32
+str16_starts_with(str16 self, str16 value);
+
+b32
+str16_ends_with(str16 self, str16 value);
 
 /* str16 slicing */
 
@@ -91,6 +96,11 @@ str16_slice_since_first(str16 self, str16 value);
 
 str16
 str16_slice_since_last(str16 self, str16 value);
+
+/* str16 chaining */
+
+str16
+str16_chain(Arena* arena, str16 value, str16 other);
 
 /* str16 splitting */
 

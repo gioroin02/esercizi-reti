@@ -25,7 +25,7 @@ utf32_encode(UTF32* self, u32 value)
 }
 
 uptr
-utf32_encode_to(u32* memory, uptr length, uptr index, u32 value)
+utf32_encode_forw(u32* memory, uptr length, uptr index, u32 value)
 {
     UTF32 utf32 = {};
 
@@ -34,22 +34,7 @@ utf32_encode_to(u32* memory, uptr length, uptr index, u32 value)
     if (index < 0 || index + utf32.size > length)
         return 0;
 
-    mem32_copy(memory + index, utf32.memory, utf32.size);
-
-    return utf32.size;
-}
-
-uptr
-utf32_encode_to_rev(u32* memory, uptr length, uptr index, u32 value)
-{
-    UTF32 utf32 = {};
-
-    if (utf32_encode(&utf32, value) == 0) return 0;
-
-    if (index < 0 || index + utf32.size > length)
-        return 0;
-
-    mem32_copy_rev(memory + index, utf32.memory, utf32.size);
+    if (utf32.size != 0) memory[index] = utf32.memory[0];
 
     return utf32.size;
 }
@@ -77,7 +62,7 @@ utf32_decode(UTF32* self, u32* value)
 }
 
 uptr
-utf32_decode_from(u32* memory, uptr length, uptr index, u32* value)
+utf32_decode_forw(u32* memory, uptr length, uptr index, u32* value)
 {
     UTF32 utf32 = {};
 
@@ -87,7 +72,7 @@ utf32_decode_from(u32* memory, uptr length, uptr index, u32* value)
     if (utf32.size <= 0 || index + utf32.size > length)
         return 0;
 
-    mem32_copy(utf32.memory, memory + index, utf32.size);
+    utf32.memory[0] = memory[index];
 
     if (utf32_decode(&utf32, value) == 0) return 0;
 
@@ -95,7 +80,7 @@ utf32_decode_from(u32* memory, uptr length, uptr index, u32* value)
 }
 
 uptr
-utf32_decode_from_rev(u32* memory, uptr length, uptr index, u32* value)
+utf32_decode_back(u32* memory, uptr length, uptr index, u32* value)
 {
     UTF32 utf32 = {};
 
@@ -106,7 +91,7 @@ utf32_decode_from_rev(u32* memory, uptr length, uptr index, u32* value)
     if (utf32.size != utf32_units_to_read(memory[index]))
         return 0;
 
-    mem32_copy(utf32.memory, memory + index, utf32.size);
+    utf32.memory[0] = memory[index];
 
     if (utf32_decode(&utf32, value) == 0) return 0;
 

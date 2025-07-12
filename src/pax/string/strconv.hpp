@@ -1,5 +1,5 @@
-#ifndef PAX_STRING_CONVERT_HPP
-#define PAX_STRING_CONVERT_HPP
+#ifndef PAX_STRING_STRCONV_HPP
+#define PAX_STRING_STRCONV_HPP
 
 #include "str8.hpp"
 #include "str16.hpp"
@@ -31,6 +31,8 @@ utf32_units_from_utf8(u8* memory, uptr length);
 uptr
 utf32_units_from_utf16(u16* value, uptr length);
 
+/* Unicode */
+
 uptr
 utf8_units_from_str16(str16 value);
 
@@ -57,9 +59,6 @@ str8_from_str16(Arena* arena, str16 value);
 str8
 str8_from_str32(Arena* arena, str32 value);
 
-str8
-str8_from_buffer(Arena* arena, Buffer value);
-
 /* str16 */
 
 str16
@@ -76,11 +75,6 @@ str32_from_str8(Arena* arena, str8 value);
 str32
 str32_from_str16(Arena* arena, str16 value);
 
-/* Buffer */
-
-Buffer
-buffer_from_str8(Arena* arena, str8 value);
-
 } // namespace pax
 
-#endif // PAX_STRING_CONVERT_HPP
+#endif // PAX_STRING_STRCONV_HPP

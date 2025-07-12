@@ -4,6 +4,7 @@
 #include "defines.hpp"
 #include "types.hpp"
 #include "memory.hpp"
-#include "buffer.hpp"
+
+#include "buf8.hpp"
 
 #endif // PAX_CORE_EXPORTS_HPP

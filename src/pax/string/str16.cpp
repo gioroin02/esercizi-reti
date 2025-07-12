@@ -35,7 +35,8 @@ str16_copy_mem(Arena* arena, u16* memory, uptr length)
 {
     str16 result = str16_reserve(arena, length);
 
-    mem16_copy(result.memory, memory, result.length);
+    if (result.length != 0)
+        mem16_copy(result.memory, memory, result.length);
 
     return result;
 }
@@ -43,12 +44,60 @@ str16_copy_mem(Arena* arena, u16* memory, uptr length)
 str16
 str16_from_unicode(Arena* arena, u32 value)
 {
-    uptr  length = utf16_units_to_write(value);
-    str16 result = str16_reserve(arena, length);
+    str16 result = str16_reserve(arena,
+        utf16_units_to_write(value));
 
-    utf16_encode_to(result.memory, result.length, 0, value);
+    if (result.length == 0) return result;
+
+    utf16_encode_forw(result.memory, result.length, 0, value);
 
     return result;
+}
+
+b32
+str16_get(str16 self, uptr index, u16* value)
+{
+    if (index < 0 || index >= self.length)
+        return 0;
+
+    if (value != 0) *value = self.memory[index];
+
+    return 1;
+}
+
+u16
+str16_get_or(str16 self, uptr index, u16 value)
+{
+    if (index < 0 || index >= self.length)
+        return value;
+
+    return self.memory[index];
+}
+
+str16
+str16_count(u16* memory)
+{
+    uptr index = 0;
+
+    while (memory[index] != 0)
+        index += 1;
+
+    return str16_make(memory, index);
+}
+
+str16
+str16_count_max(u16* memory, uptr limit)
+{
+    uptr index = 0;
+
+    while (memory[index] != 0) {
+        index += 1;
+
+        if (index > limit)
+            return {};
+    }
+
+    return str16_make(memory, index);
 }
 
 b32
@@ -88,48 +137,13 @@ str16_ends_with(str16 self, str16 value)
     return 0;
 }
 
-u16
-str16_get_or(str16 self, uptr index, u16 value)
-{
-    if (index < 0 || index >= self.length)
-        return value;
-
-    return self.memory[index];
-}
-
-str16
-str16_count(u16* memory)
-{
-    uptr index = 0;
-
-    while (memory[index] != 0)
-        index += 1;
-
-    return str16_make(memory, index);
-}
-
-str16
-str16_count_max(u16* memory, uptr limit)
-{
-    uptr index = 0;
-
-    while (memory[index] != 0) {
-        index += 1;
-
-        if (index > limit)
-            return {};
-    }
-
-    return str16_make(memory, index);
-}
-
 str16
 str16_slice(str16 self, uptr start, uptr stop)
 {
     str16 result = {};
 
-    start = pax_limit(start, 0, self.length);
-    stop  = pax_limit(stop, 0, self.length);
+    start = pax_min(start, self.length);
+    stop  = pax_min(stop, self.length);
 
     uptr length = stop - start;
 
@@ -190,6 +204,21 @@ str16_slice_since_last(str16 self, str16 value)
 }
 
 str16
+str16_chain(Arena* arena, str16 value, str16 other)
+{
+    str16 result = str16_reserve(arena, value.length + other.length);
+
+    if (result.length == 0) return result;
+
+    mem16_copy(result.memory, value.memory, value.length);
+
+    mem16_copy(result.memory + value.length, other.memory,
+        other.length);
+
+    return result;
+}
+
+str16
 str16_split_on(str16 self, str16 pivot, str16* value)
 {
     uptr start = 0;
@@ -240,7 +269,7 @@ str16_trim_spaces_start(str16 self)
     for (; start < stop; start += units) {
         u32 unicode = 0;
 
-        units = utf16_decode_from(self.memory,
+        units = utf16_decode_forw(self.memory,
             self.length, start, &unicode);
 
         if (units == 0) return self;
@@ -262,7 +291,7 @@ str16_trim_spaces_end(str16 self)
     for (; start < stop; stop -= units) {
         u32 unicode = 0;
 
-        units = utf16_decode_from_rev(self.memory,
+        units = utf16_decode_back(self.memory,
             self.length, stop - 1, &unicode);
 
         if (units == 0) return self;
@@ -283,7 +312,7 @@ str16_find_first(str16 self, str16 value, uptr* index)
 b32
 str16_find_first_since(str16 self, str16 value, uptr start, uptr* index)
 {
-    start = pax_limit(start, 0, self.length);
+    start = pax_min(start, self.length);
 
     for (uptr i = start; i < self.length; i += 1) {
         str16 slice = str16_slice_len(self, i, value.length);
@@ -308,7 +337,7 @@ str16_find_last(str16 self, str16 value, uptr* index)
 b32
 str16_find_last_until(str16 self, str16 value, uptr start, uptr* index)
 {
-    start = pax_limit(start, 0, self.length);
+    start = pax_min(start, self.length);
 
     for (uptr i = start; i > 0; i -= 1) {
         str16 slice = str16_slice_len(self, i - value.length, value.length);
@@ -347,7 +376,7 @@ str16_next(str16 self, uptr index, uptr* units, u32* value)
     if (index < 0 || index >= self.length)
         return 0;
 
-    uptr step = utf16_decode_from(self.memory,
+    uptr step = utf16_decode_forw(self.memory,
         self.length, index, value);
 
     if (step == 0) return 0;
@@ -363,7 +392,7 @@ str16_prev(str16 self, uptr index, uptr* units, u32* value)
     if (index < 0 || index >= self.length)
         return 0;
 
-    uptr step = utf16_decode_from_rev(self.memory,
+    uptr step = utf16_decode_back(self.memory,
         self.length, index, value);
 
     if (step == 0) return 0;

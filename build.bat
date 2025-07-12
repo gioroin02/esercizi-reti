@@ -32,7 +32,7 @@ rem TCP
 
 rem zig c++ %src% "%dir%\tcp_server_first.cpp" %lib% -o tcp_server_first.exe
 rem zig c++ %src% "%dir%\tcp_client_first.cpp" %lib% -o tcp_client_first.exe
-rem
+
 rem zig c++ %src% "%dir%\tcp_server_add.cpp" %lib% -o tcp_server_add.exe
 rem zig c++ %src% "%dir%\tcp_client_add.cpp" %lib% -o tcp_client_add.exe
 
@@ -41,4 +41,4 @@ rem zig c++ %src% "%dir%\tcp_client_file.cpp" %lib% -o tcp_client_file.exe
 
 rem HTTP
 
-zig c++ %src% "%dir%\http_server.cpp" %lib% -o http_server.exe
+rem zig c++ %src% "%dir%\http_server.cpp" %lib% -o http_server.exe

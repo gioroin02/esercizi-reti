@@ -35,20 +35,8 @@ str8_copy_mem(Arena* arena, u8* memory, uptr length)
 {
     str8 result = str8_reserve(arena, length);
 
-    mem8_copy(result.memory, memory, result.length);
-
-    return result;
-}
-
-str8
-str8_append(Arena* arena, str8 value, str8 other)
-{
-    str8 result = str8_reserve(arena, value.length + other.length);
-
-    mem8_copy(result.memory, value.memory, value.length);
-
-    mem8_copy(result.memory + value.length, other.memory,
-        other.length);
+    if (result.length != 0)
+        mem8_copy(result.memory, memory, result.length);
 
     return result;
 }
@@ -56,12 +44,60 @@ str8_append(Arena* arena, str8 value, str8 other)
 str8
 str8_from_unicode(Arena* arena, u32 value)
 {
-    uptr length = utf8_units_to_write(value);
-    str8 result = str8_reserve(arena, length);
+    str8 result = str8_reserve(arena,
+        utf8_units_to_write(value));
 
-    utf8_encode_to(result.memory, result.length, 0, value);
+    if (result.length == 0) return result;
+
+    utf8_encode_forw(result.memory, result.length, 0, value);
 
     return result;
+}
+
+b32
+str8_get(str8 self, uptr index, u8* value)
+{
+    if (index < 0 || index >= self.length)
+        return 0;
+
+    if (value != 0) *value = self.memory[index];
+
+    return 1;
+}
+
+u8
+str8_get_or(str8 self, uptr index, u8 value)
+{
+    if (index < 0 || index >= self.length)
+        return value;
+
+    return self.memory[index];
+}
+
+str8
+str8_count(u8* memory)
+{
+    uptr index = 0;
+
+    while (memory[index] != 0)
+        index += 1;
+
+    return str8_make(memory, index);
+}
+
+str8
+str8_count_max(u8* memory, uptr limit)
+{
+    uptr index = 0;
+
+    while (memory[index] != 0) {
+        index += 1;
+
+        if (index > limit)
+            return {};
+    }
+
+    return str8_make(memory, index);
 }
 
 b32
@@ -101,48 +137,13 @@ str8_ends_with(str8 self, str8 value)
     return 0;
 }
 
-u8
-str8_get_or(str8 self, uptr index, u8 value)
-{
-    if (index < 0 || index >= self.length)
-        return value;
-
-    return self.memory[index];
-}
-
-str8
-str8_count(u8* memory)
-{
-    uptr index = 0;
-
-    while (memory[index] != 0)
-        index += 1;
-
-    return str8_make(memory, index);
-}
-
-str8
-str8_count_max(u8* memory, uptr limit)
-{
-    uptr index = 0;
-
-    while (memory[index] != 0) {
-        index += 1;
-
-        if (index > limit)
-            return {};
-    }
-
-    return str8_make(memory, index);
-}
-
 str8
 str8_slice(str8 self, uptr start, uptr stop)
 {
     str8 result = {};
 
-    start = pax_limit(start, 0, self.length);
-    stop  = pax_limit(stop, 0, self.length);
+    start = pax_min(start, self.length);
+    stop  = pax_min(stop, self.length);
 
     uptr length = stop - start;
 
@@ -203,6 +204,21 @@ str8_slice_since_last(str8 self, str8 value)
 }
 
 str8
+str8_chain(Arena* arena, str8 value, str8 other)
+{
+    str8 result = str8_reserve(arena, value.length + other.length);
+
+    if (result.length == 0) return result;
+
+    mem8_copy(result.memory, value.memory, value.length);
+
+    mem8_copy(result.memory + value.length, other.memory,
+        other.length);
+
+    return result;
+}
+
+str8
 str8_split_on(str8 self, str8 pivot, str8* value)
 {
     uptr start = 0;
@@ -253,7 +269,7 @@ str8_trim_spaces_start(str8 self)
     for (; start < stop; start += units) {
         u32 unicode = 0;
 
-        units = utf8_decode_from(self.memory,
+        units = utf8_decode_forw(self.memory,
             self.length, start, &unicode);
 
         if (units == 0) return self;
@@ -275,7 +291,7 @@ str8_trim_spaces_end(str8 self)
     for (; start < stop; stop -= units) {
         u32 unicode = 0;
 
-        units = utf8_decode_from_rev(self.memory,
+        units = utf8_decode_back(self.memory,
             self.length, stop - 1, &unicode);
 
         if (units == 0) return self;
@@ -296,7 +312,7 @@ str8_find_first(str8 self, str8 value, uptr* index)
 b32
 str8_find_first_since(str8 self, str8 value, uptr start, uptr* index)
 {
-    start = pax_limit(start, 0, self.length);
+    start = pax_min(start, self.length);
 
     for (uptr i = start; i < self.length; i += 1) {
         str8 slice = str8_slice_len(self, i, value.length);
@@ -360,7 +376,7 @@ str8_next(str8 self, uptr index, uptr* units, u32* value)
     if (index < 0 || index >= self.length)
         return 0;
 
-    uptr step = utf8_decode_from(self.memory,
+    uptr step = utf8_decode_forw(self.memory,
         self.length, index, value);
 
     if (step == 0) return 0;
@@ -376,7 +392,7 @@ str8_prev(str8 self, uptr index, uptr* units, u32* value)
     if (index < 0 || index >= self.length)
         return 0;
 
-    uptr step = utf8_decode_from_rev(self.memory,
+    uptr step = utf8_decode_back(self.memory,
         self.length, index, value);
 
     if (step == 0) return 0;

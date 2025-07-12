@@ -41,19 +41,25 @@ b32
 utf8_encode(UTF8* self, u32 value);
 
 uptr
-utf8_encode_to(u8* memory, uptr length, uptr index, u32 value);
+utf8_encode_forw(u8* memory, uptr length, uptr index, u32 value);
 
 uptr
-utf8_encode_to_rev(u8* memory, uptr length, uptr index, u32 value);
+utf8_encode_forw_circ(u8* memory, uptr length, uptr index, u32 value);
 
 b32
 utf8_decode(UTF8* self, u32* value);
 
 uptr
-utf8_decode_from(u8* memory, uptr length, uptr index, u32* value);
+utf8_decode_forw(u8* memory, uptr length, uptr index, u32* value);
 
 uptr
-utf8_decode_from_rev(u8* memory, uptr length, uptr index, u32* value);
+utf8_decode_forw_circ(u8* memory, uptr length, uptr index, u32* value);
+
+uptr
+utf8_decode_back(u8* memory, uptr length, uptr index, u32* value);
+
+uptr
+utf8_decode_back_circ(u8* memory, uptr length, uptr index, u32* value);
 
 uptr
 utf8_units_to_write(u32 value);

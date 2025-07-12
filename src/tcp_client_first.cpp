@@ -48,15 +48,15 @@ main(int argc, const char* argv[])
     if (client_tcp_connect(client, server_port, server_addr) == 0)
         return 1;
 
-    Buffer request  = buffer_reserve(&arena, MEMORY_KIB);
-    Buffer response = buffer_reserve(&arena, MEMORY_KIB);
+    buf8 request  = buf8_reserve(&arena, MEMORY_KIB);
+    buf8 response = buf8_reserve(&arena, MEMORY_KIB);
 
-    buffer_write_str8_tail(&request, CLIENT_MSG);
+    buf8_write_str8_tail(&request, CLIENT_MSG);
 
     client_tcp_write(client, &request);
 
     if (client_tcp_read(client, &response) != 0) {
-        buffer_normalize(&response);
+        buf8_normalize(&response);
 
         printf(INFO " " BLU("'%.*s'") "\n",
             pax_cast(int, response.size), response.memory);

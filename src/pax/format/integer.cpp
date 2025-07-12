@@ -920,6 +920,7 @@ i8_from_str32(str32 self, Format_Options opts, i8* value)
     return 1;
 }
 
+/*
 b32
 iptr_from_buffer(Buffer self, Format_Options opts, iptr* value)
 {
@@ -949,6 +950,7 @@ i8_from_buffer(Buffer self, Format_Options opts, i8* value)
 {
     return i8_from_str8(str8_make(self.memory, self.size), opts, value);
 }
+*/
 
 str8
 str8_from_iptr(Arena* arena, Format_Options opts, iptr value)
@@ -978,7 +980,7 @@ str8_from_iptr(Arena* arena, Format_Options opts, iptr value)
         u32 ascii = ascii_from_digit(other, base);
 
         if (ascii != ASCII_NULL)
-            result.memory[i] = pax_cast(u8, ascii);
+            result.memory[i - 1] = pax_cast(u8, ascii);
         else
             break;
 
@@ -1021,7 +1023,7 @@ str8_from_i64(Arena* arena, Format_Options opts, i64 value)
         u32 ascii = ascii_from_digit(other, base);
 
         if (ascii != ASCII_NULL)
-            result.memory[i] = pax_cast(u8, ascii);
+            result.memory[i - 1] = pax_cast(u8, ascii);
         else
             break;
 
@@ -1064,7 +1066,7 @@ str8_from_i32(Arena* arena, Format_Options opts, i32 value)
         u32 ascii = ascii_from_digit(other, base);
 
         if (ascii != ASCII_NULL)
-            result.memory[i] = pax_cast(u8, ascii);
+            result.memory[i - 1] = pax_cast(u8, ascii);
         else
             break;
 
@@ -1107,7 +1109,7 @@ str8_from_i16(Arena* arena, Format_Options opts, i16 value)
         u32 ascii = ascii_from_digit(other, base);
 
         if (ascii != ASCII_NULL)
-            result.memory[i] = pax_cast(u8, ascii);
+            result.memory[i - 1] = pax_cast(u8, ascii);
         else
             break;
 
@@ -1150,7 +1152,7 @@ str8_from_i8(Arena* arena, Format_Options opts, i8 value)
         u32 ascii = ascii_from_digit(other, base);
 
         if (ascii != ASCII_NULL)
-            result.memory[i] = pax_cast(u8, ascii);
+            result.memory[i - 1] = pax_cast(u8, ascii);
         else
             break;
 
@@ -1193,7 +1195,7 @@ str16_from_iptr(Arena* arena, Format_Options opts, iptr value)
         u32 ascii = ascii_from_digit(other, base);
 
         if (ascii != ASCII_NULL)
-            result.memory[i] = pax_cast(u16, ascii);
+            result.memory[i - 1] = pax_cast(u16, ascii);
         else
             break;
 
@@ -1236,7 +1238,7 @@ str16_from_i64(Arena* arena, Format_Options opts, i64 value)
         u32 ascii = ascii_from_digit(other, base);
 
         if (ascii != ASCII_NULL)
-            result.memory[i] = pax_cast(u16, ascii);
+            result.memory[i - 1] = pax_cast(u16, ascii);
         else
             break;
 
@@ -1279,7 +1281,7 @@ str16_from_i32(Arena* arena, Format_Options opts, i32 value)
         u32 ascii = ascii_from_digit(other, base);
 
         if (ascii != ASCII_NULL)
-            result.memory[i] = pax_cast(u16, ascii);
+            result.memory[i - 1] = pax_cast(u16, ascii);
         else
             break;
 
@@ -1322,7 +1324,7 @@ str16_from_i16(Arena* arena, Format_Options opts, i16 value)
         u32 ascii = ascii_from_digit(other, base);
 
         if (ascii != ASCII_NULL)
-            result.memory[i] = pax_cast(u16, ascii);
+            result.memory[i - 1] = pax_cast(u16, ascii);
         else
             break;
 
@@ -1365,7 +1367,7 @@ str16_from_i8(Arena* arena, Format_Options opts, i8 value)
         u32 ascii = ascii_from_digit(other, base);
 
         if (ascii != ASCII_NULL)
-            result.memory[i] = pax_cast(u16, ascii);
+            result.memory[i - 1] = pax_cast(u16, ascii);
         else
             break;
 
@@ -1408,7 +1410,7 @@ str32_from_iptr(Arena* arena, Format_Options opts, iptr value)
         u32 ascii = ascii_from_digit(other, base);
 
         if (ascii != ASCII_NULL)
-            result.memory[i] = ascii;
+            result.memory[i - 1] = ascii;
         else
             break;
 
@@ -1451,7 +1453,7 @@ str32_from_i64(Arena* arena, Format_Options opts, i64 value)
         u32 ascii = ascii_from_digit(other, base);
 
         if (ascii != ASCII_NULL)
-            result.memory[i] = ascii;
+            result.memory[i - 1] = ascii;
         else
             break;
 
@@ -1494,7 +1496,7 @@ str32_from_i32(Arena* arena, Format_Options opts, i32 value)
         u32 ascii = ascii_from_digit(other, base);
 
         if (ascii != ASCII_NULL)
-            result.memory[i] = ascii;
+            result.memory[i - 1] = ascii;
         else
             break;
 
@@ -1537,7 +1539,7 @@ str32_from_i16(Arena* arena, Format_Options opts, i16 value)
         u32 ascii = ascii_from_digit(other, base);
 
         if (ascii != ASCII_NULL)
-            result.memory[i] = ascii;
+            result.memory[i - 1] = ascii;
         else
             break;
 
@@ -1580,7 +1582,7 @@ str32_from_i8(Arena* arena, Format_Options opts, i8 value)
         u32 ascii = ascii_from_digit(other, base);
 
         if (ascii != ASCII_NULL)
-            result.memory[i] = ascii;
+            result.memory[i - 1] = ascii;
         else
             break;
 
@@ -1595,6 +1597,7 @@ str32_from_i8(Arena* arena, Format_Options opts, i8 value)
     return result;
 }
 
+/*
 b32
 buffer_write_iptr(Buffer* self, Format_Options opts, iptr value)
 {
@@ -1824,6 +1827,7 @@ buffer_write_i8(Buffer* self, Format_Options opts, i8 value)
 
     return 1;
 }
+*/
 
 } // namespace pax
 

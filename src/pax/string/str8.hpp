@@ -50,19 +50,10 @@ str8
 str8_copy_mem(Arena* arena, u8* memory, uptr length);
 
 str8
-str8_append(Arena* arena, str8 self, str8 value);
-
-str8
 str8_from_unicode(Arena* arena, u32 value);
 
 b32
-str8_is_equal(str8 self, str8 value);
-
-b32
-str8_starts_with(str8 self, str8 value);
-
-b32
-str8_ends_with(str8 self, str8 value);
+str8_get(str8 self, uptr index, u8* value);
 
 u8
 str8_get_or(str8 self, uptr index, u8 value);
@@ -74,6 +65,17 @@ str8_count(u8* memory);
 
 str8
 str8_count_max(u8* memory, uptr limit);
+
+/* str8 comparison */
+
+b32
+str8_is_equal(str8 self, str8 value);
+
+b32
+str8_starts_with(str8 self, str8 value);
+
+b32
+str8_ends_with(str8 self, str8 value);
 
 /* str8 slicing */
 
@@ -94,6 +96,11 @@ str8_slice_since_first(str8 self, str8 value);
 
 str8
 str8_slice_since_last(str8 self, str8 value);
+
+/* str8 chaining */
+
+str8
+str8_chain(Arena* arena, str8 value, str8 other);
 
 /* str8 splitting */
 

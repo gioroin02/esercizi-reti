@@ -54,7 +54,7 @@ client_tcp_connect(Socket_TCP self, u16 port, Address address)
 }
 
 b32
-client_tcp_write(Socket_TCP self, Buffer* buffer)
+client_tcp_write(Socket_TCP self, buf8* buffer)
 {
     printf(TRACE " Scrittura richiesta di " YLW("%lluB") ": ",
         buffer->size);
@@ -67,7 +67,7 @@ client_tcp_write(Socket_TCP self, Buffer* buffer)
 }
 
 b32
-client_tcp_read(Socket_TCP self, Buffer* buffer)
+client_tcp_read(Socket_TCP self, buf8* buffer)
 {
     printf(TRACE " Lettura risposta ");
 

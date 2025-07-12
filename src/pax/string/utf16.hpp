@@ -41,19 +41,25 @@ b32
 utf16_encode(UTF16* self, u32 value);
 
 uptr
-utf16_encode_to(u16* memory, uptr length, uptr index, u32 value);
+utf16_encode_forw(u16* memory, uptr length, uptr index, u32 value);
 
 uptr
-utf16_encode_to_rev(u16* memory, uptr length, uptr index, u32 value);
+utf16_encode_forw_circ(u16* memory, uptr length, uptr index, u32 value);
 
 b32
 utf16_decode(UTF16* self, u32* value);
 
 uptr
-utf16_decode_from(u16* memory, uptr length, uptr index, u32* value);
+utf16_decode_forw(u16* memory, uptr length, uptr index, u32* value);
 
 uptr
-utf16_decode_from_rev(u16* memory, uptr length, uptr index, u32* value);
+utf16_decode_forw_circ(u16* memory, uptr length, uptr index, u32* value);
+
+uptr
+utf16_decode_back(u16* memory, uptr length, uptr index, u32* value);
+
+uptr
+utf16_decode_back_circ(u16* memory, uptr length, uptr index, u32* value);
 
 uptr
 utf16_units_to_write(u32 value);

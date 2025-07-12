@@ -38,13 +38,7 @@ str32
 str32_from_unicode(Arena* arena, u32 value);
 
 b32
-str32_is_equal(str32 self, str32 value);
-
-b32
-str32_starts_with(str32 self, str32 value);
-
-b32
-str32_ends_with(str32 self, str32 value);
+str32_get(str32 self, uptr index, u32* value);
 
 u32
 str32_get_or(str32 self, uptr index, u32 value);
@@ -56,6 +50,17 @@ str32_count(u32* memory);
 
 str32
 str32_count_max(u32* memory, uptr limit);
+
+/* str32 comparison */
+
+b32
+str32_is_equal(str32 self, str32 value);
+
+b32
+str32_starts_with(str32 self, str32 value);
+
+b32
+str32_ends_with(str32 self, str32 value);
 
 /* str32 slicing */
 
@@ -76,6 +81,11 @@ str32_slice_since_first(str32 self, str32 value);
 
 str32
 str32_slice_since_last(str32 self, str32 value);
+
+/* str32 chaining */
+
+str32
+str32_chain(Arena* arena, str32 value, str32 other);
 
 /* str32 splitting */
 

@@ -10,7 +10,7 @@
 
 struct HTTP_Response_Writer
 {
-    Buffer buffer = {};
+    buf8 buffer = {};
 
     uptr line = 0;
     uptr body = 0;
@@ -18,7 +18,7 @@ struct HTTP_Response_Writer
 
 struct HTTP_Response_Reader
 {
-    Buffer buffer = {};
+    buf8 buffer = {};
 
     uptr line = 0;
     uptr body = 0;
@@ -46,7 +46,7 @@ b32
 http_response_write_header(HTTP_Response_Writer* self, str8 key, str8 value);
 
 b32
-http_response_write_content(HTTP_Response_Writer* self, Buffer* content);
+http_response_write_content(HTTP_Response_Writer* self, buf8* content);
 
 /* HTTP_Response_Reader */
 
@@ -70,7 +70,7 @@ http_response_read_header(HTTP_Response_Reader* self, str8* key, str8* value);
 HTTP_Heading
 http_response_heading(HTTP_Response_Reader* self, Arena* arena, Socket_TCP session);
 
-Buffer
+buf8
 http_response_content(HTTP_Response_Reader* self, Arena* arena, uptr length, Socket_TCP session);
 
 #endif // HTTP_RESPONSE_HPP

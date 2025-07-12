@@ -2,6 +2,7 @@
 #define PAX_CORE_EXPORTS_CPP
 
 #include "memory.cpp"
-#include "buffer.cpp"
+
+#include "buf8.cpp"
 
 #endif // PAX_CORE_EXPORTS_CPP

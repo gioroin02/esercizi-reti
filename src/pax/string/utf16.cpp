@@ -33,7 +33,7 @@ utf16_encode(UTF16* self, u32 value)
 }
 
 uptr
-utf16_encode_to(u16* memory, uptr length, uptr index, u32 value)
+utf16_encode_forw(u16* memory, uptr length, uptr index, u32 value)
 {
     UTF16 utf16 = {};
 
@@ -42,22 +42,24 @@ utf16_encode_to(u16* memory, uptr length, uptr index, u32 value)
     if (index < 0 || index + utf16.size > length)
         return 0;
 
-    mem16_copy(memory + index, utf16.memory, utf16.size);
+    for (uptr i = 0; i < utf16.size; i += 1)
+        memory[index + i] = utf16.memory[i];
 
     return utf16.size;
 }
 
 uptr
-utf16_encode_to_rev(u16* memory, uptr length, uptr index, u32 value)
+utf16_encode_forw_circ(u16* memory, uptr length, uptr index, u32 value)
 {
     UTF16 utf16 = {};
 
     if (utf16_encode(&utf16, value) == 0) return 0;
 
-    if (index < 0 || index + utf16.size > length)
+    if (index < 0 || index > length | utf16.size > length)
         return 0;
 
-    mem16_copy_rev(memory + index, utf16.memory, utf16.size);
+    for (uptr i = 0; i < utf16.size; i += 1)
+        memory[(index + i) % length] = utf16.memory[i];
 
     return utf16.size;
 }
@@ -94,7 +96,7 @@ utf16_decode(UTF16* self, u32* value)
 }
 
 uptr
-utf16_decode_from(u16* memory, uptr length, uptr index, u32* value)
+utf16_decode_forw(u16* memory, uptr length, uptr index, u32* value)
 {
     UTF16 utf16 = {};
 
@@ -104,7 +106,8 @@ utf16_decode_from(u16* memory, uptr length, uptr index, u32* value)
     if (utf16.size <= 0 || index + utf16.size > length)
         return 0;
 
-    mem16_copy(utf16.memory, memory + index, utf16.size);
+    for (uptr i = 0; i < utf16.size; i += 1)
+        utf16.memory[i] = memory[index + i];
 
     if (utf16_decode(&utf16, value) == 0) return 0;
 
@@ -112,7 +115,25 @@ utf16_decode_from(u16* memory, uptr length, uptr index, u32* value)
 }
 
 uptr
-utf16_decode_from_rev(u16* memory, uptr length, uptr index, u32* value)
+utf16_decode_forw_circ(u16* memory, uptr length, uptr index, u32* value)
+{
+    UTF16 utf16 = {};
+
+    if (index >= 0 && index < length)
+        utf16.size = utf16_units_to_read(memory[index]);
+
+    if (utf16.size <= 0 || utf16.size > length) return 0;
+
+    for (uptr i = 0; i < utf16.size; i += 1)
+        utf16.memory[i] = memory[(index + i) % length];
+
+    if (utf16_decode(&utf16, value) == 0) return 0;
+
+    return utf16.size;
+}
+
+uptr
+utf16_decode_back(u16* memory, uptr length, uptr index, u32* value)
 {
     UTF16 utf16 = {};
     uptr  start = index;
@@ -131,7 +152,37 @@ utf16_decode_from_rev(u16* memory, uptr length, uptr index, u32* value)
     if (utf16.size != utf16_units_to_read(memory[index]))
         return 0;
 
-    mem16_copy(utf16.memory, memory + index, utf16.size);
+    for (uptr i = 0; i < utf16.size; i += 1)
+        utf16.memory[i] = memory[index + i];
+
+    if (utf16_decode(&utf16, value) == 0) return 0;
+
+    return utf16.size;
+}
+
+uptr
+utf16_decode_back_circ(u16* memory, uptr length, uptr index, u32* value)
+{
+    UTF16 utf16 = {};
+    uptr  count = 0;
+
+    if (index < 0 || index >= length) return 0;
+
+    while (count < 2) {
+        if (unicode_is_surrogate_low(memory[index % length]) == 0)
+            break;
+
+        index  = (index + length - 1) % length;
+        count += 1;
+    }
+
+    utf16.size = count + 1;
+
+    if (utf16.size != utf16_units_to_read(memory[index % length]))
+        return 0;
+
+    for (uptr i = 0; i < utf16.size; i += 1)
+        utf16.memory[i] = memory[(index + i) % length];
 
     if (utf16_decode(&utf16, value) == 0) return 0;
 

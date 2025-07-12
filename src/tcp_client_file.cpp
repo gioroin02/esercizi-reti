@@ -67,8 +67,8 @@ main(int argc, const char* argv[])
     if (client_tcp_connect(client, server_port, server_addr) == 0)
         return 1;
 
-    Buffer request  = buffer_reserve(&arena, MEMORY_KIB);
-    Buffer response = buffer_reserve(&arena, MEMORY_KIB);
+    buf8 request  = buf8_reserve(&arena, MEMORY_KIB);
+    buf8 response = buf8_reserve(&arena, MEMORY_KIB);
 
     uptr offset = arena_offset(&arena);
     b32  loop   = 1;
@@ -82,7 +82,7 @@ main(int argc, const char* argv[])
         if (str8_starts_with(line, CLIENT_CMD_EXIT) != 0) {
             u8 type = COMMAND_EXIT;
 
-            buffer_write_mem8_tail(&request, &type, 1);
+            buf8_write_mem8_tail(&request, &type, 1);
 
             client_tcp_write(client, &request);
 
@@ -98,8 +98,8 @@ main(int argc, const char* argv[])
             name = str8_trim_prefix(name, CLIENT_CMD_FILE);
             name = str8_trim_spaces(name);
 
-            buffer_write_mem8_tail(&request, &type, 1);
-            buffer_write_str8_tail(&request, name);
+            buf8_write_mem8_tail(&request, &type, 1);
+            buf8_write_str8_tail(&request, name);
 
             printf(INFO " Requesting size of file " BLU("'%.*s'") "\n",
                 pax_cast(int, name.length), name.memory);
@@ -111,7 +111,7 @@ main(int argc, const char* argv[])
 
             u32 number = 0;
 
-            buffer_read_mem8_head(&response,
+            buf8_read_mem8_head(&response,
                 pax_cast(u8*, &number), pax_size_of(u32));
 
             printf(INFO " Requested file is " YLW("%u") " bytes long\n", number);
@@ -119,8 +119,8 @@ main(int argc, const char* argv[])
             if (number != 0) {
                 type = COMMAND_FILE_CONTENT;
 
-                buffer_write_mem8_tail(&request, &type, 1);
-                buffer_write_str8_tail(&request, name);
+                buf8_write_mem8_tail(&request, &type, 1);
+                buf8_write_str8_tail(&request, name);
 
                 printf(INFO " Requesting content of file " BLU("'%.*s'") "\n",
                     pax_cast(int, name.length), name.memory);
@@ -135,12 +135,12 @@ main(int argc, const char* argv[])
 
                     // TODO: Write to file
 
-                    buffer_normalize(&response);
+                    buf8_normalize(&response);
 
                     printf(TRACE " %.*s", pax_cast(int, response.size),
                         response.memory);
 
-                    buffer_clear(&response);
+                    buf8_clear(&response);
                 }
             }
         }

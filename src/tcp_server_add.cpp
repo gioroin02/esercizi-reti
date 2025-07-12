@@ -39,8 +39,8 @@ main(int argc, const char* argv[])
 
     server_tcp_stop(server);
 
-    Buffer request  = buffer_reserve(&arena, MEMORY_KIB);
-    Buffer response = buffer_reserve(&arena, MEMORY_KIB);
+    buf8 request  = buf8_reserve(&arena, MEMORY_KIB);
+    buf8 response = buf8_reserve(&arena, MEMORY_KIB);
 
     u32 result = 0;
 
@@ -49,7 +49,7 @@ main(int argc, const char* argv[])
 
         u32 input = 0;
 
-        buffer_read_mem8_head(&request, pax_cast(u8*, &input),
+        buf8_read_mem8_head(&request, pax_cast(u8*, &input),
             pax_size_of(u32));
 
         input = u32_host_from_net(input);
@@ -64,7 +64,7 @@ main(int argc, const char* argv[])
 
     result = u32_net_from_host(result);
 
-    buffer_write_mem8_tail(&response, pax_cast(u8*, &result),
+    buf8_write_mem8_tail(&response, pax_cast(u8*, &result),
         pax_size_of(u32));
 
     session_tcp_write(session, &response);

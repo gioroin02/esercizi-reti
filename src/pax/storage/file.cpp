@@ -74,7 +74,7 @@ file_rewind(File self, uptr offset)
 }
 
 b32
-file_write(File self, Buffer* buffer)
+file_write(File self, buf8* buffer)
 {
     return __file_write__(pax_file(self), buffer);
 }
@@ -86,7 +86,7 @@ file_write_mem8(File self, u8* memory, uptr length)
 }
 
 b32
-file_read(File self, Buffer* buffer)
+file_read(File self, buf8* buffer)
 {
     return __file_read__(pax_file(self), buffer);
 }

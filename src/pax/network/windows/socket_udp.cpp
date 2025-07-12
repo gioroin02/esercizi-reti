@@ -238,7 +238,7 @@ windows_socket_udp_accept(Windows_Socket_UDP* self, Arena* arena)
 }
 
 b32
-windows_socket_udp_write(Windows_Socket_UDP* self, Buffer* buffer)
+windows_socket_udp_write(Windows_Socket_UDP* self, buf8* buffer)
 {
     u8*  memory = buffer->memory + buffer->head;
     uptr length = buffer->size;
@@ -275,7 +275,7 @@ windows_socket_udp_write(Windows_Socket_UDP* self, Buffer* buffer)
 }
 
 b32
-windows_socket_udp_write_to(Windows_Socket_UDP* self, Buffer* buffer, u16 port, Address address)
+windows_socket_udp_write_to(Windows_Socket_UDP* self, buf8* buffer, u16 port, Address address)
 {
     u8*  memory = buffer->memory + buffer->head;
     uptr length = buffer->size;
@@ -379,7 +379,7 @@ windows_socket_udp_write_mem8_to(Windows_Socket_UDP* self, u8* memory, uptr leng
 }
 
 b32
-windows_socket_udp_read(Windows_Socket_UDP* self, Buffer* buffer)
+windows_socket_udp_read(Windows_Socket_UDP* self, buf8* buffer)
 {
     u8*  memory = buffer->memory + buffer->tail;
     uptr length = buffer->length - buffer->size;
@@ -418,7 +418,7 @@ windows_socket_udp_read(Windows_Socket_UDP* self, Buffer* buffer)
 }
 
 b32
-windows_socket_udp_read_from(Windows_Socket_UDP* self, Buffer* buffer, u16* port, Address* address)
+windows_socket_udp_read_from(Windows_Socket_UDP* self, buf8* buffer, u16* port, Address* address)
 {
     u8*  memory = buffer->memory + buffer->tail;
     uptr length = buffer->length - buffer->size;
@@ -426,7 +426,7 @@ windows_socket_udp_read_from(Windows_Socket_UDP* self, Buffer* buffer, u16* port
     b32  state = 0;
     uptr size  = 0;
 
-    if (buffer->head > buffer->tail) buffer_normalize(buffer);
+    if (buffer->head > buffer->tail) buf8_normalize(buffer);
 
     if (length != 0) {
         state = windows_socket_udp_read_mem8_from(self, memory, length, &size, port, address);

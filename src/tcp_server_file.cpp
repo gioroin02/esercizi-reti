@@ -15,10 +15,10 @@ static const str8 SERVER_DATA_PATH = pax_str8("./data/http_server");
 static const str8 SERVER_ARG_PORT = pax_str8("--port=");
 
 void
-file_server_on_content(Socket_TCP session, Arena* arena, str8 name, Buffer response);
+file_server_on_content(Socket_TCP session, Arena* arena, str8 name, buf8 response);
 
 void
-file_server_on_size(Socket_TCP session, Arena* arena, str8 name, Buffer response);
+file_server_on_size(Socket_TCP session, Arena* arena, str8 name, buf8 response);
 
 int
 main(int argc, const char* argv[])
@@ -53,8 +53,8 @@ main(int argc, const char* argv[])
 
     if (session == 0) return 1;
 
-    Buffer request  = buffer_reserve(&arena, MEMORY_KIB);
-    Buffer response = buffer_reserve(&arena, MEMORY_KIB);
+    buf8 request  = buf8_reserve(&arena, MEMORY_KIB);
+    buf8 response = buf8_reserve(&arena, MEMORY_KIB);
 
     server_tcp_stop(server);
 
@@ -67,18 +67,18 @@ main(int argc, const char* argv[])
 
         u8 type = 0;
 
-        buffer_read_mem8_head(&request, &type, 1);
+        buf8_read_mem8_head(&request, &type, 1);
 
         switch (type) {
             case COMMAND_FILE_CONTENT: {
-                str8 name = buffer_read_str8_head(&request,
+                str8 name = buf8_read_str8_head(&request,
                     &arena, request.size);
 
                 file_server_on_content(session, &arena, name, response);
             } break;
 
             case COMMAND_FILE_SIZE: {
-                str8 name = buffer_read_str8_head(&request,
+                str8 name = buf8_read_str8_head(&request,
                     &arena, request.size);
 
                 file_server_on_size(session, &arena, name, response);
@@ -96,7 +96,7 @@ main(int argc, const char* argv[])
 }
 
 void
-file_server_on_content(Socket_TCP session, Arena* arena, str8 name, Buffer response)
+file_server_on_content(Socket_TCP session, Arena* arena, str8 name, buf8 response)
 {
     printf(INFO " Requested content of file " BLU("'%.*s'") "\n",
         pax_cast(int, name.length), name.memory);
@@ -121,7 +121,7 @@ file_server_on_content(Socket_TCP session, Arena* arena, str8 name, Buffer respo
 }
 
 void
-file_server_on_size(Socket_TCP session, Arena* arena, str8 name, Buffer response)
+file_server_on_size(Socket_TCP session, Arena* arena, str8 name, buf8 response)
 {
     printf(INFO " Requested size of file " BLU("'%.*s'") "\n",
         pax_cast(int, name.length), name.memory);
@@ -133,7 +133,7 @@ file_server_on_size(Socket_TCP session, Arena* arena, str8 name, Buffer response
 
     u32 size = file_size(&props);
 
-    buffer_write_mem8_tail(&response, pax_cast(u8*, &size),
+    buf8_write_mem8_tail(&response, pax_cast(u8*, &size),
         pax_size_of(u32));
 
     session_tcp_write(session, &response);

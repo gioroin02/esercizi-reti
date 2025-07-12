@@ -81,7 +81,7 @@ socket_tcp_accept(Socket_TCP self, Arena* arena)
 }
 
 b32
-socket_tcp_write(Socket_TCP self, Buffer* buffer)
+socket_tcp_write(Socket_TCP self, buf8* buffer)
 {
     return __socket_tcp_write__(pax_socket_tcp(self), buffer);
 }
@@ -93,7 +93,7 @@ socket_tcp_write_mem8(Socket_TCP self, u8* memory, uptr length)
 }
 
 b32
-socket_tcp_read(Socket_TCP self, Buffer* buffer)
+socket_tcp_read(Socket_TCP self, buf8* buffer)
 {
     return __socket_tcp_read__(pax_socket_tcp(self), buffer);
 }

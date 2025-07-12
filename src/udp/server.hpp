@@ -10,9 +10,9 @@ void
 server_udp_stop(Socket_UDP self);
 
 b32
-server_udp_write(Socket_UDP self, Buffer* buffer, u16 port, Address address);
+server_udp_write(Socket_UDP self, buf8* buffer, u16 port, Address address);
 
 b32
-server_udp_read(Socket_UDP self, Buffer* buffer, u16* port, Address* address);
+server_udp_read(Socket_UDP self, buf8* buffer, u16* port, Address* address);
 
 #endif // UDP_SERVER_HPP

@@ -1,7 +1,7 @@
-#ifndef PAX_STRING_CONVERT_CPP
-#define PAX_STRING_CONVERT_CPP
+#ifndef PAX_STRING_STRCONV_CPP
+#define PAX_STRING_STRCONV_CPP
 
-#include "convert.hpp"
+#include "strconv.hpp"
 
 namespace pax {
 
@@ -14,7 +14,7 @@ utf8_units_from_utf16(u16* memory, uptr length)
     while (other < length) {
         u32 unicode = 0;
 
-        uptr read = utf16_decode_from(memory, length,
+        uptr read = utf16_decode_forw(memory, length,
             index, &unicode);
 
         uptr write = utf8_units_to_write(unicode);
@@ -37,7 +37,7 @@ utf8_units_from_utf32(u32* memory, uptr length)
     while (other < length) {
         u32 unicode = 0;
 
-        uptr read = utf32_decode_from(memory, length,
+        uptr read = utf32_decode_forw(memory, length,
             index, &unicode);
 
         uptr write = utf8_units_to_write(unicode);
@@ -60,7 +60,7 @@ utf16_units_from_utf8(u8* memory, uptr length)
     while (other < length) {
         u32 unicode = 0;
 
-        uptr read = utf8_decode_from(memory, length,
+        uptr read = utf8_decode_forw(memory, length,
             index, &unicode);
 
         uptr write = utf16_units_to_write(unicode);
@@ -83,7 +83,7 @@ utf16_units_from_utf32(u32* memory, uptr length)
     while (other < length) {
         u32 unicode = 0;
 
-        uptr read = utf32_decode_from(memory, length,
+        uptr read = utf32_decode_forw(memory, length,
             index, &unicode);
 
         uptr write = utf16_units_to_write(unicode);
@@ -106,7 +106,7 @@ utf32_units_from_utf8(u8* memory, uptr length)
     while (other < length) {
         u32 unicode = 0;
 
-        uptr read = utf8_decode_from(memory, length,
+        uptr read = utf8_decode_forw(memory, length,
             index, &unicode);
 
         uptr write = utf32_units_to_write(unicode);
@@ -129,7 +129,7 @@ utf32_units_from_utf16(u16* memory, uptr length)
     while (other < length) {
         u32 unicode = 0;
 
-        uptr read = utf16_decode_from(memory, length,
+        uptr read = utf16_decode_forw(memory, length,
             index, &unicode);
 
         uptr write = utf32_units_to_write(unicode);
@@ -185,13 +185,15 @@ str8_from_str16(Arena* arena, str16 value)
     uptr length = utf8_units_from_str16(value);
     str8 result = str8_reserve(arena, length);
 
+    if (result.length == 0) return result;
+
     for (uptr i = 0, j = 0; j < length;) {
         u32 unicode = 0;
 
-        i += utf16_decode_from(value.memory,
+        i += utf16_decode_forw(value.memory,
             value.length, i, &unicode);
 
-        j += utf8_encode_to(result.memory,
+        j += utf8_encode_forw(result.memory,
             result.length, j, unicode);
     }
 
@@ -204,26 +206,17 @@ str8_from_str32(Arena* arena, str32 value)
     uptr length = utf8_units_from_str32(value);
     str8 result = str8_reserve(arena, length);
 
+    if (result.length == 0) return result;
+
     for (uptr i = 0, j = 0; j < length;) {
         u32 unicode = 0;
 
-        i += utf32_decode_from(value.memory,
+        i += utf32_decode_forw(value.memory,
             value.length, i, &unicode);
 
-        j += utf8_encode_to(result.memory,
+        j += utf8_encode_forw(result.memory,
             result.length, j, unicode);
     }
-
-    return result;
-}
-
-str8
-str8_from_buffer(Arena* arena, Buffer value)
-{
-    str8 result = str8_reserve(arena, value.size);
-
-    for (uptr i = 0; i < result.length; i += 1)
-        result.memory[i] = value.memory[(value.head + i) % value.length];
 
     return result;
 }
@@ -234,13 +227,15 @@ str16_from_str8(Arena* arena, str8 value)
     uptr  length = utf16_units_from_str8(value);
     str16 result = str16_reserve(arena, length);
 
+    if (result.length == 0) return result;
+
     for (uptr i = 0, j = 0; j < length;) {
         u32 unicode = 0;
 
-        i += utf8_decode_from(value.memory,
+        i += utf8_decode_forw(value.memory,
             value.length, i, &unicode);
 
-        j += utf16_encode_to(result.memory,
+        j += utf16_encode_forw(result.memory,
             result.length, j, unicode);
     }
 
@@ -253,13 +248,15 @@ str16_from_str32(Arena* arena, str32 value)
     uptr  length = utf16_units_from_str32(value);
     str16 result = str16_reserve(arena, length);
 
+    if (result.length == 0) return result;
+
     for (uptr i = 0, j = 0; j < length;) {
         u32 unicode = 0;
 
-        i += utf32_decode_from(value.memory,
+        i += utf32_decode_forw(value.memory,
             value.length, i, &unicode);
 
-        j += utf16_encode_to(result.memory,
+        j += utf16_encode_forw(result.memory,
             result.length, j, unicode);
     }
 
@@ -272,13 +269,15 @@ str32_from_str8(Arena* arena, str8 value)
     uptr  length = utf32_units_from_str8(value);
     str32 result = str32_reserve(arena, length);
 
+    if (result.length == 0) return result;
+
     for (uptr i = 0, j = 0; j < length;) {
         u32 unicode = 0;
 
-        i += utf8_decode_from(value.memory,
+        i += utf8_decode_forw(value.memory,
             value.length, i, &unicode);
 
-        j += utf32_encode_to(result.memory,
+        j += utf32_encode_forw(result.memory,
             result.length, j, unicode);
     }
 
@@ -291,32 +290,21 @@ str32_from_str16(Arena* arena, str16 value)
     uptr  length = utf32_units_from_str16(value);
     str32 result = str32_reserve(arena, length);
 
+    if (result.length == 0) return result;
+
     for (uptr i = 0, j = 0; j < length;) {
         u32 unicode = 0;
 
-        i += utf16_decode_from(value.memory,
+        i += utf16_decode_forw(value.memory,
             value.length, i, &unicode);
 
-        j += utf32_encode_to(result.memory,
+        j += utf32_encode_forw(result.memory,
             result.length, j, unicode);
     }
 
     return result;
 }
 
-Buffer
-buffer_from_str8(Arena* arena, str8 value)
-{
-    Buffer result = buffer_reserve(arena, value.length);
-
-    result.size = result.length;
-
-    mem8_copy(result.memory, value.memory,
-        result.size);
-
-    return result;
-}
-
 } // namespace pax
 
-#endif // PAX_STRING_CONVERT_CPP
+#endif // PAX_STRING_STRCONV_CPP

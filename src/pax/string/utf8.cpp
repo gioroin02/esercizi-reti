@@ -46,7 +46,7 @@ utf8_encode(UTF8* self, u32 value)
 }
 
 uptr
-utf8_encode_to(u8* memory, uptr length, uptr index, u32 value)
+utf8_encode_forw(u8* memory, uptr length, uptr index, u32 value)
 {
     UTF8 utf8 = {};
 
@@ -55,22 +55,24 @@ utf8_encode_to(u8* memory, uptr length, uptr index, u32 value)
     if (index < 0 || index + utf8.size > length)
         return 0;
 
-    mem8_copy(memory + index, utf8.memory, utf8.size);
+    for (uptr i = 0; i < utf8.size; i += 1)
+        memory[index + i] = utf8.memory[i];
 
     return utf8.size;
 }
 
 uptr
-utf8_encode_to_rev(u8* memory, uptr length, uptr index, u32 value)
+utf8_encode_forw_circ(u8* memory, uptr length, uptr index, u32 value)
 {
     UTF8 utf8 = {};
 
     if (utf8_encode(&utf8, value) == 0) return 0;
 
-    if (index < 0 || index + utf8.size > length)
+    if (index < 0 || index > length || utf8.size > length)
         return 0;
 
-    mem8_copy_rev(memory + index, utf8.memory, utf8.size);
+    for (uptr i = 0; i < utf8.size; i += 1)
+        memory[(index + i) % length] = utf8.memory[i];
 
     return utf8.size;
 }
@@ -129,7 +131,7 @@ utf8_decode(UTF8* self, u32* value)
 }
 
 uptr
-utf8_decode_from(u8* memory, uptr length, uptr index, u32* value)
+utf8_decode_forw(u8* memory, uptr length, uptr index, u32* value)
 {
     UTF8 utf8 = {};
 
@@ -139,7 +141,8 @@ utf8_decode_from(u8* memory, uptr length, uptr index, u32* value)
     if (utf8.size <= 0 || index + utf8.size > length)
         return 0;
 
-    mem8_copy(utf8.memory, memory + index, utf8.size);
+    for (uptr i = 0; i < utf8.size; i += 1)
+        utf8.memory[i] = memory[index + i];
 
     if (utf8_decode(&utf8, value) == 0) return 0;
 
@@ -147,7 +150,25 @@ utf8_decode_from(u8* memory, uptr length, uptr index, u32* value)
 }
 
 uptr
-utf8_decode_from_rev(u8* memory, uptr length, uptr index, u32* value)
+utf8_decode_forw_circ(u8* memory, uptr length, uptr index, u32* value)
+{
+    UTF8 utf8 = {};
+
+    if (index >= 0 && index < length)
+        utf8.size = utf8_units_to_read(memory[index]);
+
+    if (utf8.size <= 0 || utf8.size > length) return 0;
+
+    for (uptr i = 0; i < utf8.size; i += 1)
+        utf8.memory[i] = memory[(index + i) % length];
+
+    if (utf8_decode(&utf8, value) == 0) return 0;
+
+    return utf8.size;
+}
+
+uptr
+utf8_decode_back(u8* memory, uptr length, uptr index, u32* value)
 {
     UTF8 utf8  = {};
     uptr start = index;
@@ -166,7 +187,37 @@ utf8_decode_from_rev(u8* memory, uptr length, uptr index, u32* value)
     if (utf8.size != utf8_units_to_read(memory[index]))
         return 0;
 
-    mem8_copy(utf8.memory, memory + index, utf8.size);
+    for (uptr i = 0; i < utf8.size; i += 1)
+        utf8.memory[i] = memory[index + i];
+
+    if (utf8_decode(&utf8, value) == 0) return 0;
+
+    return utf8.size;
+}
+
+uptr
+utf8_decode_back_circ(u8* memory, uptr length, uptr index, u32* value)
+{
+    UTF8 utf8  = {};
+    uptr count = 0;
+
+    if (index < 0 || index >= length) return 0;
+
+    while (count < 4) {
+        if (utf8_is_trailing(memory[index % length]) == 0)
+            break;
+
+        index  = (index + length - 1) % length;
+        count += 1;
+    }
+
+    utf8.size = count + 1;
+
+    if (utf8.size != utf8_units_to_read(memory[index % length]))
+        return 0;
+
+    for (uptr i = 0; i < utf8.size; i += 1)
+        utf8.memory[i] = memory[(index + i) % length];
 
     if (utf8_decode(&utf8, value) == 0) return 0;
 

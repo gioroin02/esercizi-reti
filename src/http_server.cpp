@@ -6,10 +6,10 @@
 #include <stdio.h>
 
 b32
-http_server_on_get(Arena* arena, HTTP_Heading* heading, Buffer* content, HTTP_Response_Writer* writer);
+http_server_on_get(Arena* arena, HTTP_Heading* heading, buf8* content, HTTP_Response_Writer* writer);
 
 b32
-http_server_on_post(Arena* arena, HTTP_Heading* heading, Buffer* content, HTTP_Response_Writer* writer);
+http_server_on_post(Arena* arena, HTTP_Heading* heading, buf8* content, HTTP_Response_Writer* writer);
 
 b32
 http_server_on_multipart_form_data(Arena* arena, HTTP_Heading* heading, str8 multipart, HTTP_Response_Writer* writer);
@@ -18,7 +18,7 @@ b32
 http_server_on_application_form_url_encoded(Arena* arena, HTTP_Heading* heading, str8 application, HTTP_Response_Writer* writer);
 
 b32
-http_server_fallback(Arena* arena, HTTP_Heading* heading, Buffer* content, HTTP_Response_Writer* writer);
+http_server_fallback(Arena* arena, HTTP_Heading* heading, buf8* content, HTTP_Response_Writer* writer);
 
 static const str8 SERVER_DATA_PATH = pax_str8("./data/http_server");
 
@@ -62,7 +62,7 @@ main(int argc, const char* argv[])
         HTTP_Response_Writer writer = http_response_writer_init(&arena, 4 * MEMORY_KIB);
 
         HTTP_Heading heading = http_request_heading(&reader, &arena, session);
-        Buffer       content = {};
+        buf8       content = {};
 
         uptr payload = http_heading_get_content_length(&heading, 0);
 
@@ -110,7 +110,7 @@ main(int argc, const char* argv[])
 }
 
 b32
-http_server_on_get(Arena* arena, HTTP_Heading* heading, Buffer* content, HTTP_Response_Writer* writer)
+http_server_on_get(Arena* arena, HTTP_Heading* heading, buf8* content, HTTP_Response_Writer* writer)
 {
     str8 fallback = pax_str8("not_found.html");
     str8 resource = http_heading_get_resource(heading, pax_str8(""));
@@ -131,7 +131,7 @@ http_server_on_get(Arena* arena, HTTP_Heading* heading, Buffer* content, HTTP_Re
             printf(ERROR " Unable to locate resource and fallback\n");
     }
 
-    Buffer buffer = buffer_reserve(arena, file_size(&properties));
+    buf8 buffer = buf8_reserve(arena, file_size(&properties));
 
     if (buffer.length != 0) {
         File file = file_open(arena, SERVER_DATA_PATH, resource, FILE_PERM_READ);
@@ -156,7 +156,7 @@ http_server_on_get(Arena* arena, HTTP_Heading* heading, Buffer* content, HTTP_Re
 }
 
 b32
-http_server_on_post(Arena* arena, HTTP_Heading* heading, Buffer* content, HTTP_Response_Writer* writer)
+http_server_on_post(Arena* arena, HTTP_Heading* heading, buf8* content, HTTP_Response_Writer* writer)
 {
     str8 content_type = http_heading_get_content_type(heading, pax_str8(""));
 
@@ -187,8 +187,8 @@ http_server_on_post(Arena* arena, HTTP_Heading* heading, Buffer* content, HTTP_R
             return 1;
         }
 
-        str8 start = str8_append(arena, pax_str8("--"), boundary);
-        str8 stop  = str8_append(arena, start, pax_str8("--"));
+        str8 start = str8_chain(arena, pax_str8("--"), boundary);
+        str8 stop  = str8_chain(arena, start, pax_str8("--"));
 
         str8 string = str8_make(content->memory, content->size);
 
@@ -273,7 +273,7 @@ http_server_on_multipart_form_data(Arena* arena, HTTP_Heading* heading, str8 mul
     File file = file_open_new(arena, SERVER_DATA_PATH, name, FILE_PERM_WRITE);
 
     if (file != 0) {
-        Buffer buffer = buffer_make_full(multipart.memory, multipart.length);
+        buf8 buffer = buf8_full(multipart.memory, multipart.length);
 
         if (file_write(file, &buffer) != 0) {
             printf(INFO " Wrote content to " BLU("'%.*s'") "\n",
@@ -306,7 +306,7 @@ http_server_on_application_form_url_encoded(Arena* arena, HTTP_Heading* heading,
 }
 
 b32
-http_server_fallback(Arena* arena, HTTP_Heading* heading, Buffer* content, HTTP_Response_Writer* writer)
+http_server_fallback(Arena* arena, HTTP_Heading* heading, buf8* content, HTTP_Response_Writer* writer)
 {
     http_response_write_start(writer, HTTP_VERSION_1_1,
         HTTP_STATUS_METHOD_NOT_ALLOWED, HTTP_MESSAGE_METHOD_NOT_ALLOWED);

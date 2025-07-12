@@ -6,6 +6,9 @@ Cose da fare:
     - in: `tcp_client_file.cpp`
 
 2. Rispondere in qualche modo ai parametri url-encoded (sia GET che POST)
-    - in `http_server.cpp`
+    - in: `http_server.cpp`
 
 3. Scrivere `http_server_cgi.cpp`
+
+4. Aggiungere il percorso del server come argomento
+    - in: `http_server.cpp`, `tcp_server_file.cpp`

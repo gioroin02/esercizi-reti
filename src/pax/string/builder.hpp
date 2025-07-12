@@ -1,7 +1,7 @@
 #ifndef PAX_STRING_BUILDER_HPP
 #define PAX_STRING_BUILDER_HPP
 
-#include "convert.hpp"
+#include "strconv.hpp"
 
 namespace pax {
 
@@ -69,8 +69,8 @@ str16_from_str_builder(Str_Builder* builder);
 str32
 str32_from_str_builder(Str_Builder* builder);
 
-Buffer
-buffer_from_str_builder(Str_Builder* builder);
+buf8
+buf8_from_str_builder(Str_Builder* builder);
 
 } // namespace pax
 

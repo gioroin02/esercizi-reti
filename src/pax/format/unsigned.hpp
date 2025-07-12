@@ -62,6 +62,7 @@ u8_from_str32(str32 self, Format_Options opts, u8* value);
 
 /* Buffer parsing */
 
+/*
 b32
 uptr_from_buffer(Buffer self, Format_Options opts, uptr *value);
 
@@ -76,6 +77,7 @@ u16_from_buffer(Buffer self, Format_Options opts, u16* value);
 
 b32
 u8_from_buffer(Buffer self, Format_Options opts, u8* value);
+*/
 
 /* str8 printing */
 
@@ -130,6 +132,7 @@ str32_from_u8(Arena* arena, Format_Options opts, u8 value);
 
 /* Buffer printing */
 
+/*
 b32
 buffer_write_uptr(Buffer* self, Format_Options opts, uptr value);
 
@@ -144,6 +147,7 @@ buffer_write_u16(Buffer* self, Format_Options opts, u16 value);
 
 b32
 buffer_write_u8(Buffer* self, Format_Options opts, u8 value);
+*/
 
 } // namespace pax
 

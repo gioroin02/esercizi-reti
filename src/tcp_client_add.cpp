@@ -57,8 +57,8 @@ main(int argc, const char* argv[])
     if (client_tcp_connect(client, server_port, server_addr) == 0)
         return 1;
 
-    Buffer request  = buffer_reserve(&arena, MEMORY_KIB);
-    Buffer response = buffer_reserve(&arena, MEMORY_KIB);
+    buf8 request  = buf8_reserve(&arena, MEMORY_KIB);
+    buf8 response = buf8_reserve(&arena, MEMORY_KIB);
 
     uptr offset = arena_offset(&arena);
     u32  number = 0;
@@ -77,7 +77,7 @@ main(int argc, const char* argv[])
 
         number = u32_net_from_host(number);
 
-        buffer_write_mem8_tail(&request, pax_cast(u8*, &number),
+        buf8_write_mem8_tail(&request, pax_cast(u8*, &number),
             pax_size_of(u32));
 
         client_tcp_write(client, &request);
@@ -88,7 +88,7 @@ main(int argc, const char* argv[])
     if (client_tcp_read(client, &response) != 0) {
         u32 result = 0;
 
-        buffer_read_mem8_head(&response, pax_cast(u8*, &result),
+        buf8_read_mem8_head(&response, pax_cast(u8*, &result),
             pax_size_of(u32));
 
         result = u32_host_from_net(result);

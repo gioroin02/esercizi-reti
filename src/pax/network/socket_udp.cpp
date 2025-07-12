@@ -71,13 +71,13 @@ socket_udp_accept(Socket_UDP self, Arena* arena)
 }
 
 b32
-socket_udp_write(Socket_UDP self, Buffer* buffer)
+socket_udp_write(Socket_UDP self, buf8* buffer)
 {
     return __socket_udp_write__(pax_socket_udp(self), buffer);
 }
 
 b32
-socket_udp_write_to(Socket_UDP self, Buffer* buffer, u16 port, Address address)
+socket_udp_write_to(Socket_UDP self, buf8* buffer, u16 port, Address address)
 {
     return __socket_udp_write_to__(pax_socket_udp(self), buffer, port, address);
 }
@@ -95,13 +95,13 @@ socket_udp_write_mem8_to(Socket_UDP self, u8* memory, uptr length, u16 port, Add
 }
 
 b32
-socket_udp_read(Socket_UDP self, Buffer* buffer)
+socket_udp_read(Socket_UDP self, buf8* buffer)
 {
     return __socket_udp_read__(pax_socket_udp(self), buffer);
 }
 
 b32
-socket_udp_read_from(Socket_UDP self, Buffer* buffer, u16* port, Address *address)
+socket_udp_read_from(Socket_UDP self, buf8* buffer, u16* port, Address *address)
 {
     return __socket_udp_read_from__(pax_socket_udp(self), buffer, port, address);
 }

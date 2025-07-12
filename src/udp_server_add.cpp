@@ -33,8 +33,8 @@ main(int argc, const char* argv[])
 
     if (server == 0) return 1;
 
-    Buffer request  = buffer_reserve(&arena, MEMORY_KIB);
-    Buffer response = buffer_reserve(&arena, MEMORY_KIB);
+    buf8 request  = buf8_reserve(&arena, MEMORY_KIB);
+    buf8 response = buf8_reserve(&arena, MEMORY_KIB);
 
     Address client_addr = {};
     u16     client_port = 0;
@@ -55,7 +55,7 @@ main(int argc, const char* argv[])
         if (client_port == port && address_is_equal(client_addr, addr) != 0) {
             u32 input = 0;
 
-            buffer_read_mem8_head(&request, pax_cast(u8*, &input),
+            buf8_read_mem8_head(&request, pax_cast(u8*, &input),
                 pax_size_of(u32));
 
             input = u32_host_from_net(input);
@@ -72,7 +72,7 @@ main(int argc, const char* argv[])
 
     result = u32_net_from_host(result);
 
-    buffer_write_mem8_tail(&response, pax_cast(u8*, &result),
+    buf8_write_mem8_tail(&response, pax_cast(u8*, &result),
         pax_size_of(u32));
 
     server_udp_write(server, &response, client_port, client_addr);

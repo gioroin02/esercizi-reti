@@ -29,7 +29,7 @@ mem8_copy(addr memory, addr value, uptr length)
 }
 
 addr
-mem8_copy_rev(addr memory, addr value, uptr length)
+mem8_copy_flipped(addr memory, addr value, uptr length)
 {
     u8* mem = pax_cast(u8*, memory);
     u8* val = pax_cast(u8*, value);
@@ -63,7 +63,7 @@ mem8_move_forw(addr memory, uptr length, uptr offset)
 }
 
 addr
-mem8_reverse(addr memory, uptr length)
+mem8_flip(addr memory, uptr length)
 {
     u8* mem = pax_cast(u8*, memory);
 
@@ -118,7 +118,7 @@ mem16_copy(addr memory, addr value, uptr length)
 }
 
 addr
-mem16_copy_rev(addr memory, addr value, uptr length)
+mem16_copy_flipped(addr memory, addr value, uptr length)
 {
     u16* mem = pax_cast(u16*, memory);
     u16* val = pax_cast(u16*, value);
@@ -130,7 +130,7 @@ mem16_copy_rev(addr memory, addr value, uptr length)
 }
 
 addr
-mem16_reverse(addr memory, uptr length)
+mem16_flip(addr memory, uptr length)
 {
     u16* mem = pax_cast(u16*, memory);
 
@@ -185,7 +185,7 @@ mem32_copy(addr memory, addr value, uptr length)
 }
 
 addr
-mem32_copy_rev(addr memory, addr value, uptr length)
+mem32_copy_flipped(addr memory, addr value, uptr length)
 {
     u32* mem = pax_cast(u32*, memory);
     u32* val = pax_cast(u32*, value);
@@ -197,7 +197,7 @@ mem32_copy_rev(addr memory, addr value, uptr length)
 }
 
 addr
-mem32_reverse(addr memory, uptr length)
+mem32_flip(addr memory, uptr length)
 {
     u32* mem = pax_cast(u32*, memory);
 
@@ -252,7 +252,7 @@ mem64_copy(addr memory, addr value, uptr length)
 }
 
 addr
-mem64_copy_rev(addr memory, addr value, uptr length)
+mem64_copy_flipped(addr memory, addr value, uptr length)
 {
     u64* mem = pax_cast(u64*, memory);
     u64* val = pax_cast(u64*, value);
@@ -264,7 +264,7 @@ mem64_copy_rev(addr memory, addr value, uptr length)
 }
 
 addr
-mem64_reverse(addr memory, uptr length)
+mem64_flip(addr memory, uptr length)
 {
     u64* mem = pax_cast(u64*, memory);
 

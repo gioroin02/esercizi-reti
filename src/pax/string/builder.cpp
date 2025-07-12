@@ -171,12 +171,14 @@ str8_from_str_builder(Str_Builder* builder)
     uptr length = utf8_units_from_str_builder(builder);
     str8 result = str8_reserve(builder->arena, length);
 
+    if (result.length == 0) return result;
+
     Str_Chunk* chunk = builder->head;
     uptr       index = 0;
 
     for (; chunk != 0; chunk = chunk->next) {
         for (uptr i = 0; i < chunk->length; i += 1) {
-            index += utf8_encode_to(result.memory, result.length,
+            index += utf8_encode_forw(result.memory, result.length,
                 index, chunk->memory[i]);
         }
     }
@@ -190,12 +192,14 @@ str16_from_str_builder(Str_Builder* builder)
     uptr  length = utf16_units_from_str_builder(builder);
     str16 result = str16_reserve(builder->arena, length);
 
+    if (result.length == 0) return result;
+
     Str_Chunk* chunk = builder->head;
     uptr       index = 0;
 
     for (; chunk != 0; chunk = chunk->next) {
         for (uptr i = 0; i < chunk->length; i += 1) {
-            index += utf16_encode_to(result.memory, result.length,
+            index += utf16_encode_forw(result.memory, result.length,
                 index, chunk->memory[i]);
         }
     }
@@ -208,6 +212,8 @@ str32_from_str_builder(Str_Builder* builder)
 {
     uptr  length = utf32_units_from_str_builder(builder);
     str32 result = str32_reserve(builder->arena, length);
+
+    if (result.length == 0) return result;
 
     Str_Chunk* chunk = builder->head;
     uptr       index = 0;
@@ -222,18 +228,18 @@ str32_from_str_builder(Str_Builder* builder)
     return result;
 }
 
-Buffer
-buffer_from_str_builder(Str_Builder* builder)
+buf8
+buf8_from_str_builder(Str_Builder* builder)
 {
-    uptr   length = utf8_units_from_str_builder(builder);
-    Buffer result = buffer_reserve(builder->arena, length);
+    uptr length = utf8_units_from_str_builder(builder);
+    buf8 result = buf8_reserve(builder->arena, length);
 
     Str_Chunk* chunk = builder->head;
     uptr       index = 0;
 
     for (; chunk != 0; chunk = chunk->next) {
         for (uptr i = 0; i < chunk->length; i += 1) {
-            index += utf8_encode_to(result.memory, result.length,
+            index += utf8_encode_forw(result.memory, result.length,
                 index, chunk->memory[i]);
         }
     }

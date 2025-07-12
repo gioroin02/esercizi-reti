@@ -238,7 +238,7 @@ windows_socket_tcp_accept(Windows_Socket_TCP* self, Arena* arena)
 }
 
 b32
-windows_socket_tcp_write(Windows_Socket_TCP* self, Buffer* buffer)
+windows_socket_tcp_write(Windows_Socket_TCP* self, buf8* buffer)
 {
     u8*  memory = buffer->memory + buffer->head;
     uptr length = buffer->size;
@@ -293,7 +293,7 @@ windows_socket_tcp_write_mem8(Windows_Socket_TCP* self, u8* memory, uptr length)
 }
 
 b32
-windows_socket_tcp_read(Windows_Socket_TCP* self, Buffer* buffer)
+windows_socket_tcp_read(Windows_Socket_TCP* self, buf8* buffer)
 {
     u8*  memory = buffer->memory + buffer->tail;
     uptr length = buffer->length - buffer->size;

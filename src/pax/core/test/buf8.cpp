@@ -11,14 +11,14 @@ main(int argc, const char* argv[])
 
     Arena arena = pax_arena(memory);
 
-    Buffer buffer = buffer_reserve(&arena, 10);
+    buf8 buffer = buf8_reserve(&arena, 10);
 
-    buffer_write_mem8_tail(&buffer, pax_cast(u8*, "coda"), 4);
-    buffer_write_mem8_head(&buffer, pax_cast(u8*, "testa"), 5);
+    buf8_write_mem8_tail(&buffer, pax_cast(u8*, "coda"), 4);
+    buf8_write_mem8_head(&buffer, pax_cast(u8*, "testa"), 5);
 
     u8 temp[3] = {};
 
-    buffer_read_mem8_head(&buffer, temp, pax_array_bytes(temp));
+    buf8_read_mem8_head(&buffer, temp, pax_array_bytes(temp));
 
     printf("temp:\n");
 
@@ -49,7 +49,11 @@ main(int argc, const char* argv[])
         printf("%llu. %c\n", idx, chr);
     }
 
-    buffer_normalize(&buffer);
+    buf8 copy = buf8_reserve(&arena, 16);
+
+    buf8_write_tail(&copy, &buffer);
+
+    buf8_normalize(&buffer);
 
     printf("buffer:\n");
 
@@ -60,6 +64,19 @@ main(int argc, const char* argv[])
     for (uptr i = 0; i < buffer.size; i += 1) {
         uptr idx = (buffer.head + i) % buffer.length;
         u8   chr = buffer.memory[idx];
+
+        printf("%llu. %c\n", idx, chr);
+    }
+
+    printf("copy:\n");
+
+    for (uptr i = 0; i < copy.length; i += 1)
+        printf("[%c]", copy.memory[i]);
+    printf("\n");
+
+    for (uptr i = 0; i < copy.size; i += 1) {
+        uptr idx = (copy.head + i) % copy.length;
+        u8   chr = copy.memory[idx];
 
         printf("%llu. %c\n", idx, chr);
     }

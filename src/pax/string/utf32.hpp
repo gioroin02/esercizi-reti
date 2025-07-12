@@ -41,19 +41,16 @@ b32
 utf32_encode(UTF32* self, u32 value);
 
 uptr
-utf32_encode_to(u32* memory, uptr length, uptr index, u32 value);
-
-uptr
-utf32_encode_to_rev(u32* memory, uptr length, uptr index, u32 value);
+utf32_encode_forw(u32* memory, uptr length, uptr index, u32 value);
 
 b32
 utf32_decode(UTF32* self, u32* value);
 
 uptr
-utf32_decode_from(u32* memory, uptr length, uptr index, u32* value);
+utf32_decode_forw(u32* memory, uptr length, uptr index, u32* value);
 
 uptr
-utf32_decode_from_rev(u32* memory, uptr length, uptr index, u32* value);
+utf32_decode_back(u32* memory, uptr length, uptr index, u32* value);
 
 uptr
 utf32_units_to_write(u32 value);
