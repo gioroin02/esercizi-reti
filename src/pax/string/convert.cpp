@@ -1,7 +1,7 @@
-#ifndef PAX_STRING_STRCONV_CPP
-#define PAX_STRING_STRCONV_CPP
+#ifndef PAX_STRING_CONVERT_CPP
+#define PAX_STRING_CONVERT_CPP
 
-#include "strconv.hpp"
+#include "convert.hpp"
 
 namespace pax {
 
@@ -307,4 +307,4 @@ str32_from_str16(Arena* arena, str16 value)
 
 } // namespace pax
 
-#endif // PAX_STRING_STRCONV_CPP
+#endif // PAX_STRING_CONVERT_CPP

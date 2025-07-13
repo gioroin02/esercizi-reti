@@ -72,6 +72,12 @@ addr
 mem16_copy_flipped(addr memory, addr value, uptr length);
 
 addr
+mem16_move_back(addr memory, uptr length, uptr offset);
+
+addr
+mem16_move_forw(addr memory, uptr length, uptr offset);
+
+addr
 mem16_flip(addr memory, uptr length);
 
 b32
@@ -87,6 +93,12 @@ addr
 mem32_copy_flipped(addr memory, addr value, uptr length);
 
 addr
+mem32_move_back(addr memory, uptr length, uptr offset);
+
+addr
+mem32_move_forw(addr memory, uptr length, uptr offset);
+
+addr
 mem32_flip(addr memory, uptr length);
 
 b32
@@ -100,6 +112,12 @@ mem64_copy(addr memory, addr value, uptr length);
 
 addr
 mem64_copy_flipped(addr memory, addr value, uptr length);
+
+addr
+mem64_move_back(addr memory, uptr length, uptr offset);
+
+addr
+mem64_move_forw(addr memory, uptr length, uptr offset);
 
 addr
 mem64_flip(addr memory, uptr length);

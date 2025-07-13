@@ -27,25 +27,17 @@ windows_dir_view(Arena* arena, str8 path)
     Windows_Dir_View* result = arena_reserve_one<Windows_Dir_View>(arena);
 
     if (result != 0) {
-        path = str8_copy(arena, path);
+        uptr  temp   = arena_offset(arena);
+        buf16 buffer = buf16_reserve(arena, MEMORY_KIB);
 
-        for (uptr i = 0; i < path.length; i += 1) {
-            if (path.memory[i] == ASCII_SLASH_BACK)
-                path.memory[i] = ASCII_SLASH;
-        }
+        buf16_write_str8_tail(&buffer, path);
+        buf16_write_str8_tail(&buffer, pax_str8("\\*.*"));
 
-        uptr temp = arena_offset(arena);
-
-        Str_Builder builder = str_builder_make(arena);
-
-        str_builder_str8(&builder, path);
-        str_builder_str8(&builder, pax_str8("/*.*"));
-
-        str16 string = str16_from_str_builder(&builder);
+        str16 string = buf16_read_str16_head(&buffer, arena, buffer.size);
 
         wchar_t* memory = pax_cast(wchar_t*, string.memory);
 
-        result->name   = path;
+        result->name   = str8_copy(arena, path);
         result->handle = FindFirstFileW(memory, &result->data);
 
         arena_rewind(arena, temp);
@@ -62,7 +54,8 @@ windows_dir_view(Arena* arena, str8 path)
 b32
 windows_dir_next(Windows_Dir_View* self, Arena* arena, File_Props* value)
 {
-    if (self->handle == INVALID_HANDLE_VALUE) return 0;
+    if (self == 0 || self->handle == INVALID_HANDLE_VALUE)
+        return 0;
 
     if (value != 0) {
         u16*  memory = pax_cast(u16*, self->data.cFileName);
@@ -70,11 +63,6 @@ windows_dir_next(Windows_Dir_View* self, Arena* arena, File_Props* value)
 
         value->path = str8_copy(arena, self->name);
         value->name = str8_from_str16(arena, string);
-
-        for (uptr i = 0; i < value->name.length; i += 1) {
-            if (value->name.memory[i] == ASCII_SLASH_BACK)
-                value->name.memory[i] = ASCII_SLASH;
-        }
 
         value->type = FILE_TYPE_NORMAL;
         value->perm = FILE_PERM_READ_WRITE;

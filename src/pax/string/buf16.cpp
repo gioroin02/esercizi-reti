@@ -1,14 +1,14 @@
-#ifndef PAX_STRING_BUF8_CPP
-#define PAX_STRING_BUF8_CPP
+#ifndef PAX_STRING_BUF16_CPP
+#define PAX_STRING_BUF16_CPP
 
-#include "buf8.hpp"
+#include "buf16.hpp"
 
 namespace pax {
 
 uptr
-buf8_write_codepoint_head(buf8* self, u32 value)
+buf16_write_codepoint_head(buf16* self, u32 value)
 {
-    uptr size = utf8_units_to_write(value);
+    uptr size = utf16_units_to_write(value);
     uptr prev = self->head + self->length - size;
 
     if (self->size < 0 || self->size + size > self->length)
@@ -17,22 +17,22 @@ buf8_write_codepoint_head(buf8* self, u32 value)
     self->size -= size;
     self->head  = prev % self->length;
 
-    utf8_encode_forw_circ(self->memory,
+    utf16_encode_forw_circ(self->memory,
         self->length, self->head, value);
 
     return size;
 }
 
 uptr
-buf8_write_codepoint_tail(buf8* self, u32 value)
+buf16_write_codepoint_tail(buf16* self, u32 value)
 {
-    uptr size = utf8_units_to_write(value);
+    uptr size = utf16_units_to_write(value);
     uptr next = self->tail + size;
 
     if (self->size < 0 || self->size + size > self->length)
         return 0;
 
-    utf8_encode_forw_circ(self->memory,
+    utf16_encode_forw_circ(self->memory,
         self->length, self->tail, value);
 
     self->size += size;
@@ -42,7 +42,57 @@ buf8_write_codepoint_tail(buf8* self, u32 value)
 }
 
 uptr
-buf8_write_str8_head(buf8* self, str8 value)
+buf16_write_str8_head(buf16* self, str8 value)
+{
+    uptr size = utf16_units_from_str8(value);
+    uptr prev = self->head + self->length - size;
+
+    if (self->size < 0 || self->size + size > self->length)
+        return 0;
+
+    self->size += size;
+    self->head  = prev % self->length;
+
+    for (uptr i = 0, j = 0; j < size;) {
+        u32 unicode = 0;
+
+        i += utf8_decode_forw(value.memory,
+            value.length, i, &unicode);
+
+        j += utf16_encode_forw_circ(self->memory, self->length,
+            (self->head + j) % self->length, unicode);
+    }
+
+    return size;
+}
+
+uptr
+buf16_write_str8_tail(buf16* self, str8 value)
+{
+    uptr size = utf16_units_from_str8(value);
+    uptr next = self->tail + size;
+
+    if (self->size < 0 || self->size + size > self->length)
+        return 0;
+
+    for (uptr i = 0, j = 0; j < size;) {
+        u32 unicode = 0;
+
+        i += utf8_decode_forw(value.memory,
+            value.length, i, &unicode);
+
+        j += utf16_encode_forw_circ(self->memory, self->length,
+            (self->tail + j) % self->length, unicode);
+    }
+
+    self->size += size;
+    self->tail  = next % self->length;
+
+    return size;
+}
+
+uptr
+buf16_write_str16_head(buf16* self, str16 value)
 {
     uptr size = value.length;
     uptr prev = self->head + self->length - size;
@@ -60,7 +110,7 @@ buf8_write_str8_head(buf8* self, str8 value)
 }
 
 uptr
-buf8_write_str8_tail(buf8* self, str8 value)
+buf16_write_str16_tail(buf16* self, str16 value)
 {
     uptr size = value.length;
     uptr next = self->tail + size;
@@ -78,59 +128,9 @@ buf8_write_str8_tail(buf8* self, str8 value)
 }
 
 uptr
-buf8_write_str16_head(buf8* self, str16 value)
+buf16_write_str32_head(buf16* self, str32 value)
 {
-    uptr size = utf8_units_from_str16(value);
-    uptr prev = self->head + self->length - size;
-
-    if (self->size < 0 || self->size + size > self->length)
-        return 0;
-
-    self->size += size;
-    self->head  = prev % self->length;
-
-    for (uptr i = 0, j = 0; j < size;) {
-        u32 unicode = 0;
-
-        i += utf16_decode_forw(value.memory,
-            value.length, i, &unicode);
-
-        j += utf8_encode_forw_circ(self->memory, self->length,
-            (self->head + j) % self->length, unicode);
-    }
-
-    return size;
-}
-
-uptr
-buf8_write_str16_tail(buf8* self, str16 value)
-{
-    uptr size = utf8_units_from_str16(value);
-    uptr next = self->tail + size;
-
-    if (self->size < 0 || self->size + size > self->length)
-        return 0;
-
-    for (uptr i = 0, j = 0; j < size;) {
-        u32 unicode = 0;
-
-        i += utf16_decode_forw(value.memory,
-            value.length, i, &unicode);
-
-        j += utf8_encode_forw_circ(self->memory, self->length,
-            (self->tail + j) % self->length, unicode);
-    }
-
-    self->size += size;
-    self->tail  = next % self->length;
-
-    return size;
-}
-
-uptr
-buf8_write_str32_head(buf8* self, str32 value)
-{
-    uptr size = utf8_units_from_str32(value);
+    uptr size = utf16_units_from_str32(value);
     uptr prev = self->head + self->length - size;
 
     if (self->size < 0 || self->size + size > self->length)
@@ -145,7 +145,7 @@ buf8_write_str32_head(buf8* self, str32 value)
         i += utf32_decode_forw(value.memory,
             value.length, i, &unicode);
 
-        j += utf8_encode_forw_circ(self->memory, self->length,
+        j += utf16_encode_forw_circ(self->memory, self->length,
             (self->head + j) % self->length, unicode);
     }
 
@@ -153,9 +153,9 @@ buf8_write_str32_head(buf8* self, str32 value)
 }
 
 uptr
-buf8_write_str32_tail(buf8* self, str32 value)
+buf16_write_str32_tail(buf16* self, str32 value)
 {
-    uptr size = utf8_units_from_str32(value);
+    uptr size = utf16_units_from_str32(value);
     uptr next = self->tail + size;
 
     if (self->size < 0 || self->size + size > self->length)
@@ -167,7 +167,7 @@ buf8_write_str32_tail(buf8* self, str32 value)
         i += utf32_decode_forw(value.memory,
             value.length, i, &unicode);
 
-        j += utf8_encode_forw_circ(self->memory, self->length,
+        j += utf16_encode_forw_circ(self->memory, self->length,
             (self->tail + j) % self->length, unicode);
     }
 
@@ -178,9 +178,9 @@ buf8_write_str32_tail(buf8* self, str32 value)
 }
 
 uptr
-buf8_read_codepoint_head(buf8* self, u32* value)
+buf16_read_codepoint_head(buf16* self, u32* value)
 {
-    uptr size = utf8_decode_forw_circ(self->memory,
+    uptr size = utf16_decode_forw_circ(self->memory,
         self->length, self->head, value);
 
     uptr next = self->head + size;
@@ -192,11 +192,11 @@ buf8_read_codepoint_head(buf8* self, u32* value)
 }
 
 uptr
-buf8_read_codepoint_tail(buf8* self, u32* value)
+buf16_read_codepoint_tail(buf16* self, u32* value)
 {
     uptr prev = self->tail + self->length - 1;
 
-    uptr size = utf8_decode_back_circ(self->memory,
+    uptr size = utf16_decode_back_circ(self->memory,
         self->length, prev % self->length, value);
 
     prev = self->tail + self->length - size;
@@ -207,13 +207,13 @@ buf8_read_codepoint_tail(buf8* self, u32* value)
     return size;
 }
 
-str8
-buf8_read_str8_head(buf8* self, Arena* arena, uptr length)
+str16
+buf16_read_str16_head(buf16* self, Arena* arena, uptr length)
 {
     uptr size = pax_min(self->size, length);
     uptr next = self->head + size;
 
-    str8 result = str8_reserve(arena, size);
+    str16 result = str16_reserve(arena, size);
 
     if (result.length == 0) return result;
 
@@ -226,13 +226,13 @@ buf8_read_str8_head(buf8* self, Arena* arena, uptr length)
     return result;
 }
 
-str8
-buf8_read_str8_tail(buf8* self, Arena* arena, uptr length)
+str16
+buf16_read_str16_tail(buf16* self, Arena* arena, uptr length)
 {
     uptr size = pax_min(self->size, length);
     uptr prev = self->tail + self->length - size;
 
-    str8 result = str8_reserve(arena, size);
+    str16 result = str16_reserve(arena, size);
 
     if (result.length == 0) return result;
 
@@ -247,4 +247,4 @@ buf8_read_str8_tail(buf8* self, Arena* arena, uptr length)
 
 } // namespace pax
 
-#endif // PAX_STRING_BUF8_CPP
+#endif // PAX_STRING_BUF16_CPP

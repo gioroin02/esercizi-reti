@@ -11,13 +11,11 @@
 #include "str8.hpp"
 #include "str16.hpp"
 #include "str32.hpp"
-#include "strconv.hpp"
+
+#include "convert.hpp"
 
 #include "buf8.hpp"
-// #include "buf16.hpp"
-// #include "buf32.hpp"
-// #include "bufconv.hpp"
-
-#include "builder.hpp"
+#include "buf16.hpp"
+#include "buf32.hpp"
 
 #endif // PAX_STRING_EXPORTS_HPP

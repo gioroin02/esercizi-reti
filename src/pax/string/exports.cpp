@@ -12,13 +12,11 @@
 #include "str8.cpp"
 #include "str16.cpp"
 #include "str32.cpp"
-#include "strconv.cpp"
+
+#include "convert.cpp"
 
 #include "buf8.cpp"
-// #include "buf16.cpp"
-// #include "buf32.cpp"
-// #include "bufconv.cpp"
-
-#include "builder.cpp"
+#include "buf16.cpp"
+#include "buf32.cpp"
 
 #endif // PAX_STRING_EXPORTS_CPP

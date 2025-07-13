@@ -1,5 +1,5 @@
-#ifndef PAX_STRING_STRCONV_HPP
-#define PAX_STRING_STRCONV_HPP
+#ifndef PAX_STRING_CONVERT_HPP
+#define PAX_STRING_CONVERT_HPP
 
 #include "str8.hpp"
 #include "str16.hpp"
@@ -77,4 +77,4 @@ str32_from_str16(Arena* arena, str16 value);
 
 } // namespace pax
 
-#endif // PAX_STRING_STRCONV_HPP
+#endif // PAX_STRING_CONVERT_HPP

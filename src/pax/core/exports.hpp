@@ -3,8 +3,11 @@
 
 #include "defines.hpp"
 #include "types.hpp"
+
 #include "memory.hpp"
 
 #include "buf8.hpp"
+#include "buf16.hpp"
+#include "buf32.hpp"
 
 #endif // PAX_CORE_EXPORTS_HPP

@@ -1,7 +1,7 @@
 #ifndef PAX_STRING_BUF8_HPP
 #define PAX_STRING_BUF8_HPP
 
-#include "strconv.hpp"
+#include "convert.hpp"
 
 namespace pax {
 

@@ -4,6 +4,34 @@ using namespace pax;
 
 #include <stdio.h>
 
+void
+show_buf8(buf8* self)
+{
+    if (self->size == 0) return;
+
+    for (uptr i = 0; i < self->length; i += 1) {
+        b32 line = (self->head <= self->tail) &&
+            (self->head <= i && i < self->tail);
+
+        b32 circ = (self->head >= self->tail) &&
+            (self->head <= i || i < self->tail);
+
+        if (line != 0 || circ != 0)
+            printf("[%c]", self->memory[i]);
+        else
+            printf("[_]");
+    }
+
+    printf("\n");
+
+    for (uptr i = 0; i < self->size; i += 1) {
+        uptr idx = (self->head + i) % self->length;
+        u8   chr = self->memory[idx];
+
+        printf("%llu. %c\n", idx, chr);
+    }
+}
+
 int
 main(int argc, const char* argv[])
 {
@@ -26,58 +54,16 @@ main(int argc, const char* argv[])
         printf("%llu. %c\n", i, temp[i]);
 
     printf("buffer:\n");
-
-    for (uptr i = 0; i < buffer.length; i += 1) {
-        b32 line = (buffer.head <= buffer.tail) &&
-            (buffer.head <= i && i < buffer.tail);
-
-        b32 circ = (buffer.head >= buffer.tail) &&
-            (buffer.head <= i || i < buffer.tail);
-
-        if (line != 0 || circ != 0)
-            printf("[%c]", buffer.memory[i]);
-        else
-            printf("[_]");
-    }
-
-    printf("\n");
-
-    for (uptr i = 0; i < buffer.size; i += 1) {
-        uptr idx = (buffer.head + i) % buffer.length;
-        u8   chr = buffer.memory[idx];
-
-        printf("%llu. %c\n", idx, chr);
-    }
+    show_buf8(&buffer);
 
     buf8 copy = buf8_reserve(&arena, 16);
 
     buf8_write_tail(&copy, &buffer);
-
     buf8_normalize(&buffer);
 
     printf("buffer:\n");
-
-    for (uptr i = 0; i < buffer.length; i += 1)
-        printf("[%c]", buffer.memory[i]);
-    printf("\n");
-
-    for (uptr i = 0; i < buffer.size; i += 1) {
-        uptr idx = (buffer.head + i) % buffer.length;
-        u8   chr = buffer.memory[idx];
-
-        printf("%llu. %c\n", idx, chr);
-    }
+    show_buf8(&buffer);
 
     printf("copy:\n");
-
-    for (uptr i = 0; i < copy.length; i += 1)
-        printf("[%c]", copy.memory[i]);
-    printf("\n");
-
-    for (uptr i = 0; i < copy.size; i += 1) {
-        uptr idx = (copy.head + i) % copy.length;
-        u8   chr = copy.memory[idx];
-
-        printf("%llu. %c\n", idx, chr);
-    }
+    show_buf8(&copy);
 }

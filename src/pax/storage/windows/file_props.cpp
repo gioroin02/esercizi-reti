@@ -14,15 +14,14 @@ namespace pax {
 b32
 windows_file_props(File_Props* self, Arena* arena, str8 path, str8 name)
 {
-    uptr offset = arena_offset(arena);
+    uptr  offset = arena_offset(arena);
+    buf16 buffer = buf16_reserve(arena, MEMORY_KIB);
 
-    Str_Builder builder = str_builder_make(arena);
+    buf16_write_str8_tail(&buffer, path);
+    buf16_write_str8_tail(&buffer, pax_str8("\\"));
+    buf16_write_str8_tail(&buffer, name);
 
-    str_builder_str8(&builder, path);
-    str_builder_str8(&builder, pax_str8("/"));
-    str_builder_str8(&builder, name);
-
-    str16 string = str16_from_str_builder(&builder);
+    str16 string = buf16_read_str16_head(&buffer, arena, buffer.size);
 
     wchar_t* memory = pax_cast(wchar_t*, string.memory);
 
