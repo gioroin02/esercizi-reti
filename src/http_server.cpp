@@ -117,8 +117,25 @@ http_server_on_get(Arena* arena, HTTP_Heading* heading, buf8* content, HTTP_Resp
 
     resource = str8_trim_prefix(resource, pax_str8("/"));
 
+    HTTP_Heading params = http_parse_resource(arena, &resource);
+
     printf(INFO " Requested resource " BLU("'%.*s'") "\n",
         pax_cast(int, resource.length), resource.memory);
+
+    /* Begin debug */
+
+    printf(DEBUG " Params (%llu):\n", params.inner.size);
+
+    for (uptr i = 0; i < params.inner.size; i += 1) {
+        str8 key   = array_get_or(&params.key,   i, pax_str8(""));
+        str8 value = array_get_or(&params.value, i, pax_str8(""));
+
+        printf(DEBUG "     - " YLW("'%.*s'") " => " BLU("'%.*s'") "\n",
+            pax_cast(int, key.length), key.memory,
+            pax_cast(int, value.length), value.memory);
+    }
+
+    /* End debug */
 
     if (resource.length == 0) resource = pax_str8("index.html");
 
@@ -299,6 +316,23 @@ http_server_on_multipart_form_data(Arena* arena, HTTP_Heading* heading, str8 mul
 b32
 http_server_on_application_form_url_encoded(Arena* arena, HTTP_Heading* heading, str8 application, HTTP_Response_Writer* writer)
 {
+    HTTP_Heading params = http_parse_url_encoded(arena, application);
+
+    /* Begin debug */
+
+    printf(DEBUG " Params (%llu):\n", params.inner.size);
+
+    for (uptr i = 0; i < params.inner.size; i += 1) {
+        str8 key   = array_get_or(&params.key,   i, pax_str8(""));
+        str8 value = array_get_or(&params.value, i, pax_str8(""));
+
+        printf(DEBUG "     - " YLW("'%.*s'") " => " BLU("'%.*s'") "\n",
+            pax_cast(int, key.length), key.memory,
+            pax_cast(int, value.length), value.memory);
+    }
+
+    /* End debug */
+
     http_response_write_start(writer, HTTP_VERSION_1_1,
         HTTP_STATUS_OK, HTTP_MESSAGE_OK);
 

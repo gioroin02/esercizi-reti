@@ -71,6 +71,9 @@ http_heading_get_status(HTTP_Heading* self, uptr other);
 str8
 http_heading_get_message(HTTP_Heading* self, str8 other);
 
+HTTP_Heading
+http_parse_resource(Arena* arena, str8* string);
+
 str8
 http_heading_get_content_type(HTTP_Heading* self, str8 other);
 
@@ -85,5 +88,8 @@ http_heading_get_content_length(HTTP_Heading* self, uptr other);
 
 HTTP_Heading
 http_parse_multipart(Arena* arena, str8* string);
+
+HTTP_Heading
+http_parse_url_encoded(Arena* arena, str8 string);
 
 #endif // HTTP_HEADING_HPP
