@@ -111,9 +111,9 @@ http_server_on_get(Arena* arena, HTTP_Heading* heading, buf8* content, HTTP_Resp
     str8 fallback = pax_str8("not_found.html");
     str8 resource = http_heading_get_resource(heading, pax_str8(""));
 
-    resource = str8_trim_prefix(resource, pax_str8("/"));
-
     HTTP_Heading params = http_parse_resource(arena, &resource);
+
+    resource = str8_trim_prefix(resource, pax_str8("/"));
 
     printf(INFO " Requested resource " BLU("'%.*s'") "\n",
         pax_cast(int, resource.length), resource.memory);

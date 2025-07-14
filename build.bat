@@ -41,5 +41,5 @@ rem zig c++ %src% "%dir%\tcp_client_file.cpp" %lib% -o tcp_client_file.exe
 
 rem HTTP
 
-rem zig c++ %src% "%dir%\http_server.cpp"     %lib% -o http_server.exe
+zig c++ %src% "%dir%\http_server.cpp"     %lib% -o http_server.exe
 zig c++ %src% "%dir%\http_server_cgi.cpp" %lib% -o http_server_cgi.exe
