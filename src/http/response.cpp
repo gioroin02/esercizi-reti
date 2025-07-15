@@ -67,12 +67,7 @@ http_response_write_content(HTTP_Response_Writer* self, buf8* buffer)
     if (self->body == 0)
         buf8_write_str8_tail(&self->buffer, CRLF);
 
-    buf8_normalize(buffer);
-
-    buf8_write_mem8_tail(&self->buffer,
-        buffer->memory, buffer->size);
-
-    buf8_clear(buffer);
+    buf8_write_tail(&self->buffer, buffer);
 
     self->body  = 1;
     self->line += 1;
@@ -215,25 +210,17 @@ http_response_content(HTTP_Response_Reader* self, Arena* arena, uptr length, Soc
     buf8 result = buf8_reserve(arena, length);
 
     if (result.length != 0) {
-        buf8_normalize(&self->buffer);
+        buf8_write_tail(&result, &self->buffer);
 
         length -= self->buffer.size;
-
-        buf8_write_mem8_tail(&result,
-            self->buffer.memory, self->buffer.size);
-
-        buf8_clear(&self->buffer);
 
         while (length > 0) {
             if (http_response_read(self, session) == 0)
                 break;
 
+            buf8_write_tail(&result, &self->buffer);
+
             length -= self->buffer.size;
-
-            buf8_write_mem8_tail(&result,
-                self->buffer.memory, self->buffer.size);
-
-            buf8_clear(&self->buffer);
         }
     }
 

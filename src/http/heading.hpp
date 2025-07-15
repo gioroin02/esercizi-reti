@@ -48,9 +48,13 @@ static const str8 HTTP_HEADER_CONTENT_TYPE   = pax_str8("Content-Type");
 static const str8 HTTP_HEADER_CONTENT_DISP   = pax_str8("Content-Disposition");
 static const str8 HTTP_HEADER_CONTENT_LENGTH = pax_str8("Content-Length");
 
-static const str8 MIME_TEXT_HTML                    = pax_str8("text/html");
+static const str8 MIME_TEXT_HTML = pax_str8("text/html");
+static const str8 MIME_TEXT_CSV  = pax_str8("text/csv");
+
 static const str8 MIME_APPLICATION_FORM_URL_ENCODED = pax_str8("application/x-www-form-urlencoded");
-static const str8 MIME_MULTIPART_FORM_DATA          = pax_str8("multipart/form-data");
+static const str8 MIME_APPLICATION_JSON             = pax_str8("application/json");
+
+static const str8 MIME_MULTIPART_FORM_DATA = pax_str8("multipart/form-data");
 
 //
 // Procs

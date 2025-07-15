@@ -164,8 +164,13 @@ http_server_on_get(Arena* arena, HTTP_Heading* heading, buf8* content, HTTP_Resp
         file_close(file);
     }
 
+    str8 length = str8_from_uptr(arena, format_options_base(10), buffer.size);
+
     http_response_write_start(writer, HTTP_VERSION_1_1,
         HTTP_STATUS_OK, HTTP_MESSAGE_OK);
+
+    http_response_write_header(writer, HTTP_HEADER_CONTENT_TYPE, MIME_TEXT_HTML);
+    http_response_write_header(writer, HTTP_HEADER_CONTENT_LENGTH, length);
 
     http_response_write_content(writer, &buffer);
 
