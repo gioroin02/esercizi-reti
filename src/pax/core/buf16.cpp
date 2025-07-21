@@ -91,8 +91,6 @@ buf16_normalize(buf16* self)
     uptr length = self->tail;
     uptr shift  = self->head;
 
-    if (self->size == 0) return;
-
     if (self->head > self->tail) {
         memory = self->memory + self->length - self->head;
         shift  = self->head - self->tail;
@@ -104,7 +102,7 @@ buf16_normalize(buf16* self)
         mem16_flip(self->memory, self->length);
     }
 
-    if (shift != 0)
+    if (shift != 0 && self->head != 0)
         mem16_move_back(memory, length, shift);
 
     self->head = 0;

@@ -210,17 +210,13 @@ http_response_content(HTTP_Response_Reader* self, Arena* arena, uptr length, Soc
     buf8 result = buf8_reserve(arena, length);
 
     if (result.length != 0) {
-        buf8_write_tail(&result, &self->buffer);
-
-        length -= self->buffer.size;
+        length -= buf8_write_tail(&result, &self->buffer);
 
         while (length > 0) {
             if (http_response_read(self, session) == 0)
                 break;
 
-            buf8_write_tail(&result, &self->buffer);
-
-            length -= self->buffer.size;
+            length -= buf8_write_tail(&result, &self->buffer);
         }
     }
 

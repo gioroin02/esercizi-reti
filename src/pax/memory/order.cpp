@@ -31,36 +31,40 @@ addr
 mem_host_from_net(addr memory, uptr length)
 {
     if (mem_is_lower_first())
-        return mem8_flip(memory, length);
+        mem8_flip(memory, length);
 
-    return pax_cast(addr, memory);
+    return memory;
 }
 
 addr
 mem_copy_host_from_net(addr memory, addr value, uptr length)
 {
     if (mem_is_lower_first())
-        return mem8_copy_flipped(memory, value, length);
+        mem8_copy_flipped(memory, value, length);
+    else
+        mem8_copy(memory, value, length);
 
-    return mem8_copy(memory, value, length);
+    return memory;
 }
 
 addr
 mem_net_from_host(addr memory, uptr length)
 {
     if (mem_is_lower_first())
-        return mem8_flip(memory, length);
+        mem8_flip(memory, length);
 
-    return pax_cast(addr, memory);
+    return memory;
 }
 
 addr
 mem_copy_net_from_host(addr memory, addr value, uptr length)
 {
     if (mem_is_lower_first())
-        return mem8_copy_flipped(memory, value, length);
+        mem8_copy_flipped(memory, value, length);
+    else
+        mem8_copy(memory, value, length);
 
-    return mem8_copy(memory, value, length);
+    return memory;
 }
 
 f64

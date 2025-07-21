@@ -3,9 +3,12 @@
 
 #include "options.cpp"
 
-#include "unsigned.cpp"
-#include "integer.cpp"
+#include "str8.cpp"
+#include "str16.cpp"
+#include "str32.cpp"
 
-#include "builder.cpp"
+#include "buf8.cpp"
+// #include "buf16.cpp"
+// #include "buf32.cpp"
 
 #endif // PAX_FORMAT_EXPORTS_CPP

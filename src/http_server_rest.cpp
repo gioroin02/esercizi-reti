@@ -187,18 +187,26 @@ http_server_on_get(Arena* arena, HTTP_Heading* heading, buf8* content, HTTP_Resp
             if (prime != 0) {
                 str8 number = str8_from_uptr(arena, format_options_base(10), i);
 
-                if (i != x)
-                    buf8_write_str8_tail(&buffer, pax_str8(", "));
+                if (i != x) {
+                    if (buffer.size + 1 >= buffer.length) {
+                        http_response_write_content(writer, &buffer);
+                        http_response_write(writer, session);
+                    }
 
-                buf8_write_str8_tail(&buffer, number);
+                    buf8_write_str8_tail(&buffer, pax_str8(","));
+                }
+
+                b32 state = buf8_write_str8_tail(&buffer, number);
+
+                if (state == 0) {
+                    http_response_write_content(writer, &buffer);
+                    http_response_write(writer, session);
+
+                    buf8_write_str8_tail(&buffer, number);
+                }
             }
 
             arena_rewind(arena, temp);
-
-            if (buffer.size + 1024 >= buffer.length) {
-                http_response_write_content(writer, &buffer);
-                http_response_write(writer, session);
-            }
         }
 
         buf8_write_str8_tail(&buffer, pax_str8(" ] }"));

@@ -41,85 +41,85 @@ struct Arena
 
 /* Memory */
 
-addr
+void
 mem8_zero(addr memory, uptr length);
 
-addr
+void
 mem8_copy(addr memory, addr value, uptr length);
 
-addr
+void
 mem8_copy_flipped(addr memory, addr value, uptr length);
 
-addr
+void
 mem8_move_back(addr memory, uptr length, uptr offset);
 
-addr
+void
 mem8_move_forw(addr memory, uptr length, uptr offset);
 
-addr
+void
 mem8_flip(addr memory, uptr length);
 
 b32
 mem8_is_equal(addr memory, addr value, uptr length);
 
-addr
+void
 mem16_zero(addr memory, uptr length);
 
-addr
+void
 mem16_copy(addr memory, addr value, uptr length);
 
-addr
+void
 mem16_copy_flipped(addr memory, addr value, uptr length);
 
-addr
+void
 mem16_move_back(addr memory, uptr length, uptr offset);
 
-addr
+void
 mem16_move_forw(addr memory, uptr length, uptr offset);
 
-addr
+void
 mem16_flip(addr memory, uptr length);
 
 b32
 mem16_is_equal(addr memory, addr value, uptr length);
 
-addr
+void
 mem32_zero(addr memory, uptr length);
 
-addr
+void
 mem32_copy(addr memory, addr value, uptr length);
 
-addr
+void
 mem32_copy_flipped(addr memory, addr value, uptr length);
 
-addr
+void
 mem32_move_back(addr memory, uptr length, uptr offset);
 
-addr
+void
 mem32_move_forw(addr memory, uptr length, uptr offset);
 
-addr
+void
 mem32_flip(addr memory, uptr length);
 
 b32
 mem32_is_equal(addr memory, addr value, uptr length);
 
-addr
+void
 mem64_zero(addr memory, uptr length);
 
-addr
+void
 mem64_copy(addr memory, addr value, uptr length);
 
-addr
+void
 mem64_copy_flipped(addr memory, addr value, uptr length);
 
-addr
+void
 mem64_move_back(addr memory, uptr length, uptr offset);
 
-addr
+void
 mem64_move_forw(addr memory, uptr length, uptr offset);
 
-addr
+void
 mem64_flip(addr memory, uptr length);
 
 b32
