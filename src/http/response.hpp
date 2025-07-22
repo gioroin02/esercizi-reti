@@ -45,8 +45,11 @@ http_response_write_start(HTTP_Response_Writer* self, str8 version, str8 status,
 b32
 http_response_write_header(HTTP_Response_Writer* self, str8 key, str8 value);
 
-b32
+uptr
 http_response_write_content(HTTP_Response_Writer* self, buf8* content);
+
+uptr
+http_response_write_content_str8(HTTP_Response_Writer* self, str8 content);
 
 /* HTTP_Response_Reader */
 

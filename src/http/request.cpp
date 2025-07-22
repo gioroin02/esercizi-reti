@@ -61,18 +61,30 @@ http_request_write_header(HTTP_Request_Writer* self, str8 key, str8 value)
     return 1;
 }
 
-b32
-http_request_write_content(HTTP_Request_Writer* self, buf8* buffer)
+uptr
+http_request_write_content(HTTP_Request_Writer* self, buf8* content)
 {
-    if (self->body == 0)
+    if (self->body == 0) {
         buf8_write_str8_tail(&self->buffer, CRLF);
 
-    buf8_write_tail(&self->buffer, buffer);
+        self->line += 1;
+        self->body  = 1;
+    }
 
-    self->body  = 1;
-    self->line += 1;
+    return buf8_write_tail(&self->buffer, content);
+}
 
-    return 1;
+uptr
+http_request_write_content_str8(HTTP_Request_Writer* self, str8 content)
+{
+    if (self->body == 0) {
+        buf8_write_str8_tail(&self->buffer, CRLF);
+
+        self->line += 1;
+        self->body  = 1;
+    }
+
+    return buf8_write_str8_tail(&self->buffer, content);
 }
 
 HTTP_Request_Reader

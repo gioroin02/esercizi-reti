@@ -8,27 +8,14 @@ set "format=src\pax\format\exports.cpp"
 set "memory=src\pax\memory\exports.cpp"
 set "storage=src\pax\storage\exports.cpp"
 set "network=src\pax\network\exports.cpp"
-set "container=src\pax\container\exports.cpp"
 
 set "winsock=-lws2_32"
 
-set "udp=src\udp\exports.cpp"
 set "tcp=src\tcp\exports.cpp"
-set "http=src\http\exports.cpp"
 
-set "src=%core% %string% %format% %memory% %storage% %network% %container% %udp% %tcp% %http%"
+set "src=%core% %string% %format% %memory% %storage% %network% %tcp%"
 set "lib=%winsock%"
-set "dir=src"
-
-rem UDP
-
-zig c++ %src% "%dir%\udp_server_first.cpp" %lib% -o udp_server_first.exe
-zig c++ %src% "%dir%\udp_client_first.cpp" %lib% -o udp_client_first.exe
-
-zig c++ %src% "%dir%\udp_server_add.cpp" %lib% -o udp_server_add.exe
-zig c++ %src% "%dir%\udp_client_add.cpp" %lib% -o udp_client_add.exe
-
-rem TCP
+set "dir=src\tcp\test"
 
 zig c++ %src% "%dir%\tcp_server_first.cpp" %lib% -o tcp_server_first.exe
 zig c++ %src% "%dir%\tcp_client_first.cpp" %lib% -o tcp_client_first.exe
@@ -38,9 +25,3 @@ zig c++ %src% "%dir%\tcp_client_add.cpp" %lib% -o tcp_client_add.exe
 
 zig c++ %src% "%dir%\tcp_server_file.cpp" %lib% -o tcp_server_file.exe
 zig c++ %src% "%dir%\tcp_client_file.cpp" %lib% -o tcp_client_file.exe
-
-rem HTTP
-
-zig c++ %src% "%dir%\http_server.cpp"      %lib% -o http_server.exe
-zig c++ %src% "%dir%\http_server_cgi.cpp"  %lib% -o http_server_cgi.exe
-zig c++ %src% "%dir%\http_server_rest.cpp" %lib% -o http_server_rest.exe

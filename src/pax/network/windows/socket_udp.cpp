@@ -240,75 +240,39 @@ windows_socket_udp_accept(Windows_Socket_UDP* self, Arena* arena)
 b32
 windows_socket_udp_write(Windows_Socket_UDP* self, buf8* buffer)
 {
-    u8*  memory = buffer->memory + buffer->head;
+    buf8_normalize(buffer);
+
+    u8*  memory = buffer->memory;
     uptr length = buffer->size;
 
-    b32 state = 0;
+    b32 state = windows_socket_udp_write_mem8(self, memory, length);
 
-    if (buffer->head > buffer->tail) {
-        memory = buffer->memory + buffer->head;
-        length = buffer->length - buffer->head;
+    if (state == 0) return 0;
 
-        state = windows_socket_udp_write_mem8(self, memory, length);
+    buffer->size = 0;
+    buffer->head = 0;
+    buffer->tail = 0;
 
-        if (state != 0) {
-            buffer->size -= length;
-            buffer->head  = (buffer->head + length) % buffer->length;
-        } else
-            return 0;
-
-        memory = buffer->memory + buffer->head;
-        length = buffer->size;
-   }
-
-    if (length != 0) {
-        state = windows_socket_udp_write_mem8(self, memory, length);
-
-        if (state != 0) {
-            buffer->size = 0;
-            buffer->head = 0;
-            buffer->tail = 0;
-        }
-    }
-
-    return state;
+    return 1;
 }
 
 b32
 windows_socket_udp_write_to(Windows_Socket_UDP* self, buf8* buffer, u16 port, Address address)
 {
-    u8*  memory = buffer->memory + buffer->head;
+    buf8_normalize(buffer);
+
+    u8*  memory = buffer->memory;
     uptr length = buffer->size;
 
-    b32 state = 0;
+    b32 state = windows_socket_udp_write_mem8_to(self, memory, length, port, address);
 
-    if (buffer->head > buffer->tail) {
-        memory = buffer->memory + buffer->head;
-        length = buffer->length - buffer->head;
+    if (state == 0) return 0;
 
-        state = windows_socket_udp_write_mem8_to(self, memory, length, port, address);
+    buffer->size = 0;
+    buffer->head = 0;
+    buffer->tail = 0;
 
-        if (state != 0) {
-            buffer->size -= length;
-            buffer->head  = (buffer->head + length) % buffer->length;
-        } else
-            return 0;
-
-        memory = buffer->memory + buffer->head;
-        length = buffer->size;
-   }
-
-    if (length != 0) {
-        state = windows_socket_udp_write_mem8_to(self, memory, length, port, address);
-
-        if (state != 0) {
-            buffer->size = 0;
-            buffer->head = 0;
-            buffer->tail = 0;
-        }
-    }
-
-    return state;
+    return 1;
 }
 
 b32
@@ -381,38 +345,20 @@ windows_socket_udp_write_mem8_to(Windows_Socket_UDP* self, u8* memory, uptr leng
 b32
 windows_socket_udp_read(Windows_Socket_UDP* self, buf8* buffer)
 {
-    u8*  memory = buffer->memory + buffer->tail;
+    buf8_normalize(buffer);
+
+    u8*  memory = buffer->memory + buffer->size;
     uptr length = buffer->length - buffer->size;
 
-    b32  state = 0;
+    if (length == 0) return 0;
+
     uptr size  = 0;
+    b32  state = windows_socket_udp_read_mem8(self, memory, length, &size);
 
-    if (buffer->head < buffer->tail) {
-        memory = buffer->memory + buffer->tail;
-        length = buffer->length - buffer->tail;
+    if (state == 0 || size == 0) return 0;
 
-        state = windows_socket_udp_read_mem8(self, memory, length, &size);
-
-        if (state != 0) {
-            buffer->size += size;
-            buffer->tail  = (buffer->tail + size) % buffer->length;
-        } else
-            return 0;
-
-        if (size < length) return 1;
-
-        memory = buffer->memory + buffer->tail;
-        length = buffer->length - buffer->size;
-    }
-
-    if (length != 0) {
-        state = windows_socket_udp_read_mem8(self, memory, length, &size);
-
-        if (state != 0) {
-            buffer->size += size;
-            buffer->tail  = (buffer->tail + size) % buffer->length;
-        }
-    }
+    buffer->size += size;
+    buffer->tail += size;
 
     return 1;
 }
@@ -420,22 +366,20 @@ windows_socket_udp_read(Windows_Socket_UDP* self, buf8* buffer)
 b32
 windows_socket_udp_read_from(Windows_Socket_UDP* self, buf8* buffer, u16* port, Address* address)
 {
-    u8*  memory = buffer->memory + buffer->tail;
+    buf8_normalize(buffer);
+
+    u8*  memory = buffer->memory + buffer->size;
     uptr length = buffer->length - buffer->size;
 
-    b32  state = 0;
+    if (length == 0) return 0;
+
     uptr size  = 0;
+    b32  state = windows_socket_udp_read_mem8_from(self, memory, length, &size, port, address);
 
-    if (buffer->head > buffer->tail) buf8_normalize(buffer);
+    if (state == 0 || size == 0) return 0;
 
-    if (length != 0) {
-        state = windows_socket_udp_read_mem8_from(self, memory, length, &size, port, address);
-
-        if (state != 0) {
-            buffer->size += size;
-            buffer->tail  = (buffer->tail + size) % buffer->length;
-        }
-    }
+    buffer->size += size;
+    buffer->tail += size;
 
     return 1;
 }

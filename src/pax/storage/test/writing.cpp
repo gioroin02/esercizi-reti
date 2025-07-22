@@ -5,7 +5,7 @@ using namespace pax;
 #include <stdio.h>
 
 int
-main(int argc, const char* argv[])
+main(int argc, char** argv)
 {
     u8 memory[8 * MEMORY_KIB] = {};
 

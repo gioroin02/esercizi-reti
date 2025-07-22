@@ -45,8 +45,11 @@ http_request_write_start(HTTP_Request_Writer* self, str8 method, str8 resource, 
 b32
 http_request_write_header(HTTP_Request_Writer* self, str8 key, str8 value);
 
-b32
+uptr
 http_request_write_content(HTTP_Request_Writer* self, buf8* content);
+
+uptr
+http_request_write_content_str8(HTTP_Request_Writer* self, str8 content);
 
 /* HTTP_Request_Reader */
 

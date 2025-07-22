@@ -50,7 +50,8 @@ buf16_copy_len(Arena* arena, buf16 value, uptr length)
 {
     buf16 result = buf16_reserve(arena, length);
 
-    if (result.length == 0) return result;
+    if (result.length == 0 || value.length == 0)
+        return result;
 
     for (uptr i = 0; i < value.size; i += 1)
         result.memory[i] = value.memory[(value.head + i) % value.length];
@@ -114,10 +115,12 @@ buf16_drop_head(buf16* self, uptr offset)
 {
     offset = pax_min(offset, self->size);
 
-    uptr next = self->head + offset;
+    if (offset != 0) {
+        uptr next = self->head + offset;
 
-    self->size -= offset;
-    self->head  = next % self->length;
+        self->size -= offset;
+        self->head  = next % self->length;
+    }
 
     return offset;
 }
@@ -127,10 +130,12 @@ buf16_drop_tail(buf16* self, uptr offset)
 {
     offset = pax_min(offset, self->size);
 
-    uptr prev = self->tail + self->length - offset;
+    if (offset != 0) {
+        uptr prev = self->tail + self->length - offset;
 
-    self->size -= offset;
-    self->tail  = prev % self->length;
+        self->size -= offset;
+        self->tail  = prev % self->length;
+    }
 
     return offset;
 }
@@ -140,6 +145,8 @@ buf16_write_head(buf16* self, buf16* value)
 {
     uptr size = pax_min(self->length - self->size, value->size);
     uptr prev = self->head + self->length - size;
+
+    if (size == 0) return 0;
 
     self->size += size;
     self->head  = prev % self->length;
@@ -165,6 +172,8 @@ buf16_write_mem16_head(buf16* self, u16* memory, uptr length)
     uptr size = pax_min(self->length - self->size, length);
     uptr prev = self->head + self->length - size;
 
+    if (size == 0) return 0;
+
     self->size += size;
     self->head  = prev % self->length;
 
@@ -179,6 +188,8 @@ buf16_write_tail(buf16* self, buf16* value)
 {
     uptr size = pax_min(self->length - self->size, value->size);
     uptr next = self->tail + size;
+
+    if (size == 0) return 0;
 
     for (uptr i = 0; i < size; i += 1) {
         uptr j = (self->tail + i) % self->length;
@@ -204,6 +215,8 @@ buf16_write_mem16_tail(buf16* self, u16* memory, uptr length)
     uptr size = pax_min(self->length - self->size, length);
     uptr next = self->tail + size;
 
+    if (size == 0) return 0;
+
     for (uptr i = 0; i < size; i += 1)
         self->memory[(self->tail + i) % self->length] = memory[i];
 
@@ -218,6 +231,8 @@ buf16_read_head(buf16* self, buf16* value)
 {
     uptr size = pax_min(self->size, value->length - value->size);
     uptr next = self->head + size;
+
+    if (size == 0) return 0;
 
     for (uptr i = 0; i < size; i += 1) {
         uptr j = (value->tail + i) % value->length;
@@ -243,6 +258,8 @@ buf16_read_mem16_head(buf16* self, u16* memory, uptr length)
     uptr size = pax_min(self->size, length);
     uptr next = self->head + size;
 
+    if (size == 0) return 0;
+
     for (uptr i = 0; i < size; i += 1)
         memory[i] = self->memory[(self->head + i) % self->length];
 
@@ -257,6 +274,8 @@ buf16_read_tail(buf16* self, buf16* value)
 {
     uptr size = pax_min(self->size, value->length - self->size);
     uptr prev = self->tail + self->length - size;
+
+    if (size == 0) return 0;
 
     self->size -= size;
     self->tail  = prev % self->length;
@@ -281,6 +300,8 @@ buf16_read_mem16_tail(buf16* self, u16* memory, uptr length)
 {
     uptr size = pax_min(self->size, length);
     uptr prev = self->tail + self->length - size;
+
+    if (size == 0) return 0;
 
     self->size -= size;
     self->tail  = prev % self->length;

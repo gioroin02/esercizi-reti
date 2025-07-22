@@ -33,7 +33,7 @@ show_buf8(buf8* self)
 }
 
 int
-main(int argc, const char* argv[])
+main(int argc, char** argv)
 {
     u8 memory[MEMORY_KIB] = {};
 

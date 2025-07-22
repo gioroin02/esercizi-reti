@@ -44,12 +44,18 @@ static const str8 HTTP_MESSAGE_METHOD_NOT_ALLOWED    = pax_str8("Method Not Allo
 static const str8 HTTP_MESSAGE_I_AM_A_TEAPOT         = pax_str8("I'm a teapot");
 static const str8 HTTP_MESSAGE_UNPROCESSABLE_CONTENT = pax_str8("Unprocessable Content");
 
-static const str8 HTTP_HEADER_CONTENT_TYPE   = pax_str8("Content-Type");
-static const str8 HTTP_HEADER_CONTENT_DISP   = pax_str8("Content-Disposition");
-static const str8 HTTP_HEADER_CONTENT_LENGTH = pax_str8("Content-Length");
+static const str8 HTTP_HEADER_CONTENT_TYPE              = pax_str8("Content-Type");
+static const str8 HTTP_HEADER_CONTENT_DISP              = pax_str8("Content-Disposition");
+static const str8 HTTP_HEADER_CONTENT_LENGTH            = pax_str8("Content-Length");
+static const str8 HTTP_HEADER_TRANSFER_ENCODING         = pax_str8("Transfer-Encoding");
+static const str8 HTTP_HEADER_TRANSFER_ENCODING_CHUNKED = pax_str8("chunked");
 
-static const str8 MIME_TEXT_HTML = pax_str8("text/html");
-static const str8 MIME_TEXT_CSV  = pax_str8("text/csv");
+static const str8 MIME_TEXT_HTML       = pax_str8("text/html");
+static const str8 MIME_TEXT_JAVASCRIPT = pax_str8("text/javascript");
+static const str8 MIME_TEXT_CSS        = pax_str8("text/css");
+static const str8 MIME_TEXT_CSV        = pax_str8("text/csv");
+
+static const str8 MIME_IMAGE_VND_MICROSOFT_ICON = pax_str8("image/vnd.microsoft.icon");
 
 static const str8 MIME_APPLICATION_FORM_URL_ENCODED = pax_str8("application/x-www-form-urlencoded");
 static const str8 MIME_APPLICATION_JSON             = pax_str8("application/json");

@@ -77,10 +77,10 @@ ascii_from_digit(uptr value, uptr base)
 {
     u32 digit = value % base;
 
-    if (digit >= 0 && digit <= 10)
+    if (digit >= 0 && digit <= 9)
         return digit + ASCII_ZERO;
 
-    if (digit >= 11 && digit <= 16)
+    if (digit >= 10 && digit <= 15)
         return digit + ASCII_LOWER_A - 10;
 
     return ASCII_NULL;
@@ -89,7 +89,7 @@ ascii_from_digit(uptr value, uptr base)
 u32
 ascii_from_lower(uptr value)
 {
-    if (value >= 0 && value < 26)
+    if (value >= 0 && value <= 25)
         return value + ASCII_LOWER_A;
 
     return ASCII_NULL;
@@ -98,7 +98,7 @@ ascii_from_lower(uptr value)
 u32
 ascii_from_upper(uptr value)
 {
-    if (value >= 0 && value < 26)
+    if (value >= 0 && value <= 25)
         return value + ASCII_UPPER_A;
 
     return ASCII_NULL;

@@ -30,7 +30,7 @@ http_heading_get_status(HTTP_Heading* self, uptr other)
     if (hash_map_get(self, HTTP_STATUS, &string) == 0)
         return other;
 
-    Format_Options opts = format_options(10, FORMAT_FLAG_NONE);
+    Format_Options opts = format_options_base(10);
 
     if (uptr_from_str8(string, opts, &result) == 0)
         return other;
@@ -167,7 +167,7 @@ http_heading_get_content_length(HTTP_Heading* self, uptr other)
     if (hash_map_get(self, HTTP_HEADER_CONTENT_LENGTH, &string) == 0)
         return other;
 
-    Format_Options opts = format_options(10, FORMAT_FLAG_NONE);
+    Format_Options opts = format_options_base(10);
 
     if (uptr_from_str8(string, opts, &result) == 0)
         return other;

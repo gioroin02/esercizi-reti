@@ -11,12 +11,12 @@ str8_from_uptr(Arena* arena, Format_Options opts, uptr value)
     uptr size = 0;
     uptr base = opts.base;
 
-    if (value == 0) size = 1;
-
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
         size += 1;
 
     for (uptr temp = value; temp != 0; temp /= base) size += 1;
+
+    if (value == 0) size += 1;
 
     uptr offset = arena_offset(arena);
     str8 result = str8_reserve(arena, size);
@@ -35,7 +35,11 @@ str8_from_uptr(Arena* arena, Format_Options opts, uptr value)
     if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
         result.memory[0] = ASCII_PLUS;
 
-    return result;
+    if (value == 0) return result;
+
+    arena_rewind(arena, offset);
+
+    return {};
 }
 
 str8

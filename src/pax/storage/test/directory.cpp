@@ -12,7 +12,7 @@ using namespace pax;
 #define AZR(str) "\x1b[36m" str "\x1b[0m"
 
 int
-main(int argc, const char* argv[])
+main(int argc, char** argv)
 {
     u8 memory[8 * MEMORY_KIB] = {};
 
