@@ -20,10 +20,10 @@ show_ip4_from_str8(str8 string)
     Address_IP4 value = {};
     b32         state = ip4_from_str8(string, &value);
 
-    printf("ip4 (" PRP("'%24.*s'") ") -> %s, ", pax_cast(int, string.length),
+    printf("ip4 (" PRP("'%24.*s'") ") -> %s, ", pax_as(int, string.length),
         string.memory, state ? TRUE : FALSE);
 
-    for (uptr i = 0; i < ADDRESS_IP4_GROUPS; i += 1)
+    for (isiz i = 0; i < ADDRESS_IP4_GROUPS; i += 1)
         printf("%4u ", value.memory[i]);
     printf("\n");
 }
@@ -34,10 +34,10 @@ show_ip6_from_str8(str8 string)
     Address_IP6 value = {};
     b32         state = ip6_from_str8(string, &value);
 
-    printf("ip6 (" PRP("'%48.*s'") ") -> %s, ", pax_cast(int, string.length),
+    printf("ip6 (" PRP("'%48.*s'") ") -> %s, ", pax_as(int, string.length),
         string.memory, state ? TRUE : FALSE);
 
-    for (uptr i = 0; i < ADDRESS_IP6_GROUPS; i += 1)
+    for (isiz i = 0; i < ADDRESS_IP6_GROUPS; i += 1)
         printf("%4x ", value.memory[i]);
     printf("\n");
 }
@@ -47,7 +47,6 @@ main()
 {
     printf("Valid IPv4:\n");
 
-    show_ip4_from_str8(pax_str8("localhost"));
     show_ip4_from_str8(pax_str8("0.0.0.0"));
     show_ip4_from_str8(pax_str8("000.0.000.0"));
     show_ip4_from_str8(pax_str8("127.0.0.1"));
@@ -74,6 +73,7 @@ main()
 
     printf("\nInvalid IPv4:\n");
 
+    show_ip4_from_str8(pax_str8("localhost"));
     show_ip4_from_str8(pax_str8("256.1.2.3"));
     show_ip4_from_str8(pax_str8("1.2.3"));
     show_ip4_from_str8(pax_str8("1.2.3.4.5"));
@@ -100,7 +100,6 @@ main()
 
     printf("\nValid IPv6:\n");
 
-    show_ip6_from_str8(pax_str8("localhost"));
     show_ip6_from_str8(pax_str8("2001:0db8:85a3:0000:0000:8a2e:0370:7334"));
     show_ip6_from_str8(pax_str8("fc00::1"));
     show_ip6_from_str8(pax_str8("::1"));
@@ -122,6 +121,7 @@ main()
 
     printf("\nInvalid IPv6:\n");
 
+    show_ip6_from_str8(pax_str8("localhost"));
     show_ip6_from_str8(pax_str8("fe80:0:0:0:200:5efe:192.168.1.1"));
     show_ip6_from_str8(pax_str8("::ffff:192.168.1.1"));
     show_ip6_from_str8(pax_str8("2001:0db8:85a3:0000:0000:8a2e:0370:7334:1"));

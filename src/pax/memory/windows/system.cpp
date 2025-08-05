@@ -11,29 +11,29 @@
 
 namespace pax {
 
-uptr
+usiz
 windows_get_page_size()
 {
     SYSTEM_INFO info = {};
 
     GetSystemInfo(&info);
 
-    return pax_cast(uptr, info.dwPageSize);
+    return pax_as(usiz, info.dwPageSize);
 }
 
 Arena
-windows_reserve(uptr pages)
+windows_reserve(usiz pages)
 {
     Arena result = {};
-    uptr  length = windows_get_page_size();
+    usiz  length = windows_get_page_size();
 
     if (length <= U32_MAX / pages) {
         length *= pages;
 
-        addr memory = VirtualAlloc(0, pax_cast(DWORD, length),
+        void* memory = VirtualAlloc(0, pax_as(DWORD, length),
             MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 
-        result = arena_make(pax_cast(u8*, memory), length);
+        result = arena_make(pax_as_u8p(memory), length);
     }
 
     return result;

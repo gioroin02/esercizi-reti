@@ -4,29 +4,29 @@ using namespace pax;
 
 #include <stdio.h>
 
+static u8 memory[8 * MEMORY_KIB] = {};
+
 int
 main(int argc, char** argv)
 {
-    u8 memory[8 * MEMORY_KIB] = {};
+    Arena arena   = arena_make(memory, 8 * MEMORY_KIB);
+    buf8  reading = buf8_reserve(&arena, 4 * MEMORY_KIB);
 
-    Arena arena = arena_make(memory, pax_array_length(memory));
+    if (argc != 2) {
+        printf("usage: <program-name> <file-name>\n");
 
-    buf8 reading = buf8_reserve(&arena, 4 * MEMORY_KIB);
+        return 1;
+    }
 
-    if (argc != 2) return 1;
-
-    str8 name = str8_count_max(pax_cast(u8*, argv[1]), 128);
+    str8 name = pax_str8_max(argv[1], 128);
     File file = file_open(&arena, pax_str8("."), name, FILE_PERM_READ);
 
     if (file == 0) return 1;
 
     file_read(file, &reading);
 
-    char* ptr = pax_cast(char*, reading.memory);
-    int   len = pax_cast(int, reading.size);
-
-    printf("\x1b[32m%.*s\x1b[0m (%llu)\n", len, ptr,
-        file_offset(file));
+    printf("\x1b[32m%.*s\x1b[0m (%llu)\n", pax_as(int, reading.size),
+        reading.memory, file_offset(file));
 
     file_rewind(file, 0);
 
@@ -34,11 +34,8 @@ main(int argc, char** argv)
 
     file_read(file, &reading);
 
-    ptr = pax_cast(char*, reading.memory);
-    len = pax_cast(int, reading.size);
-
-    printf("\x1b[34m%.*s\x1b[0m (%llu)\n", len, ptr,
-        file_offset(file));
+    printf("\x1b[34m%.*s\x1b[0m (%llu)\n", pax_as(int, reading.size),
+        reading.memory, file_offset(file));
 
     file_close(file);
 }

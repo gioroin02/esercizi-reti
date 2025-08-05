@@ -19,9 +19,9 @@ struct Windows_Lock
 Windows_Lock*
 windows_lock_create(Arena* arena)
 {
-    uptr offset = arena_offset(arena);
+    isiz offset = arena_offset(arena);
 
-    Windows_Lock* result = arena_reserve_one<Windows_Lock>(arena);
+    Windows_Lock* result = pax_arena_reserve_one(arena, Windows_Lock);
 
     if (result != 0) {
         result->handle = CreateMutex(0, 0, 0);

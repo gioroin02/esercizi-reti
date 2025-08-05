@@ -48,9 +48,9 @@ main(int argc, char** argv)
     Server server = {};
 
     if (argc != 1) {
-        Format_Options opts = format_options_base(10);
+        Format_Options opts = format_options_simple(10);
 
-        for (uptr i = 1; i < argc; i += 1) {
+        for (usiz i = 1; i < argc; i += 1) {
             str8 arg = pax_str8_max(argv[i], 128);
 
             if (str8_starts_with(arg, SERVER_ARG_PORT) != 0) {
@@ -69,7 +69,7 @@ main(int argc, char** argv)
         }
     }
 
-    server.socket = server_tcp_start(&arena, server.port, address_any(ADDRESS_KIND_IP4));
+    server.socket = server_tcp_start(&arena, server.port, address_any(ADDRESS_TYPE_IP4));
 
     if (server.socket == 0) return 1;
 
@@ -84,7 +84,7 @@ main(int argc, char** argv)
     session.request  = buf8_reserve(&arena, MEMORY_KIB);
     session.response = buf8_reserve(&arena, MEMORY_KIB);
 
-    uptr offset = arena_offset(&arena);
+    usiz offset = arena_offset(&arena);
     b32  loop   = 1;
 
     do {
@@ -122,13 +122,11 @@ file_server_on_content(Arena* arena, Server* server, Session* session)
         session->request.size);
 
     printf(INFO " Requested content of file " BLU("'%.*s'") "\n",
-        pax_cast(int, name.length), name.memory);
+        pax_as(int, name.length), name.memory);
 
-    File_Props properties = {};
+    File_Attribs attribs = file_attribs(arena, server->path, name);
 
-    file_props(&properties, arena, server->path, name);
-
-    uptr size = file_size(&properties);
+    usiz size = file_size(&attribs);
     File file = file_open(arena, server->path, name, FILE_PERM_READ);
 
     buf8_clear(&session->response);
@@ -152,17 +150,15 @@ file_server_on_size(Arena* arena, Server* server, Session* session)
         session->request.size);
 
     printf(INFO " Requested size of file " BLU("'%.*s'") "\n",
-        pax_cast(int, name.length), name.memory);
+        pax_as(int, name.length), name.memory);
 
-    File_Props properties = {};
+    File_Attribs attribs = file_attribs(arena, server->path, name);
 
-    file_props(&properties, arena, server->path, name);
-
-    u32 size = file_size(&properties);
+    u32 size = file_size(&attribs);
 
     buf8_clear(&session->response);
 
-    buf8_write_mem8_tail(&session->response, pax_cast(u8*, &size),
+    buf8_write_mem8_tail(&session->response, pax_as_u8p(&size),
         pax_size_of(u32));
 
     session_tcp_write(session->socket, &session->response);

@@ -3,7 +3,7 @@
 
 #include "system.hpp"
 
-#if PAX_PLATFORM == PAX_PLATFORM_WINDOWS
+#if PAX_SYSTEM == PAX_SYSTEM_WINDOWS
 
     #include "windows/system.cpp"
 
@@ -19,14 +19,14 @@
 
 namespace pax {
 
-uptr
+usiz
 system_get_page_size()
 {
     return __system_get_page_size__();
 }
 
 Arena
-system_reserve(uptr pages)
+system_reserve(usiz pages)
 {
     return __system_reserve__(pages);
 }

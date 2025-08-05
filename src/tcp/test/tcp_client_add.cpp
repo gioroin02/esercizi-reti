@@ -7,7 +7,7 @@ static const str8 CLIENT_ARG_PORT = pax_str8("--port=");
 
 struct Server
 {
-    Address addr = {};
+    Address addr = address_localhost(ADDRESS_TYPE_IP4);
     u16     port = 8000;
 };
 
@@ -20,7 +20,7 @@ struct Client
 };
 
 str8
-stdin_read_str8(Arena* arena, uptr length);
+stdin_read_str8(Arena* arena, usiz length);
 
 int
 main(int argc, char** argv)
@@ -31,19 +31,17 @@ main(int argc, char** argv)
 
     Server server = {};
 
-    address_from_str8(pax_str8("localhost"), ADDRESS_KIND_IP4, &server.addr);
-
     if (argc != 1) {
-        Format_Options opts = format_options_base(10);
+        Format_Options opts = format_options_simple(10);
 
-        for (uptr i = 1; i < argc; i += 1) {
+        for (usiz i = 1; i < argc; i += 1) {
             str8 arg = pax_str8_max(argv[i], 128);
 
             if (str8_starts_with(arg, CLIENT_ARG_ADDR) != 0) {
                 arg = str8_trim_prefix(arg, CLIENT_ARG_ADDR);
                 arg = str8_trim_spaces(arg);
 
-                address_from_str8(arg, ADDRESS_KIND_IP4, &server.addr);
+                address_from_str8(arg, ADDRESS_TYPE_IP4, &server.addr);
             }
 
             if (str8_starts_with(arg, CLIENT_ARG_PORT) != 0) {
@@ -57,7 +55,7 @@ main(int argc, char** argv)
 
     Client client = {};
 
-    client.socket = client_tcp_start(&arena, ADDRESS_KIND_IP4);
+    client.socket = client_tcp_start(&arena, ADDRESS_TYPE_IP4);
 
     if (client.socket == 0) return 1;
 
@@ -67,7 +65,7 @@ main(int argc, char** argv)
     client.request  = buf8_reserve(&arena, MEMORY_KIB);
     client.response = buf8_reserve(&arena, MEMORY_KIB);
 
-    uptr offset = arena_offset(&arena);
+    usiz offset = arena_offset(&arena);
     u32  number = 0;
 
     do {
@@ -85,7 +83,7 @@ main(int argc, char** argv)
         number = u32_net_from_host(number);
 
         buf8_write_mem8_tail(&client.request,
-            pax_cast(u8*, &number), pax_size_of(u32));
+            pax_as_u8p(&number), pax_size_of(u32));
 
         client_tcp_write(client.socket, &client.request);
 
@@ -93,7 +91,7 @@ main(int argc, char** argv)
             u32 result = 0;
 
             buf8_read_mem8_head(&client.response,
-                pax_cast(u8*, &result), pax_size_of(u32));
+                pax_as_u8p(&result), pax_size_of(u32));
 
             result = u32_host_from_net(result);
 
@@ -109,12 +107,12 @@ main(int argc, char** argv)
 }
 
 str8
-stdin_read_str8(Arena* arena, uptr length)
+stdin_read_str8(Arena* arena, usiz length)
 {
     str8 result = str8_reserve(arena, length);
 
-    fgets(pax_cast(char*, result.memory),
-        pax_cast(int, result.length), stdin);
+    fgets(pax_as(char*, result.memory),
+        pax_as(int, result.length), stdin);
 
     return result;
 }

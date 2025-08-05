@@ -6,11 +6,11 @@
 namespace pax {
 
 str32
-str32_make(u32* memory, uptr length)
+str32_make(u32* memory, isiz length)
 {
     str32 result = {};
 
-    if (memory != 0 && length != 0) {
+    if (memory != 0 && length > 0) {
         result.memory = memory;
         result.length = length;
     }
@@ -19,9 +19,9 @@ str32_make(u32* memory, uptr length)
 }
 
 str32
-str32_reserve(Arena* arena, uptr length)
+str32_reserve(Arena* arena, isiz length)
 {
-    return str32_make(arena_reserve_arr<u32>(arena, length + 1), length);
+    return str32_make(pax_arena_reserve(arena, u32, length + 1), length);
 }
 
 str32
@@ -31,12 +31,13 @@ str32_copy(Arena* arena, str32 value)
 }
 
 str32
-str32_copy_mem(Arena* arena, u32* memory, uptr length)
+str32_copy_mem(Arena* arena, u32* memory, isiz length)
 {
     str32 result = str32_reserve(arena, length);
 
-    if (result.length != 0)
-        mem32_copy(result.memory, memory, result.length);
+    if (result.length <= 0) return result;
+
+    mem32_copy(result.memory, memory, result.length);
 
     return result;
 }
@@ -44,18 +45,18 @@ str32_copy_mem(Arena* arena, u32* memory, uptr length)
 str32
 str32_from_unicode(Arena* arena, u32 value)
 {
-    str32 result = str32_reserve(arena,
-        utf32_units_to_write(value));
+    isiz  units  = utf32_units_to_write(value);
+    str32 result = str32_reserve(arena, units);
 
-    if (result.length == 0) return result;
+    if (result.length <= 0) return result;
 
-    utf32_encode_forw(result.memory, result.length, 0, value);
+    str32_write_utf32_forw(result, 0, value);
 
     return result;
 }
 
 b32
-str32_get(str32 self, uptr index, u32* value)
+str32_get(str32 self, isiz index, u32* value)
 {
     if (index < 0 || index >= self.length)
         return 0;
@@ -66,7 +67,7 @@ str32_get(str32 self, uptr index, u32* value)
 }
 
 u32
-str32_get_or(str32 self, uptr index, u32 value)
+str32_get_or(str32 self, isiz index, u32 value)
 {
     if (index < 0 || index >= self.length)
         return value;
@@ -77,7 +78,7 @@ str32_get_or(str32 self, uptr index, u32 value)
 str32
 str32_count(u32* memory)
 {
-    uptr index = 0;
+    isiz index = 0;
 
     while (memory[index] != 0)
         index += 1;
@@ -86,9 +87,9 @@ str32_count(u32* memory)
 }
 
 str32
-str32_count_max(u32* memory, uptr limit)
+str32_count_max(u32* memory, isiz limit)
 {
-    uptr index = 0;
+    isiz index = 0;
 
     while (memory[index] != 0) {
         index += 1;
@@ -112,8 +113,8 @@ str32_is_equal(str32 self, str32 value)
 b32
 str32_starts_with(str32 self, str32 value)
 {
-    uptr start  = 0;
-    uptr length = value.length;
+    isiz start  = 0;
+    isiz length = value.length;
 
     str32 slice = str32_slice_len(self, start, length);
 
@@ -126,8 +127,8 @@ str32_starts_with(str32 self, str32 value)
 b32
 str32_ends_with(str32 self, str32 value)
 {
-    uptr start  = self.length - value.length;
-    uptr length = value.length;
+    isiz start  = self.length - value.length;
+    isiz length = value.length;
 
     str32 slice = str32_slice_len(self, start, length);
 
@@ -138,14 +139,14 @@ str32_ends_with(str32 self, str32 value)
 }
 
 str32
-str32_slice(str32 self, uptr start, uptr stop)
+str32_slice(str32 self, isiz start, isiz stop)
 {
     str32 result = {};
 
-    start = pax_min(start, self.length);
-    stop  = pax_min(stop, self.length);
+    start = pax_limit(start, 0, self.length);
+    stop  = pax_limit(stop, 0, self.length);
 
-    uptr length = stop - start;
+    isiz length = stop - start;
 
     if (start <= stop)
         result = str32_make(self.memory + start, length);
@@ -154,16 +155,16 @@ str32_slice(str32 self, uptr start, uptr stop)
 }
 
 str32
-str32_slice_len(str32 self, uptr start, uptr length)
+str32_slice_len(str32 self, isiz index, isiz length)
 {
-    return str32_slice(self, start, start + length);
+    return str32_slice(self, index, index + length);
 }
 
 str32
 str32_slice_until_first(str32 self, str32 value)
 {
-    uptr start = 0;
-    uptr stop  = self.length;
+    isiz start = 0;
+    isiz stop  = self.length;
 
     str32_find_first(self, value, &stop);
 
@@ -173,8 +174,8 @@ str32_slice_until_first(str32 self, str32 value)
 str32
 str32_slice_until_last(str32 self, str32 value)
 {
-    uptr start = 0;
-    uptr stop  = self.length;
+    isiz start = 0;
+    isiz stop  = self.length;
 
     str32_find_last(self, value, &stop);
 
@@ -184,8 +185,8 @@ str32_slice_until_last(str32 self, str32 value)
 str32
 str32_slice_since_first(str32 self, str32 value)
 {
-    uptr start = self.length;
-    uptr stop  = self.length;
+    isiz start = self.length;
+    isiz stop  = self.length;
 
     str32_find_first(self, value, &start);
 
@@ -195,8 +196,8 @@ str32_slice_since_first(str32 self, str32 value)
 str32
 str32_slice_since_last(str32 self, str32 value)
 {
-    uptr start = self.length;
-    uptr stop  = self.length;
+    isiz start = self.length;
+    isiz stop  = self.length;
 
     str32_find_last(self, value, &start);
 
@@ -208,7 +209,7 @@ str32_chain(Arena* arena, str32 value, str32 other)
 {
     str32 result = str32_reserve(arena, value.length + other.length);
 
-    if (result.length == 0) return result;
+    if (result.length <= 0) return result;
 
     mem32_copy(result.memory, value.memory, value.length);
 
@@ -221,9 +222,9 @@ str32_chain(Arena* arena, str32 value, str32 other)
 str32
 str32_split_on(str32 self, str32 pivot, str32* value)
 {
-    uptr start = 0;
-    uptr index = self.length;
-    uptr stop  = self.length;
+    isiz start = 0;
+    isiz stop  = self.length;
+    isiz index = self.length;
 
     str32_find_first(self, pivot, &index);
 
@@ -248,7 +249,7 @@ str32_trim_suffix(str32 self, str32 suffix)
     if (str32_ends_with(self, suffix) == 0)
         return self;
 
-    uptr length = self.length - suffix.length;
+    isiz length = self.length - suffix.length;
 
     return str32_slice(self, 0, length);
 }
@@ -262,11 +263,16 @@ str32_trim_spaces(str32 self)
 str32
 str32_trim_spaces_start(str32 self)
 {
-    uptr start = 0;
-    uptr stop  = self.length;
+    isiz units = 0;
+    isiz start = 0;
+    isiz stop  = self.length;
 
-    for (; start < stop; start += 1) {
-        u32 unicode = self.memory[start];
+    for (; start < stop; start += units) {
+        u32 unicode = 0;
+
+        units = str32_read_utf32_forw(self, start, &unicode);
+
+        if (units <= 0) return self;
 
         if (ascii_is_space(unicode) == 0)
             break;
@@ -278,11 +284,16 @@ str32_trim_spaces_start(str32 self)
 str32
 str32_trim_spaces_end(str32 self)
 {
-    uptr start = 0;
-    uptr stop  = self.length;
+    isiz units = 0;
+    isiz start = 0;
+    isiz stop  = self.length;
 
-    for (; start < stop; stop -= 1) {
-        u32 unicode = self.memory[stop - 1];
+    for (; start < stop; stop -= units) {
+        u32 unicode = 0;
+
+        units = str32_read_utf32_back(self, stop - 1, &unicode);
+
+        if (units <= 0) return self;
 
         if (ascii_is_space(unicode) == 0)
             break;
@@ -292,17 +303,17 @@ str32_trim_spaces_end(str32 self)
 }
 
 b32
-str32_find_first(str32 self, str32 value, uptr* index)
+str32_find_first(str32 self, str32 value, isiz* index)
 {
     return str32_find_first_since(self, value, 0, index);
 }
 
 b32
-str32_find_first_since(str32 self, str32 value, uptr start, uptr* index)
+str32_find_first_since(str32 self, str32 value, isiz since, isiz* index)
 {
-    start = pax_min(start, self.length);
+    since = pax_limit(since, 0, self.length);
 
-    for (uptr i = start; i < self.length; i += 1) {
+    for (isiz i = since; i < self.length; i += 1) {
         str32 slice = str32_slice_len(self, i, value.length);
 
         if (str32_is_equal(slice, value) == 0)
@@ -317,17 +328,17 @@ str32_find_first_since(str32 self, str32 value, uptr start, uptr* index)
 }
 
 b32
-str32_find_last(str32 self, str32 value, uptr* index)
+str32_find_last(str32 self, str32 value, isiz* index)
 {
     return str32_find_last_until(self, value, self.length, index);
 }
 
 b32
-str32_find_last_until(str32 self, str32 value, uptr start, uptr* index)
+str32_find_last_until(str32 self, str32 value, isiz until, isiz* index)
 {
-    start = pax_min(start, self.length);
+    until = pax_limit(until, 0, self.length);
 
-    for (uptr i = start; i > 0; i -= 1) {
+    for (isiz i = until; i > 0; i -= 1) {
         str32 slice = str32_slice_len(self, i - value.length, value.length);
 
         if (str32_is_equal(slice, value) == 0)
@@ -341,14 +352,14 @@ str32_find_last_until(str32 self, str32 value, uptr start, uptr* index)
     return 0;
 }
 
-uptr
+usiz
 str32_contains(str32 self, str32 value)
 {
-    uptr result = 0;
+    isiz result = 0;
 
     if (value.length > self.length) return result;
 
-    for (uptr i = 0; i < self.length; i += 1) {
+    for (isiz i = 0; i < self.length; i += 1) {
         str32 slice = str32_slice_len(self, i, value.length);
 
         if (str32_is_equal(slice, value) != 0)
@@ -359,31 +370,55 @@ str32_contains(str32 self, str32 value)
 }
 
 b32
-str32_next(str32 self, uptr index, uptr* units, u32* value)
+str32_next(str32 self, isiz index, isiz* units, u32* value)
 {
     if (index < 0 || index >= self.length)
         return 0;
 
-    if (value != 0)
-        *value = self.memory[index];
+    isiz step = str32_read_utf32_forw(self, index, value);
 
-    if (units != 0) *units = 1;
+    if (step == 0) return 0;
+
+    if (units != 0) *units = step;
 
     return 1;
 }
 
 b32
-str32_prev(str32 self, uptr index, uptr* units, u32* value)
+str32_prev(str32 self, isiz index, isiz* units, u32* value)
 {
     if (index < 0 || index >= self.length)
         return 0;
 
-    if (value != 0)
-        *value = self.memory[index];
+    isiz step = str32_read_utf32_back(self, index, value);
 
-    if (units != 0) *units = 1;
+    if (units != 0) *units = step;
 
     return 1;
+}
+
+isiz
+str32_write_utf32_forw(str32 self, isiz index, u32 value)
+{
+    return mem32_write_utf32_forw(self.memory, self.length, index, value);
+}
+
+isiz
+str32_write_utf32_back(str32 self, isiz index, u32 value)
+{
+    return mem32_write_utf32_back(self.memory, self.length, index, value);
+}
+
+isiz
+str32_read_utf32_forw(str32 self, isiz index, u32* value)
+{
+    return mem32_read_utf32_forw(self.memory, self.length, index, value);
+}
+
+isiz
+str32_read_utf32_back(str32 self, isiz index, u32* value)
+{
+    return mem32_read_utf32_back(self.memory, self.length, index, value);
 }
 
 } // namespace pax

@@ -9,7 +9,7 @@ namespace pax {
 // Types
 //
 
-using Lock = addr;
+using Lock = void*;
 
 //
 // Procs

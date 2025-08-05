@@ -9,8 +9,8 @@ namespace pax {
 // Types
 //
 
-using Routine = u32 (addr);
-using Thread  = addr;
+using Routine = u32 (void*);
+using Thread  = void*;
 
 //
 // Procs
@@ -19,7 +19,7 @@ using Thread  = addr;
 /* Thread */
 
 Thread
-thread_create(Arena* arena, Routine* routine, addr argumns);
+thread_create(Arena* arena, Routine* routine, void* ctxt);
 
 void
 thread_destroy(Thread self);

@@ -9,7 +9,7 @@ namespace pax {
 // Types
 //
 
-using Socket_UDP = addr;
+using Socket_UDP = void*;
 
 //
 // Procs
@@ -18,7 +18,7 @@ using Socket_UDP = addr;
 /* Socket_UDP */
 
 Socket_UDP
-socket_udp_create(Arena* arena, Address_Kind kind);
+socket_udp_create(Arena* arena, Address_Type type);
 
 void
 socket_udp_destroy(Socket_UDP self);
@@ -42,10 +42,10 @@ b32
 socket_udp_write_to(Socket_UDP self, buf8* buffer, u16 port, Address address);
 
 b32
-socket_udp_write_mem8(Socket_UDP self, u8* memory, uptr length);
+socket_udp_write_mem8(Socket_UDP self, u8* memory, isiz length);
 
 b32
-socket_udp_write_mem8_to(Socket_UDP self, u8* memory, uptr length, u16 port, Address address);
+socket_udp_write_mem8_to(Socket_UDP self, u8* memory, isiz length, u16 port, Address address);
 
 b32
 socket_udp_read(Socket_UDP self, buf8* buffer);
@@ -54,10 +54,10 @@ b32
 socket_udp_read_from(Socket_UDP self, buf8* buffer, u16* port, Address *address);
 
 b32
-socket_udp_read_mem8(Socket_UDP* self, u8* memory, uptr length, uptr* size);
+socket_udp_read_mem8(Socket_UDP* self, u8* memory, isiz length, isiz* size);
 
 b32
-socket_udp_read_mem8_from(Socket_UDP self, u8* memory, uptr length, uptr* size, u16* port, Address* address);
+socket_udp_read_mem8_from(Socket_UDP self, u8* memory, isiz length, isiz* size, u16* port, Address* address);
 
 } // namespace pax
 

@@ -15,9 +15,9 @@ using namespace pax;
 #define FALSE RED("F")
 
 u32
-thread_routine_a(addr argumns)
+thread_routine_a(void* ctxt)
 {
-    for (uptr i = 0; i < 15; i += 1) {
+    for (isiz i = 0; i < 15; i += 1) {
         printf("ROUTINE " RED("A") "\n");
 
         system_sleep(500);
@@ -27,9 +27,9 @@ thread_routine_a(addr argumns)
 }
 
 u32
-thread_routine_b(addr argumns)
+thread_routine_b(void* ctxt)
 {
-    for (uptr i = 0; i < 5; i += 1) {
+    for (isiz i = 0; i < 5; i += 1) {
         printf("ROUTINE " BLU("B") "\n");
 
         system_sleep(1500);
@@ -43,8 +43,8 @@ main()
 {
     Arena arena = system_reserve(4);
 
-    printf("number of cpus = %llu\n", system_get_number_of_cpus());
-    printf("thread ident   = %llu\n", system_get_thread_ident());
+    printf("number of cpus = %lli\n", system_get_number_of_cpus());
+    printf("thread ident   = %lli\n", system_get_thread_ident());
 
     printf("thread start...\n");
 

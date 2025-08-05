@@ -4,7 +4,7 @@
 #include "imports.hpp"
 
 Socket_UDP
-client_udp_start(Arena* arena, Address_Kind kind);
+client_udp_start(Arena* arena, Address_Type type);
 
 void
 client_udp_stop(Socket_UDP self);

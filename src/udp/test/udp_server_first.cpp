@@ -34,9 +34,9 @@ main(int argc, char** argv)
     Server server = {};
 
     if (argc != 1) {
-        Format_Options opts = format_options_base(10);
+        Format_Options opts = format_options_simple(10);
 
-        for (uptr i = 1; i < argc; i += 1) {
+        for (usiz i = 1; i < argc; i += 1) {
             str8 arg = pax_str8_max(argv[i], 128);
 
             if (str8_starts_with(arg, SERVER_ARG_PORT) != 0) {
@@ -55,13 +55,13 @@ main(int argc, char** argv)
         }
     }
 
-    server.socket = server_udp_start(&arena, server.port, address_any(ADDRESS_KIND_IP4));
+    server.socket = server_udp_start(&arena, server.port, address_any(ADDRESS_TYPE_IP4));
 
     if (server.socket == 0) return 1;
 
-    uptr offset = arena_offset(&arena);
+    usiz offset = arena_offset(&arena);
 
-    for (uptr i = 0; i < server.lifetime; i += 1) {
+    for (usiz i = 0; i < server.lifetime; i += 1) {
         Session session = {};
 
         session.request  = buf8_reserve(&arena, MEMORY_KIB);
@@ -75,7 +75,7 @@ main(int argc, char** argv)
                 &arena, session.request.size);
 
             printf(INFO " " BLU("'%.*s'") "\n",
-                pax_cast(int, string.length), string.memory);
+                pax_as(int, string.length), string.memory);
 
             buf8_write_str8_tail(&session.response, SERVER_MSG);
 

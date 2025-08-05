@@ -21,18 +21,18 @@ http_heading_get_version(HTTP_Heading* self, str8 other)
     return hash_map_get_or(self, HTTP_VERSION, other);
 }
 
-uptr
-http_heading_get_status(HTTP_Heading* self, uptr other)
+usiz
+http_heading_get_status(HTTP_Heading* self, usiz other)
 {
     str8 string = {};
-    uptr result = other;
+    usiz result = other;
 
     if (hash_map_get(self, HTTP_STATUS, &string) == 0)
         return other;
 
-    Format_Options opts = format_options_base(10);
+    Format_Options opts = format_options_simple(10);
 
-    if (uptr_from_str8(string, opts, &result) == 0)
+    if (usiz_from_str8(string, opts, &result) == 0)
         return other;
 
     return result;
@@ -158,18 +158,18 @@ http_parse_content_disp(Arena* arena, str8* string)
     return result;
 }
 
-uptr
-http_heading_get_content_length(HTTP_Heading* self, uptr other)
+usiz
+http_heading_get_content_length(HTTP_Heading* self, usiz other)
 {
     str8 string = {};
-    uptr result = other;
+    usiz result = other;
 
     if (hash_map_get(self, HTTP_HEADER_CONTENT_LENGTH, &string) == 0)
         return other;
 
-    Format_Options opts = format_options_base(10);
+    Format_Options opts = format_options_simple(10);
 
-    if (uptr_from_str8(string, opts, &result) == 0)
+    if (usiz_from_str8(string, opts, &result) == 0)
         return other;
 
     return result;

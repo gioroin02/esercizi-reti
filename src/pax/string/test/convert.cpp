@@ -17,8 +17,8 @@ using namespace pax;
 void
 show_str8(str8 string)
 {
-    uptr index = 0;
-    uptr units = 0;
+    isiz index = 0;
+    isiz units = 0;
     u32  value = 0;
 
     printf("str8 forward:\n");
@@ -26,7 +26,7 @@ show_str8(str8 string)
     while (str8_next(string, index, &units, &value) != 0) {
         printf("%2lli: %6x ", index, value);
 
-        for (uptr i = 0; i < units; i += 1)
+        for (isiz i = 0; i < units; i += 1)
             printf("[%02x] ", string.memory[i + index]);
 
         printf("\n");
@@ -43,7 +43,7 @@ show_str8(str8 string)
 
         index -= units;
 
-        for (uptr i = 0; i < units; i += 1)
+        for (isiz i = 0; i < units; i += 1)
             printf("[%02x] ", string.memory[i + index + 1]);
 
         printf("\n");
@@ -53,8 +53,8 @@ show_str8(str8 string)
 void
 show_str16(str16 string)
 {
-    uptr index = 0;
-    uptr units = 0;
+    isiz index = 0;
+    isiz units = 0;
     u32  value = 0;
 
     printf("str16 forward:\n");
@@ -62,7 +62,7 @@ show_str16(str16 string)
     while (str16_next(string, index, &units, &value) != 0) {
         printf("%2lli: %6x ", index, value);
 
-        for (uptr i = 0; i < units; i += 1)
+        for (isiz i = 0; i < units; i += 1)
             printf("[%04x] ", string.memory[i + index]);
 
         printf("\n");
@@ -79,7 +79,7 @@ show_str16(str16 string)
 
         index -= units;
 
-        for (uptr i = 0; i < units; i += 1)
+        for (isiz i = 0; i < units; i += 1)
             printf("[%04x] ", string.memory[i + index + 1]);
 
         printf("\n");

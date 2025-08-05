@@ -4,7 +4,7 @@
 #include "imports.hpp"
 
 Socket_TCP
-client_tcp_start(Arena* arena, Address_Kind kind);
+client_tcp_start(Arena* arena, Address_Type type);
 
 void
 client_tcp_stop(Socket_TCP self);

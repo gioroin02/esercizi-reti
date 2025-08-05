@@ -12,16 +12,16 @@ struct HTTP_Response_Writer
 {
     buf8 buffer = {};
 
-    uptr line = 0;
-    uptr body = 0;
+    usiz line = 0;
+    usiz body = 0;
 };
 
 struct HTTP_Response_Reader
 {
     buf8 buffer = {};
 
-    uptr line = 0;
-    uptr body = 0;
+    usiz line = 0;
+    usiz body = 0;
 };
 
 //
@@ -31,7 +31,7 @@ struct HTTP_Response_Reader
 /* HTTP_Response_Writer */
 
 HTTP_Response_Writer
-http_response_writer_init(Arena* arena, uptr length);
+http_response_writer_init(Arena* arena, usiz length);
 
 void
 http_response_writer_clear(HTTP_Response_Writer* self);
@@ -45,16 +45,16 @@ http_response_write_start(HTTP_Response_Writer* self, str8 version, str8 status,
 b32
 http_response_write_header(HTTP_Response_Writer* self, str8 key, str8 value);
 
-uptr
+usiz
 http_response_write_content(HTTP_Response_Writer* self, buf8* content);
 
-uptr
+usiz
 http_response_write_content_str8(HTTP_Response_Writer* self, str8 content);
 
 /* HTTP_Response_Reader */
 
 HTTP_Response_Reader
-http_response_reader_init(Arena* arena, uptr length);
+http_response_reader_init(Arena* arena, usiz length);
 
 void
 http_response_reader_clear(HTTP_Response_Reader* self);
@@ -74,6 +74,6 @@ HTTP_Heading
 http_response_heading(HTTP_Response_Reader* self, Arena* arena, Socket_TCP session);
 
 buf8
-http_response_content(HTTP_Response_Reader* self, Arena* arena, uptr length, Socket_TCP session);
+http_response_content(HTTP_Response_Reader* self, Arena* arena, usiz length, Socket_TCP session);
 
 #endif // HTTP_RESPONSE_HPP

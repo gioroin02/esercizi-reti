@@ -22,16 +22,15 @@ struct Windows_Thread
 //
 
 Windows_Thread*
-windows_thread_create(Arena* arena, Windows_Routine* routine, addr argumns)
+windows_thread_create(Arena* arena, Windows_Routine* routine, void* ctxt)
 {
-    uptr offset = arena_offset(arena);
+    isiz offset = arena_offset(arena);
 
-    Windows_Thread* result = arena_reserve_one<Windows_Thread>(arena);
+    Windows_Thread* result = pax_arena_reserve_one(arena, Windows_Thread);
 
     if (result != 0) {
-        LPTHREAD_START_ROUTINE temp = pax_cast(LPTHREAD_START_ROUTINE, routine);
-
-        result->handle = CreateThread(0, 0, temp, argumns, 0, &result->ident);
+        result->handle = CreateThread(0, 0,
+            pax_as(LPTHREAD_START_ROUTINE, routine), ctxt, 0, &result->ident);
 
         if (result->handle != 0)
             return result;

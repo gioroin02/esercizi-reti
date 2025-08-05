@@ -9,8 +9,8 @@ namespace pax {
 // Values
 //
 
-static const uptr ADDRESS_IP4_GROUPS = 4;
-static const uptr ADDRESS_IP6_GROUPS = 8;
+static const isiz ADDRESS_IP4_GROUPS = 4;
+static const isiz ADDRESS_IP6_GROUPS = 8;
 
 //
 // Types
@@ -52,10 +52,13 @@ struct Address_IP6
 Address_IP4
 address_ip4_any();
 
+Address_IP4
+address_ip4_localhost();
+
 b32
 address_ip4_is_equal(Address_IP4 self, Address_IP4 value);
 
-/* Address_IP4 parsing */
+/* Address_IP4 reading */
 
 b32
 ip4_from_str8(str8 self, Address_IP4* value);
@@ -65,10 +68,13 @@ ip4_from_str8(str8 self, Address_IP4* value);
 Address_IP6
 address_ip6_any();
 
+Address_IP6
+address_ip6_localhost();
+
 b32
 address_ip6_is_equal(Address_IP6 self, Address_IP6 value);
 
-/* Address_IP6 parsing */
+/* Address_IP6 reading */
 
 b32
 ip6_from_str8(str8 self, Address_IP6* value);

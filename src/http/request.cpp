@@ -4,7 +4,7 @@
 #include "request.hpp"
 
 HTTP_Request_Writer
-http_request_writer_init(Arena* arena, uptr length)
+http_request_writer_init(Arena* arena, usiz length)
 {
     HTTP_Request_Writer result = {};
 
@@ -61,7 +61,7 @@ http_request_write_header(HTTP_Request_Writer* self, str8 key, str8 value)
     return 1;
 }
 
-uptr
+usiz
 http_request_write_content(HTTP_Request_Writer* self, buf8* content)
 {
     if (self->body == 0) {
@@ -74,7 +74,7 @@ http_request_write_content(HTTP_Request_Writer* self, buf8* content)
     return buf8_write_tail(&self->buffer, content);
 }
 
-uptr
+usiz
 http_request_write_content_str8(HTTP_Request_Writer* self, str8 content)
 {
     if (self->body == 0) {
@@ -88,7 +88,7 @@ http_request_write_content_str8(HTTP_Request_Writer* self, str8 content)
 }
 
 HTTP_Request_Reader
-http_request_reader_init(Arena* arena, uptr length)
+http_request_reader_init(Arena* arena, usiz length)
 {
     HTTP_Request_Reader result = {};
 
@@ -217,7 +217,7 @@ http_request_heading(HTTP_Request_Reader* self, Arena* arena, Socket_TCP session
 }
 
 buf8
-http_request_content(HTTP_Request_Reader* self, Arena* arena, uptr length, Socket_TCP session)
+http_request_content(HTTP_Request_Reader* self, Arena* arena, usiz length, Socket_TCP session)
 {
     buf8 result = buf8_reserve(arena, length);
 

@@ -3,7 +3,7 @@
 
 #include "system.hpp"
 
-#if PAX_PLATFORM == PAX_PLATFORM_WINDOWS
+#if PAX_SYSTEM == PAX_SYSTEM_WINDOWS
 
     #include "windows/system.cpp"
 
@@ -25,13 +25,13 @@ system_sleep(u32 millis)
     __system_sleep__(millis);
 }
 
-uptr
+isiz
 system_get_number_of_cpus()
 {
     return __system_get_number_of_cpus__();
 }
 
-uptr
+isiz
 system_get_thread_ident()
 {
     return __system_get_thread_ident__();

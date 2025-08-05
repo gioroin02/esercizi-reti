@@ -8,8 +8,8 @@
 Socket_TCP
 server_tcp_start(Arena* arena, u16 port, Address address)
 {
-    uptr       offset = arena_offset(arena);
-    Socket_TCP result = socket_tcp_create(arena, address.kind);
+    usiz       offset = arena_offset(arena);
+    Socket_TCP result = socket_tcp_create(arena, address.type);
 
     if (result != 0) {
         printf(TRACE " Attivazione porta " YLW("%u") ": ", port);
@@ -52,9 +52,9 @@ session_tcp_open(Arena* arena, Socket_TCP server)
     Address address = socket_tcp_get_address(result);
     u16     port    = socket_tcp_get_port(result);
 
-    switch (address.kind) {
-        case ADDRESS_KIND_IP4: {
-            for (uptr i = 0; i < ADDRESS_IP4_GROUPS; i += 1) {
+    switch (address.type) {
+        case ADDRESS_TYPE_IP4: {
+            for (usiz i = 0; i < ADDRESS_IP4_GROUPS; i += 1) {
                 printf(YLW("%u"), address.ip4.memory[i]);
 
                 if (i + 1 != ADDRESS_IP4_GROUPS)
@@ -62,8 +62,8 @@ session_tcp_open(Arena* arena, Socket_TCP server)
             }
         } break;
 
-        case ADDRESS_KIND_IP6: {
-            for (uptr i = 0; i < ADDRESS_IP6_GROUPS; i += 1) {
+        case ADDRESS_TYPE_IP6: {
+            for (usiz i = 0; i < ADDRESS_IP6_GROUPS; i += 1) {
                 printf(YLW("%x"), address.ip6.memory[i]);
 
                 if (i + 1 != ADDRESS_IP6_GROUPS)

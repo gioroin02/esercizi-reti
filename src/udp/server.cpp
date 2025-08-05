@@ -8,8 +8,8 @@
 Socket_UDP
 server_udp_start(Arena* arena, u16 port, Address address)
 {
-    uptr       offset = arena_offset(arena);
-    Socket_UDP result = socket_udp_create(arena, address.kind);
+    usiz       offset = arena_offset(arena);
+    Socket_UDP result = socket_udp_create(arena, address.type);
 
     if (result != 0) {
         printf(TRACE " Attivazione porta " YLW("%u") ": ", port);
@@ -38,9 +38,9 @@ server_udp_write(Socket_UDP self, buf8* buffer, u16 port, Address address)
     printf(TRACE " Scrittura risposta di " YLW("%lluB") " a {addr = [",
         buffer->size);
 
-    switch (address.kind) {
-        case ADDRESS_KIND_IP4: {
-            for (uptr i = 0; i < ADDRESS_IP4_GROUPS; i += 1) {
+    switch (address.type) {
+        case ADDRESS_TYPE_IP4: {
+            for (usiz i = 0; i < ADDRESS_IP4_GROUPS; i += 1) {
                 printf(YLW("%u"), address.ip4.memory[i]);
 
                 if (i + 1 != ADDRESS_IP4_GROUPS)
@@ -48,8 +48,8 @@ server_udp_write(Socket_UDP self, buf8* buffer, u16 port, Address address)
             }
         } break;
 
-        case ADDRESS_KIND_IP6: {
-            for (uptr i = 0; i < ADDRESS_IP6_GROUPS; i += 1) {
+        case ADDRESS_TYPE_IP6: {
+            for (usiz i = 0; i < ADDRESS_IP6_GROUPS; i += 1) {
                 printf(YLW("%x"), address.ip6.memory[i]);
 
                 if (i + 1 != ADDRESS_IP6_GROUPS)
@@ -79,9 +79,9 @@ server_udp_read(Socket_UDP self, buf8* buffer, u16* port, Address* address)
     printf("di " YLW("%lluB") " da {addr = [", buffer->size);
 
     if (state != 0 && address != 0) {
-        switch (address->kind) {
-            case ADDRESS_KIND_IP4: {
-                for (uptr i = 0; i < ADDRESS_IP4_GROUPS; i += 1) {
+        switch (address->type) {
+            case ADDRESS_TYPE_IP4: {
+                for (usiz i = 0; i < ADDRESS_IP4_GROUPS; i += 1) {
                     printf(YLW("%u"), address->ip4.memory[i]);
 
                     if (i + 1 != ADDRESS_IP4_GROUPS)
@@ -89,8 +89,8 @@ server_udp_read(Socket_UDP self, buf8* buffer, u16* port, Address* address)
                 }
             } break;
 
-            case ADDRESS_KIND_IP6: {
-                for (uptr i = 0; i < ADDRESS_IP6_GROUPS; i += 1) {
+            case ADDRESS_TYPE_IP6: {
+                for (usiz i = 0; i < ADDRESS_IP6_GROUPS; i += 1) {
                     printf(YLW("%x"), address->ip6.memory[i]);
 
                     if (i + 1 != ADDRESS_IP6_GROUPS)

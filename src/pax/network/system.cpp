@@ -3,7 +3,7 @@
 
 #include "system.hpp"
 
-#if PAX_PLATFORM == PAX_PLATFORM_WINDOWS
+#if PAX_SYSTEM == PAX_SYSTEM_WINDOWS
 
     #include "windows/system.cpp"
 

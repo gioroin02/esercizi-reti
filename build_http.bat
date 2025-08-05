@@ -2,20 +2,20 @@ echo off
 
 cls
 
-set "core=src\pax\core\exports.cpp"
+set "base=src\pax\base\exports.cpp"
 set "string=src\pax\string\exports.cpp"
 set "format=src\pax\format\exports.cpp"
 set "memory=src\pax\memory\exports.cpp"
 set "storage=src\pax\storage\exports.cpp"
 set "network=src\pax\network\exports.cpp"
-set "container=src\pax\container\exports.cpp"
+set "structure=src\pax\structure\exports.cpp"
 
 set "winsock=-lws2_32"
 
 set "tcp=src\tcp\exports.cpp"
 set "http=src\http\exports.cpp"
 
-set "src=%core% %string% %format% %memory% %storage% %network% %container% %tcp% %http%"
+set "src=%base% %string% %format% %memory% %storage% %network% %structure% %tcp% %http%"
 set "lib=%winsock%"
 set "dir=src\http\test"
 

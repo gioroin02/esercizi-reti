@@ -9,7 +9,7 @@ namespace pax {
 // Values
 //
 
-static const uptr ASCII_COUNT = 128;
+static const isiz ASCII_COUNT = 128;
 
 //
 // Types
@@ -27,9 +27,9 @@ enum ASCII
     ASCII_7,
     ASCII_SPACE_BACK,
     ASCII_TAB_HORIZONTAL,
-    ASCII_NEW_LINE,
+    ASCII_LINE_FEED,
     ASCII_TAB_VERTICAL,
-    ASCII_NEW_PAGE,
+    ASCII_PAGE_FEED,
     ASCII_CARRIAGE_RETURN,
     ASCII_14,
     ASCII_15,
@@ -50,8 +50,8 @@ enum ASCII
     ASCII_30,
     ASCII_31,
     ASCII_SPACE,
-    ASCII_EXCLAMATION,
-    ASCII_QUOTATION,
+    ASCII_MARK_EXCL,
+    ASCII_MARK_QUOTE,
     ASCII_SHARP,
     ASCII_DOLLAR,
     ASCII_PERCENT,
@@ -80,7 +80,7 @@ enum ASCII
     ASCII_LESS,
     ASCII_EQUAL,
     ASCII_MORE,
-    ASCII_QUESTION,
+    ASCII_MARK_QUEST,
     ASCII_COMMERCIAL,
     ASCII_UPPER_A,
     ASCII_UPPER_B,
@@ -112,7 +112,7 @@ enum ASCII
     ASCII_SLASH_BACK,
     ASCII_SQUARE_RIGHT,
     ASCII_CIRCUMFLEX,
-    ASCII_UNDERSCORE,
+    ASCII_UNDERSBASE,
     ASCII_TICK_BACK,
     ASCII_LOWER_A,
     ASCII_LOWER_B,
@@ -157,7 +157,7 @@ b32
 ascii_is_space(u32 value);
 
 b32
-ascii_is_digit(u32 value, uptr base);
+ascii_is_digit(u32 value, usiz radix);
 
 b32
 ascii_is_letter(u32 value);
@@ -168,20 +168,29 @@ ascii_is_lower(u32 value);
 b32
 ascii_is_upper(u32 value);
 
-uptr
-digit_from_ascii(u32 value, uptr base);
+usiz
+ascii_index_from_digit(u32 value, usiz radix);
 
-uptr
-letter_from_ascii(u32 value);
+usiz
+ascii_index_from_letter(u32 value);
+
+usiz
+ascii_index_from_lower(u32 value);
+
+usiz
+ascii_index_from_upper(u32 value);
 
 u32
-ascii_from_digit(uptr value, uptr base);
+ascii_digit_from_index(usiz value, usiz radix, b32 upper);
 
 u32
-ascii_from_upper(uptr value);
+ascii_letter_from_index(usiz value, b32 upper);
 
 u32
-ascii_from_lower(uptr value);
+ascii_lower_from_index(usiz value);
+
+u32
+ascii_upper_from_index(usiz value);
 
 } // namespace pax
 

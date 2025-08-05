@@ -5,47 +5,32 @@
 
 namespace pax {
 
-uptr
-buf16_write_codepoint_head(buf16* self, u32 value)
+isiz
+buf16_write_utf16_head(buf16* self, u32 value)
 {
-    uptr size = utf16_units_to_write(value);
-    uptr prev = self->head + self->length - size;
+    UTF16 utf16 = {};
 
-    if (self->size < 0 || self->size + size > self->length)
+    if (utf16_encode(&utf16, value) == 0) return 0;
+
+    if (self->size < 0 || self->size + utf16.size > self->length)
         return 0;
 
-    self->size -= size;
+    isiz prev = self->head + self->length - utf16.size;
+
+    self->size += utf16.size;
     self->head  = prev % self->length;
 
-    utf16_encode_forw_circ(self->memory,
-        self->length, self->head, value);
+    for (isiz i = 0; i < utf16.size; i += 1)
+        self->memory[(self->head + i) % self->length] = utf16.memory[i];
 
-    return size;
+    return utf16.size;
 }
 
-uptr
-buf16_write_codepoint_tail(buf16* self, u32 value)
-{
-    uptr size = utf16_units_to_write(value);
-    uptr next = self->tail + size;
-
-    if (self->size < 0 || self->size + size > self->length)
-        return 0;
-
-    utf16_encode_forw_circ(self->memory,
-        self->length, self->tail, value);
-
-    self->size += size;
-    self->tail  = next % self->length;
-
-    return size;
-}
-
-uptr
+isiz
 buf16_write_str8_head(buf16* self, str8 value)
 {
-    uptr size = utf16_units_from_str8(value);
-    uptr prev = self->head + self->length - size;
+    isiz size = utf16_units_from_str8(value);
+    isiz prev = self->head + self->length - size;
 
     if (self->size < 0 || self->size + size > self->length)
         return 0;
@@ -53,49 +38,28 @@ buf16_write_str8_head(buf16* self, str8 value)
     self->size += size;
     self->head  = prev % self->length;
 
-    for (uptr i = 0, j = 0; j < size;) {
-        u32 unicode = 0;
+    for (isiz i = 0, j = 0; j < size;) {
+        UTF16 utf16   = {};
+        u32   unicode = 0;
 
-        i += utf8_decode_forw(value.memory,
-            value.length, i, &unicode);
+        i += str8_read_utf8_forw(value, i, &unicode);
 
-        j += utf16_encode_forw_circ(self->memory, self->length,
-            (self->head + j) % self->length, unicode);
+        utf16_encode(&utf16, unicode);
+
+        for (isiz k = 0; k < utf16.size; k += 1)
+            self->memory[(self->head + j + k) % self->length] = utf16.memory[k];
+
+        j += utf16.size;
     }
 
     return size;
 }
 
-uptr
-buf16_write_str8_tail(buf16* self, str8 value)
-{
-    uptr size = utf16_units_from_str8(value);
-    uptr next = self->tail + size;
-
-    if (self->size < 0 || self->size + size > self->length)
-        return 0;
-
-    for (uptr i = 0, j = 0; j < size;) {
-        u32 unicode = 0;
-
-        i += utf8_decode_forw(value.memory,
-            value.length, i, &unicode);
-
-        j += utf16_encode_forw_circ(self->memory, self->length,
-            (self->tail + j) % self->length, unicode);
-    }
-
-    self->size += size;
-    self->tail  = next % self->length;
-
-    return size;
-}
-
-uptr
+isiz
 buf16_write_str16_head(buf16* self, str16 value)
 {
-    uptr size = value.length;
-    uptr prev = self->head + self->length - size;
+    isiz size = value.length;
+    isiz prev = self->head + self->length - size;
 
     if (self->size < 0 || self->size + size > self->length)
         return 0;
@@ -103,22 +67,101 @@ buf16_write_str16_head(buf16* self, str16 value)
     self->size += size;
     self->head  = prev % self->length;
 
-    for (uptr i = 0; i < size; i += 1)
+    for (isiz i = 0; i < size; i += 1)
         self->memory[(self->head + i) % self->length] = value.memory[i];
 
     return size;
 }
 
-uptr
-buf16_write_str16_tail(buf16* self, str16 value)
+isiz
+buf16_write_str32_head(buf16* self, str32 value)
 {
-    uptr size = value.length;
-    uptr next = self->tail + size;
+    isiz size = utf16_units_from_str32(value);
+    isiz prev = self->head + self->length - size;
 
     if (self->size < 0 || self->size + size > self->length)
         return 0;
 
-    for (uptr i = 0; i < size; i += 1)
+    self->size += size;
+    self->head  = prev % self->length;
+
+    for (isiz i = 0, j = 0; j < size;) {
+        UTF16 utf16   = {};
+        u32   unicode = 0;
+
+        i += str32_read_utf32_forw(value, i, &unicode);
+
+        utf16_encode(&utf16, unicode);
+
+        for (isiz k = 0; k < utf16.size; k += 1)
+            self->memory[(self->head + j + k) % self->length] = utf16.memory[k];
+
+        j += utf16.size;
+    }
+
+    return size;
+}
+
+isiz
+buf16_write_utf16_tail(buf16* self, u32 value)
+{
+    UTF16 utf16 = {};
+
+    if (utf16_encode(&utf16, value) == 0) return 0;
+
+    if (self->size < 0 || self->size + utf16.size > self->length)
+        return 0;
+
+    isiz next = self->tail + utf16.size;
+
+    for (isiz i = 0; i < utf16.size; i += 1)
+        self->memory[(self->tail + i) % self->length] = utf16.memory[i];
+
+    self->size += utf16.size;
+    self->tail  = next % self->length;
+
+    return utf16.size;
+}
+
+isiz
+buf16_write_str8_tail(buf16* self, str8 value)
+{
+    isiz size = utf16_units_from_str8(value);
+    isiz next = self->tail + size;
+
+    if (self->size < 0 || self->size + size > self->length)
+        return 0;
+
+    for (isiz i = 0, j = 0; j < size;) {
+        UTF16 utf16   = {};
+        u32   unicode = 0;
+
+        i += str8_read_utf8_forw(value, i, &unicode);
+
+        utf16_encode(&utf16, unicode);
+
+        for (isiz k = 0; k < utf16.size; k += 1)
+            self->memory[(self->tail + j + k) % self->length] = utf16.memory[k];
+
+        j += utf16.size;
+    }
+
+    self->size += size;
+    self->tail  = next % self->length;
+
+    return size;
+}
+
+isiz
+buf16_write_str16_tail(buf16* self, str16 value)
+{
+    isiz size = value.length;
+    isiz next = self->tail + size;
+
+    if (self->size < 0 || self->size + size > self->length)
+        return 0;
+
+    for (isiz i = 0; i < size; i += 1)
         self->memory[(self->tail + i) % self->length] = value.memory[i];
 
     self->size += size;
@@ -127,48 +170,27 @@ buf16_write_str16_tail(buf16* self, str16 value)
     return size;
 }
 
-uptr
-buf16_write_str32_head(buf16* self, str32 value)
-{
-    uptr size = utf16_units_from_str32(value);
-    uptr prev = self->head + self->length - size;
-
-    if (self->size < 0 || self->size + size > self->length)
-        return 0;
-
-    self->size += size;
-    self->head  = prev % self->length;
-
-    for (uptr i = 0, j = 0; j < size;) {
-        u32 unicode = 0;
-
-        i += utf32_decode_forw(value.memory,
-            value.length, i, &unicode);
-
-        j += utf16_encode_forw_circ(self->memory, self->length,
-            (self->head + j) % self->length, unicode);
-    }
-
-    return size;
-}
-
-uptr
+isiz
 buf16_write_str32_tail(buf16* self, str32 value)
 {
-    uptr size = utf16_units_from_str32(value);
-    uptr next = self->tail + size;
+    isiz size = utf16_units_from_str32(value);
+    isiz next = self->tail + size;
 
     if (self->size < 0 || self->size + size > self->length)
         return 0;
 
-    for (uptr i = 0, j = 0; j < size;) {
-        u32 unicode = 0;
+    for (isiz i = 0, j = 0; j < size;) {
+        UTF16 utf16   = {};
+        u32   unicode = 0;
 
-        i += utf32_decode_forw(value.memory,
-            value.length, i, &unicode);
+        i += str32_read_utf32_forw(value, i, &unicode);
 
-        j += utf16_encode_forw_circ(self->memory, self->length,
-            (self->tail + j) % self->length, unicode);
+        utf16_encode(&utf16, unicode);
+
+        for (isiz k = 0; k < utf16.size; k += 1)
+            self->memory[(self->tail + j + k) % self->length] = utf16.memory[k];
+
+        j += utf16.size;
     }
 
     self->size += size;
@@ -177,47 +199,73 @@ buf16_write_str32_tail(buf16* self, str32 value)
     return size;
 }
 
-uptr
-buf16_read_codepoint_head(buf16* self, u32* value)
+isiz
+buf16_read_utf16_head(buf16* self, u32* value)
 {
-    uptr size = utf16_decode_forw_circ(self->memory,
-        self->length, self->head, value);
+    UTF16 utf16 = {};
 
-    uptr next = self->head + size;
+    if (self->size > 0 && self->size <= self->length)
+        utf16.size = utf16_units_to_read(self->memory[self->head]);
 
-    self->size -= size;
+    if (utf16.size <= 0 || utf16.size > self->size)
+        return 0;
+
+    for (isiz i = 0; i < utf16.size; i += 1)
+        utf16.memory[i] = self->memory[(self->head + i) % self->length];
+
+    if (utf16_decode(&utf16, value) == 0) return 0;
+
+    isiz next = self->head + utf16.size;
+
+    self->size -= utf16.size;
     self->head  = next % self->length;
 
-    return size;
+    return utf16.size;
 }
 
-uptr
-buf16_read_codepoint_tail(buf16* self, u32* value)
+isiz
+buf16_read_utf16_tail(buf16* self, u32* value)
 {
-    uptr prev = self->tail + self->length - 1;
+    UTF16 utf16 = {};
+    isiz  index = (self->tail + self->length - 1) % self->length;
+    isiz  count = 0;
 
-    uptr size = utf16_decode_back_circ(self->memory,
-        self->length, prev % self->length, value);
+    for (; count < 2; count += 1) {
+        if (unicode_is_surrogate_low(self->memory[index]) == 0)
+            break;
 
-    prev = self->tail + self->length - size;
+        index = (index + self->length - 1) % self->length;
+    }
 
-    self->size -= size;
+    utf16.size = count + 1;
+
+    if (utf16.size != utf16_units_to_read(self->memory[index]))
+        return 0;
+
+    isiz prev = self->tail + self->length - utf16.size;
+
+    for (isiz i = 0; i < utf16.size; i += 1)
+        utf16.memory[i] = self->memory[(prev + i) % self->length];
+
+    if (utf16_decode(&utf16, value) == 0) return 0;
+
+    self->size -= utf16.size;
     self->tail  = prev % self->length;
 
-    return size;
+    return utf16.size;
 }
 
 str16
-buf16_read_str16_head(buf16* self, Arena* arena, uptr length)
+buf16_read_str16_head(buf16* self, Arena* arena, isiz length)
 {
-    uptr size = pax_min(self->size, length);
-    uptr next = self->head + size;
+    isiz size = pax_limit(self->size, 0, length);
+    isiz next = self->head + size;
 
     str16 result = str16_reserve(arena, size);
 
-    if (result.length == 0) return result;
+    if (result.length <= 0) return result;
 
-    for (uptr i = 0; i < size; i += 1)
+    for (isiz i = 0; i < size; i += 1)
         result.memory[i] = self->memory[(self->head + i) % self->length];
 
     self->size -= size;
@@ -227,19 +275,19 @@ buf16_read_str16_head(buf16* self, Arena* arena, uptr length)
 }
 
 str16
-buf16_read_str16_tail(buf16* self, Arena* arena, uptr length)
+buf16_read_str16_tail(buf16* self, Arena* arena, isiz length)
 {
-    uptr size = pax_min(self->size, length);
-    uptr prev = self->tail + self->length - size;
+    isiz size = pax_limit(self->size, 0, length);
+    isiz prev = self->tail + self->length - size;
 
     str16 result = str16_reserve(arena, size);
 
-    if (result.length == 0) return result;
+    if (result.length <= 0) return result;
 
     self->size -= size;
     self->tail  = prev % self->length;
 
-    for (uptr i = 0; i < size; i += 1)
+    for (isiz i = 0; i < size; i += 1)
         result.memory[i] = self->memory[(self->tail + i) % self->length];
 
     return result;

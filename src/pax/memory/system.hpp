@@ -5,11 +5,11 @@
 
 namespace pax {
 
-uptr
+usiz
 system_get_page_size();
 
 Arena
-system_reserve(uptr pages);
+system_reserve(usiz pages);
 
 void
 system_release(Arena* arena);

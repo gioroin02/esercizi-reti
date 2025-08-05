@@ -9,7 +9,7 @@ namespace pax {
 // Types
 //
 
-using Socket_TCP = addr;
+using Socket_TCP = void*;
 
 //
 // Procs
@@ -18,7 +18,7 @@ using Socket_TCP = addr;
 /* Socket_TCP */
 
 Socket_TCP
-socket_tcp_create(Arena* arena, Address_Kind kind);
+socket_tcp_create(Arena* arena, Address_Type type);
 
 void
 socket_tcp_destroy(Socket_TCP self);
@@ -45,13 +45,13 @@ b32
 socket_tcp_write(Socket_TCP self, buf8* buffer);
 
 b32
-socket_tcp_write_mem8(Socket_TCP self, u8* memory, uptr length);
+socket_tcp_write_mem8(Socket_TCP self, u8* memory, isiz length);
 
 b32
 socket_tcp_read(Socket_TCP self, buf8* buffer);
 
 b32
-socket_tcp_read_mem8(Socket_TCP self, u8* memory, uptr length, uptr* size);
+socket_tcp_read_mem8(Socket_TCP self, u8* memory, isiz length, isiz* size);
 
 } // namespace pax
 

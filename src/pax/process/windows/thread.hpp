@@ -13,7 +13,7 @@ namespace pax {
 // Types
 //
 
-using Windows_Routine = u32 (addr);
+using Windows_Routine = u32 (void*);
 
 struct Windows_Thread;
 
@@ -24,7 +24,7 @@ struct Windows_Thread;
 /* Windows_Thread */
 
 Windows_Thread*
-windows_thread_create(Arena* arena, Windows_Routine* routine, addr argumns);
+windows_thread_create(Arena* arena, Windows_Routine* routine, void* ctxt);
 
 void
 windows_thread_destroy(Windows_Thread* self);

@@ -3,7 +3,7 @@
 
 #include "file.hpp"
 
-#if PAX_PLATFORM == PAX_PLATFORM_WINDOWS
+#if PAX_SYSTEM == PAX_SYSTEM_WINDOWS
 
     #include "windows/file.cpp"
 
@@ -20,6 +20,7 @@
     #define __file_write_mem8__  windows_file_write_mem8
     #define __file_read__        windows_file_read
     #define __file_read_mem8__   windows_file_read_mem8
+    #define __file_attribs__     windows_file_attribs
 
 #else
 
@@ -27,7 +28,7 @@
 
 #endif
 
-#define pax_file(self) pax_cast(__File__*, self)
+#define pax_file(self) pax_as(__File__*, self)
 
 namespace pax {
 
@@ -61,14 +62,14 @@ file_close(File self)
     __file_close__(pax_file(self));
 }
 
-uptr
+usiz
 file_offset(File self)
 {
     return __file_offset__(pax_file(self));
 }
 
 b32
-file_rewind(File self, uptr offset)
+file_rewind(File self, isiz offset)
 {
     return __file_rewind__(pax_file(self), offset);
 }
@@ -80,7 +81,7 @@ file_write(File self, buf8* buffer)
 }
 
 b32
-file_write_mem8(File self, u8* memory, uptr length)
+file_write_mem8(File self, u8* memory, isiz length)
 {
     return __file_write_mem8__(pax_file(self), memory, length);
 }
@@ -92,9 +93,15 @@ file_read(File self, buf8* buffer)
 }
 
 b32
-file_read_mem8(File self, u8* memory, uptr length, uptr* size)
+file_read_mem8(File self, u8* memory, isiz length, isiz* size)
 {
     return __file_read_mem8__(pax_file(self), memory, length, size);
+}
+
+File_Attribs
+file_attribs(Arena* arena, str8 path, str8 name)
+{
+    return __file_attribs__(arena, path, name);
 }
 
 } // namespace pax

@@ -11,43 +11,43 @@ namespace pax {
 
 /* buf16 writing */
 
-uptr
-buf16_write_codepoint_head(buf16* self, u32 value);
+isiz
+buf16_write_utf16_head(buf16* self, u32 value);
 
-uptr
-buf16_write_codepoint_tail(buf16* self, u32 value);
-
-uptr
+isiz
 buf16_write_str8_head(buf16* self, str8 value);
 
-uptr
-buf16_write_str8_tail(buf16* self, str8 value);
-
-uptr
+isiz
 buf16_write_str16_head(buf16* self, str16 value);
 
-uptr
-buf16_write_str16_tail(buf16* self, str16 value);
-
-uptr
+isiz
 buf16_write_str32_head(buf16* self, str32 value);
 
-uptr
+isiz
+buf16_write_utf16_tail(buf16* self, u32 value);
+
+isiz
+buf16_write_str8_tail(buf16* self, str8 value);
+
+isiz
+buf16_write_str16_tail(buf16* self, str16 value);
+
+isiz
 buf16_write_str32_tail(buf16* self, str32 value);
 
 /* buf16 reading */
 
-uptr
-buf16_read_codepoint_head(buf16* self, u32* value);
+isiz
+buf16_read_utf16_head(buf16* self, u32* value);
 
-uptr
-buf16_read_codepoint_tail(buf16* self, u32* value);
-
-str16
-buf16_read_str16_head(buf16* self, Arena* arena, uptr length);
+isiz
+buf16_read_utf16_tail(buf16* self, u32* value);
 
 str16
-buf16_read_str16_tail(buf16* self, Arena* arena, uptr length);
+buf16_read_str16_head(buf16* self, Arena* arena, isiz length);
+
+str16
+buf16_read_str16_tail(buf16* self, Arena* arena, isiz length);
 
 } // namespace pax
 

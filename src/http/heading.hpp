@@ -75,8 +75,8 @@ http_heading_get_resource(HTTP_Heading* self, str8 other);
 str8
 http_heading_get_version(HTTP_Heading* self, str8 other);
 
-uptr
-http_heading_get_status(HTTP_Heading* self, uptr other);
+usiz
+http_heading_get_status(HTTP_Heading* self, usiz other);
 
 str8
 http_heading_get_message(HTTP_Heading* self, str8 other);
@@ -93,8 +93,8 @@ http_parse_content_type(Arena* arena, str8* string);
 HTTP_Heading
 http_parse_content_disp(Arena* arena, str8* string);
 
-uptr
-http_heading_get_content_length(HTTP_Heading* self, uptr other);
+usiz
+http_heading_get_content_length(HTTP_Heading* self, usiz other);
 
 HTTP_Heading
 http_parse_multipart(Arena* arena, str8* string);

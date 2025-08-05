@@ -8,7 +8,7 @@ namespace pax {
 b32
 utf8_encode(UTF8* self, u32 value)
 {
-    uptr units = utf8_units_to_write(value);
+    isiz units = utf8_units_to_write(value);
 
     self->a    = 0;
     self->b    = 0;
@@ -17,24 +17,24 @@ utf8_encode(UTF8* self, u32 value)
     self->size = 0;
 
     switch (units) {
-        case 1: { self->a = pax_cast(u8, value); } break;
+        case 1: { self->a = pax_as_u8(value); } break;
 
         case 2: {
-            self->a = pax_cast(u8, ((value >> 6) & 0xff) | 0xc0);
-            self->b = pax_cast(u8, ( value       & 0x3f) | 0x80);
+            self->a = pax_as_u8(((value >> 6) & 0xff) | 0xc0);
+            self->b = pax_as_u8(( value       & 0x3f) | 0x80);
         } break;
 
         case 3: {
-            self->a = pax_cast(u8, ((value >> 12) & 0xff) | 0xe0);
-            self->b = pax_cast(u8, ((value >> 6)  & 0x3f) | 0x80);
-            self->c = pax_cast(u8, ( value        & 0x3f) | 0x80);
+            self->a = pax_as_u8(((value >> 12) & 0xff) | 0xe0);
+            self->b = pax_as_u8(((value >> 6)  & 0x3f) | 0x80);
+            self->c = pax_as_u8(( value        & 0x3f) | 0x80);
         } break;
 
         case 4: {
-            self->a = pax_cast(u8, ((value >> 18) & 0xff) | 0xf0);
-            self->b = pax_cast(u8, ((value >> 12) & 0x3f) | 0x80);
-            self->c = pax_cast(u8, ((value >> 6)  & 0x3f) | 0x80);
-            self->d = pax_cast(u8, ( value        & 0x3f) | 0x80);
+            self->a = pax_as_u8(((value >> 18) & 0xff) | 0xf0);
+            self->b = pax_as_u8(((value >> 12) & 0x3f) | 0x80);
+            self->c = pax_as_u8(((value >> 6)  & 0x3f) | 0x80);
+            self->d = pax_as_u8(( value        & 0x3f) | 0x80);
         } break;
 
         default: return 0;
@@ -45,8 +45,8 @@ utf8_encode(UTF8* self, u32 value)
     return 1;
 }
 
-uptr
-utf8_encode_forw(u8* memory, uptr length, uptr index, u32 value)
+isiz
+mem8_write_utf8_forw(u8* memory, isiz length, isiz index, u32 value)
 {
     UTF8 utf8 = {};
 
@@ -55,14 +55,47 @@ utf8_encode_forw(u8* memory, uptr length, uptr index, u32 value)
     if (index < 0 || index + utf8.size > length)
         return 0;
 
-    for (uptr i = 0; i < utf8.size; i += 1)
+    for (isiz i = 0; i < utf8.size; i += 1)
         memory[index + i] = utf8.memory[i];
 
     return utf8.size;
 }
 
-uptr
-utf8_encode_forw_circ(u8* memory, uptr length, uptr index, u32 value)
+isiz
+mem8_write_utf8_back(u8* memory, isiz length, isiz index, u32 value)
+{
+    UTF8 utf8 = {};
+
+    if (utf8_encode(&utf8, value) == 0) return 0;
+
+    if (index - utf8.size < 0 || index >= length)
+        return 0;
+
+    for (isiz i = 0; i < utf8.size; i += 1)
+        memory[index + i - utf8.size] = utf8.memory[i];
+
+    return utf8.size;
+}
+
+/*
+usiz
+utf8_encode_forw(u8* memory, isiz length, isiz index, u32 value)
+{
+    UTF8 utf8 = {};
+
+    if (utf8_encode(&utf8, value) == 0) return 0;
+
+    if (index < 0 || index + utf8.size > length)
+        return 0;
+
+    for (isiz i = 0; i < utf8.size; i += 1)
+        memory[index + i] = utf8.memory[i];
+
+    return utf8.size;
+}
+
+usiz
+utf8_encode_forw_circ(u8* memory, isiz length, isiz index, u32 value)
 {
     UTF8 utf8 = {};
 
@@ -71,16 +104,17 @@ utf8_encode_forw_circ(u8* memory, uptr length, uptr index, u32 value)
     if (index < 0 || index > length || utf8.size > length)
         return 0;
 
-    for (uptr i = 0; i < utf8.size; i += 1)
+    for (isiz i = 0; i < utf8.size; i += 1)
         memory[(index + i) % length] = utf8.memory[i];
 
     return utf8.size;
 }
+*/
 
 b32
 utf8_decode(UTF8* self, u32* value)
 {
-    uptr units = utf8_units_to_read(self->a);
+    isiz units = utf8_units_to_read(self->a);
     u32  temp  = 0;
 
     if (self->size != units) return 0;
@@ -130,8 +164,8 @@ utf8_decode(UTF8* self, u32* value)
     return 1;
 }
 
-uptr
-utf8_decode_forw(u8* memory, uptr length, uptr index, u32* value)
+isiz
+mem8_read_utf8_forw(u8* memory, isiz length, isiz index, u32* value)
 {
     UTF8 utf8 = {};
 
@@ -141,7 +175,7 @@ utf8_decode_forw(u8* memory, uptr length, uptr index, u32* value)
     if (utf8.size <= 0 || index + utf8.size > length)
         return 0;
 
-    for (uptr i = 0; i < utf8.size; i += 1)
+    for (isiz i = 0; i < utf8.size; i += 1)
         utf8.memory[i] = memory[index + i];
 
     if (utf8_decode(&utf8, value) == 0) return 0;
@@ -149,29 +183,11 @@ utf8_decode_forw(u8* memory, uptr length, uptr index, u32* value)
     return utf8.size;
 }
 
-uptr
-utf8_decode_forw_circ(u8* memory, uptr length, uptr index, u32* value)
-{
-    UTF8 utf8 = {};
-
-    if (index >= 0 && index < length)
-        utf8.size = utf8_units_to_read(memory[index]);
-
-    if (utf8.size <= 0 || utf8.size > length) return 0;
-
-    for (uptr i = 0; i < utf8.size; i += 1)
-        utf8.memory[i] = memory[(index + i) % length];
-
-    if (utf8_decode(&utf8, value) == 0) return 0;
-
-    return utf8.size;
-}
-
-uptr
-utf8_decode_back(u8* memory, uptr length, uptr index, u32* value)
+isiz
+mem8_read_utf8_back(u8* memory, isiz length, isiz index, u32* value)
 {
     UTF8 utf8  = {};
-    uptr start = index;
+    isiz start = index;
 
     if (index < 0 || index >= length) return 0;
 
@@ -187,7 +203,7 @@ utf8_decode_back(u8* memory, uptr length, uptr index, u32* value)
     if (utf8.size != utf8_units_to_read(memory[index]))
         return 0;
 
-    for (uptr i = 0; i < utf8.size; i += 1)
+    for (isiz i = 0; i < utf8.size; i += 1)
         utf8.memory[i] = memory[index + i];
 
     if (utf8_decode(&utf8, value) == 0) return 0;
@@ -195,11 +211,79 @@ utf8_decode_back(u8* memory, uptr length, uptr index, u32* value)
     return utf8.size;
 }
 
-uptr
-utf8_decode_back_circ(u8* memory, uptr length, uptr index, u32* value)
+/*
+usiz
+utf8_decode_forw(u8* memory, isiz length, isiz index, u32* value)
+{
+    UTF8 utf8 = {};
+
+    if (index >= 0 && index < length)
+        utf8.size = utf8_units_to_read(memory[index]);
+
+    if (utf8.size <= 0 || index + utf8.size > length)
+        return 0;
+
+    for (isiz i = 0; i < utf8.size; i += 1)
+        utf8.memory[i] = memory[index + i];
+
+    if (utf8_decode(&utf8, value) == 0) return 0;
+
+    return utf8.size;
+}
+
+usiz
+utf8_decode_forw_circ(u8* memory, isiz length, isiz index, u32* value)
+{
+    UTF8 utf8 = {};
+
+    if (index >= 0 && index < length)
+        utf8.size = utf8_units_to_read(memory[index]);
+
+    if (utf8.size <= 0 || utf8.size > length) return 0;
+
+    for (isiz i = 0; i < utf8.size; i += 1)
+        utf8.memory[i] = memory[(index + i) % length];
+
+    if (utf8_decode(&utf8, value) == 0) return 0;
+
+    return utf8.size;
+}
+*/
+
+/*
+usiz
+utf8_decode_back(u8* memory, isiz length, isiz index, u32* value)
 {
     UTF8 utf8  = {};
-    uptr count = 0;
+    isiz start = index;
+
+    if (index < 0 || index >= length) return 0;
+
+    while (utf8_is_trailing(memory[index]) != 0) {
+        index -= 1;
+
+        if (index < 0 || index >= length)
+            return 0;
+    }
+
+    utf8.size = start - index + 1;
+
+    if (utf8.size != utf8_units_to_read(memory[index]))
+        return 0;
+
+    for (isiz i = 0; i < utf8.size; i += 1)
+        utf8.memory[i] = memory[index + i];
+
+    if (utf8_decode(&utf8, value) == 0) return 0;
+
+    return utf8.size;
+}
+
+usiz
+utf8_decode_back_circ(u8* memory, isiz length, isiz index, u32* value)
+{
+    UTF8 utf8  = {};
+    usiz count = 0;
 
     if (index < 0 || index >= length) return 0;
 
@@ -216,39 +300,36 @@ utf8_decode_back_circ(u8* memory, uptr length, uptr index, u32* value)
     if (utf8.size != utf8_units_to_read(memory[index % length]))
         return 0;
 
-    for (uptr i = 0; i < utf8.size; i += 1)
+    for (isiz i = 0; i < utf8.size; i += 1)
         utf8.memory[i] = memory[(index + i) % length];
 
     if (utf8_decode(&utf8, value) == 0) return 0;
 
     return utf8.size;
 }
+*/
 
-uptr
+isiz
 utf8_units_to_write(u32 value)
 {
-    uptr units = 0;
+    if (value >= 0x0     && value <= 0x7f)     return 1;
+    if (value >= 0x80    && value <= 0x7ff)    return 2;
+    if (value >= 0x800   && value <= 0xd7ff)   return 3;
+    if (value >= 0xe000  && value <= 0xffff)   return 3;
+    if (value >= 0x10000 && value <= 0x10ffff) return 4;
 
-    if (value >= 0x0     && value <= 0x7f)     units = 1;
-    if (value >= 0x80    && value <= 0x7ff)    units = 2;
-    if (value >= 0x800   && value <= 0xd7ff)   units = 3;
-    if (value >= 0xe000  && value <= 0xffff)   units = 3;
-    if (value >= 0x10000 && value <= 0x10ffff) units = 4;
-
-    return units;
+    return 0;
 }
 
-uptr
+isiz
 utf8_units_to_read(u8 value)
 {
-    uptr units = 0;
+    if (value >= 0x00 && value <= 0x7f) return 1;
+    if (value >= 0xc0 && value <= 0xdf) return 2;
+    if (value >= 0xe0 && value <= 0xef) return 3;
+    if (value >= 0xf0 && value <= 0xf7) return 4;
 
-    if (value >= 0x00 && value <= 0x7f) units = 1;
-    if (value >= 0xc0 && value <= 0xdf) units = 2;
-    if (value >= 0xe0 && value <= 0xef) units = 3;
-    if (value >= 0xf0 && value <= 0xf7) units = 4;
-
-    return units;
+    return 0;
 }
 
 b32
@@ -258,7 +339,7 @@ utf8_is_trailing(u8 value)
 }
 
 b32
-utf8_is_overlong(u32 value, uptr units)
+utf8_is_overlong(u32 value, isiz units)
 {
     return (units == 2 && value >= 0xc080     && value <= 0xc1ff) ||
            (units == 3 && value >= 0xe08080   && value <= 0xe09fff) ||

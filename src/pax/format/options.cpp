@@ -6,22 +6,25 @@
 namespace pax {
 
 Format_Options
-format_options(uptr base, uptr flags)
+format_options(i8 radix, usiz flags)
 {
     Format_Options result = {};
 
-    result.base  = base;
-    result.flags = flags;
+    if (radix >= 2) {
+        result.flags = flags;
+        result.radix = radix;
+    }
 
     return result;
 }
 
 Format_Options
-format_options_base(uptr base)
+format_options_simple(i8 radix)
 {
     Format_Options result = {};
 
-    result.base = base;
+    if (radix >= 2)
+        result.radix = radix;
 
     return result;
 }

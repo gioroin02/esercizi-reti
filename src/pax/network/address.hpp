@@ -9,16 +9,16 @@ namespace pax {
 // Types
 //
 
-enum Address_Kind
+enum Address_Type
 {
-    ADDRESS_KIND_NONE,
-    ADDRESS_KIND_IP4,
-    ADDRESS_KIND_IP6,
+    ADDRESS_TYPE_NONE,
+    ADDRESS_TYPE_IP4,
+    ADDRESS_TYPE_IP6,
 };
 
 struct Address
 {
-    Address_Kind kind = ADDRESS_KIND_NONE;
+    Address_Type type = ADDRESS_TYPE_NONE;
 
     union
     {
@@ -34,15 +34,18 @@ struct Address
 /* Address*/
 
 Address
-address_any(Address_Kind kind);
+address_any(Address_Type type);
+
+Address
+address_localhost(Address_Type type);
 
 b32
 address_is_equal(Address self, Address value);
 
-/* Address parsing */
+/* Address reading */
 
 b32
-address_from_str8(str8 self, Address_Kind kind, Address* value);
+address_from_str8(str8 self, Address_Type type, Address* value);
 
 } // namespace pax
 

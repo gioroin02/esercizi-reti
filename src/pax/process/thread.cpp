@@ -3,7 +3,7 @@
 
 #include "thread.hpp"
 
-#if PAX_PLATFORM == PAX_PLATFORM_WINDOWS
+#if PAX_SYSTEM == PAX_SYSTEM_WINDOWS
 
     #include "windows/thread.cpp"
 
@@ -22,15 +22,15 @@
 
 #endif
 
-#define pax_routine(self) pax_cast(__Routine__*, self)
-#define pax_thread(self)  pax_cast(__Thread__*, self)
+#define pax_routine(self) pax_as(__Routine__*, self)
+#define pax_thread(self)  pax_as(__Thread__*, self)
 
 namespace pax {
 
 Thread
-thread_create(Arena* arena, Routine* routine, addr argumns)
+thread_create(Arena* arena, Routine* routine, void* ctxt)
 {
-    return __thread_create__(arena, pax_routine(routine), argumns);
+    return __thread_create__(arena, pax_routine(routine), ctxt);
 }
 
 void

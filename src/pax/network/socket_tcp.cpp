@@ -3,7 +3,7 @@
 
 #include "socket_tcp.hpp"
 
-#if PAX_PLATFORM == PAX_PLATFORM_WINDOWS
+#if PAX_SYSTEM == PAX_SYSTEM_WINDOWS
 
     #include "windows/socket_tcp.cpp"
 
@@ -28,14 +28,14 @@
 
 #endif
 
-#define pax_socket_tcp(self) pax_cast(__Socket_TCP__*, self)
+#define pax_socket_tcp(self) pax_as(__Socket_TCP__*, self)
 
 namespace pax {
 
 Socket_TCP
-socket_tcp_create(Arena* arena, Address_Kind kind)
+socket_tcp_create(Arena* arena, Address_Type type)
 {
-    return __socket_tcp_create__(arena, kind);
+    return __socket_tcp_create__(arena, type);
 }
 
 void
@@ -87,7 +87,7 @@ socket_tcp_write(Socket_TCP self, buf8* buffer)
 }
 
 b32
-socket_tcp_write_mem8(Socket_TCP self, u8* memory, uptr length)
+socket_tcp_write_mem8(Socket_TCP self, u8* memory, isiz length)
 {
     return __socket_tcp_write_mem8__(pax_socket_tcp(self), memory, length);
 }
@@ -99,7 +99,7 @@ socket_tcp_read(Socket_TCP self, buf8* buffer)
 }
 
 b32
-socket_tcp_read_mem8(Socket_TCP self, u8* memory, uptr length, uptr* size)
+socket_tcp_read_mem8(Socket_TCP self, u8* memory, isiz length, isiz* size)
 {
     return __socket_tcp_read_mem8__(pax_socket_tcp(self), memory, length, size);
 }

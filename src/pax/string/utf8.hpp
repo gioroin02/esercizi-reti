@@ -9,8 +9,8 @@ namespace pax {
 // Values
 //
 
-static const uptr UTF8_MAX_UNITS = 4;
-static const uptr UTF8_MIN_UNITS = 1;
+static const isiz UTF8_MAX_UNITS = 4;
+static const isiz UTF8_MIN_UNITS = 1;
 
 //
 // Types
@@ -28,50 +28,48 @@ struct UTF8
         u8 memory[UTF8_MAX_UNITS] = {};
     };
 
-    uptr size = 0;
+    isiz size = 0;
 };
 
 //
 // Procs
 //
 
-/* UTF8 */
+/* UTF8 writing */
 
 b32
 utf8_encode(UTF8* self, u32 value);
 
-uptr
-utf8_encode_forw(u8* memory, uptr length, uptr index, u32 value);
+isiz
+mem8_write_utf8_forw(u8* memory, isiz length, isiz index, u32 value);
 
-uptr
-utf8_encode_forw_circ(u8* memory, uptr length, uptr index, u32 value);
+isiz
+mem8_write_utf8_back(u8* memory, isiz length, isiz index, u32 value);
+
+/* UTf8 reading */
 
 b32
 utf8_decode(UTF8* self, u32* value);
 
-uptr
-utf8_decode_forw(u8* memory, uptr length, uptr index, u32* value);
+isiz
+mem8_read_utf8_forw(u8* memory, isiz length, isiz index, u32* value);
 
-uptr
-utf8_decode_forw_circ(u8* memory, uptr length, uptr index, u32* value);
+isiz
+mem8_read_utf8_back(u8* memory, isiz length, isiz index, u32* value);
 
-uptr
-utf8_decode_back(u8* memory, uptr length, uptr index, u32* value);
+/* Utils */
 
-uptr
-utf8_decode_back_circ(u8* memory, uptr length, uptr index, u32* value);
-
-uptr
+isiz
 utf8_units_to_write(u32 value);
 
-uptr
+isiz
 utf8_units_to_read(u8 value);
 
 b32
 utf8_is_trailing(u8 value);
 
 b32
-utf8_is_overlong(u32 value, uptr units);
+utf8_is_overlong(u32 value, isiz units);
 
 } // namespace pax
 

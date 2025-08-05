@@ -18,7 +18,7 @@ struct Windows_Socket_UDP;
 /* Windows_Socket_UDP */
 
 Windows_Socket_UDP*
-windows_socket_udp_create(Arena* arena, Address_Kind kind);
+windows_socket_udp_create(Arena* arena, Address_Type type);
 
 void
 windows_socket_udp_destroy(Windows_Socket_UDP* self);
@@ -48,10 +48,10 @@ b32
 windows_socket_udp_write_to(Windows_Socket_UDP* self, buf8* buffer, u16 port, Address address);
 
 b32
-windows_socket_udp_write_mem8(Windows_Socket_UDP* self, u8* memory, uptr length);
+windows_socket_udp_write_mem8(Windows_Socket_UDP* self, u8* memory, isiz length);
 
 b32
-windows_socket_udp_write_mem8_to(Windows_Socket_UDP* self, u8* memory, uptr length, u16 port, Address address);
+windows_socket_udp_write_mem8_to(Windows_Socket_UDP* self, u8* memory, isiz length, u16 port, Address address);
 
 b32
 windows_socket_udp_read(Windows_Socket_UDP* self, buf8* buffer);
@@ -60,10 +60,10 @@ b32
 windows_socket_udp_read_from(Windows_Socket_UDP* self, buf8* buffer, u16* port, Address* address);
 
 b32
-windows_socket_udp_read_mem8(Windows_Socket_UDP* self, u8* memory, uptr length, uptr* size);
+windows_socket_udp_read_mem8(Windows_Socket_UDP* self, u8* memory, isiz length, isiz* size);
 
 b32
-windows_socket_udp_read_mem8_from(Windows_Socket_UDP* self, u8* memory, uptr length, uptr* size, u16* port, Address* address);
+windows_socket_udp_read_mem8_from(Windows_Socket_UDP* self, u8* memory, isiz length, isiz* size, u16* port, Address* address);
 
 } // namespace pax
 

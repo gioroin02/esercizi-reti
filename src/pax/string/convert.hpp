@@ -11,44 +11,46 @@ namespace pax {
 // Procs
 //
 
-/* Unicode */
+/* UTF8 units */
 
-uptr
-utf8_units_from_utf16(u16* memory, uptr length);
+isiz
+utf8_units_from_mem16(u16* memory, isiz length);
 
-uptr
-utf8_units_from_utf32(u32* value, uptr length);
-
-uptr
-utf16_units_from_utf8(u8* memory, uptr length);
-
-uptr
-utf16_units_from_utf32(u32* value, uptr length);
-
-uptr
-utf32_units_from_utf8(u8* memory, uptr length);
-
-uptr
-utf32_units_from_utf16(u16* value, uptr length);
-
-/* Unicode */
-
-uptr
+isiz
 utf8_units_from_str16(str16 value);
 
-uptr
+isiz
+utf8_units_from_mem32(u32* memory, isiz length);
+
+isiz
 utf8_units_from_str32(str32 value);
 
-uptr
+/* UTF16 units */
+
+isiz
+utf16_units_from_mem8(u8* memory, isiz length);
+
+isiz
 utf16_units_from_str8(str8 value);
 
-uptr
+isiz
+utf16_units_from_mem32(u32* memory, isiz length);
+
+isiz
 utf16_units_from_str32(str32 value);
 
-uptr
+/* UTF32 units */
+
+isiz
+utf32_units_from_mem8(u8* memory, isiz length);
+
+isiz
 utf32_units_from_str8(str8 value);
 
-uptr
+isiz
+utf32_units_from_mem16(u16* memory, isiz length);
+
+isiz
 utf32_units_from_str16(str16 value);
 
 /* str8 */

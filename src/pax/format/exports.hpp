@@ -8,7 +8,7 @@
 #include "str32.hpp"
 
 #include "buf8.hpp"
-// #include "buf16.hpp"
-// #include "buf32.hpp"
+#include "buf16.hpp"
+#include "buf32.hpp"
 
 #endif // PAX_FORMAT_EXPORTS_HPP

@@ -15,7 +15,7 @@ static const str8 COLON = pax_str8(":");
 // Procs
 //
 
-uptr
+usiz
 http_hash_str8(str8 key);
 
 #endif // HTTP_HELPERS_HPP

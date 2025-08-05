@@ -3,16 +3,16 @@
 
 #include "helpers.hpp"
 
-uptr
+usiz
 http_hash_str8(str8 key)
 {
-    uptr prime  = 31;
-    uptr power  = 1;
-    uptr modulo = 1e9 + 1;
-    uptr result = 0;
+    usiz prime  = 31;
+    usiz power  = 1;
+    usiz modulo = 1e9 + 1;
+    usiz result = 0;
 
-    for (uptr i = 0; i < key.length; i += 1) {
-        uptr temp =
+    for (usiz i = 0; i < key.length; i += 1) {
+        usiz temp =
             (key.memory[i] - ASCII_LOWER_A + 1) * power;
 
         result = (result + temp)  % modulo;

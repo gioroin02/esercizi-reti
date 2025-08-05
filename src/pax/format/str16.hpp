@@ -5,73 +5,73 @@
 
 namespace pax {
 
-/* str16 printing unsigned */
+/* str16 writing unsigned */
 
 str16
-str16_from_uptr(Arena* arena, Format_Options opts, uptr value);
+str16_from_usiz(Arena* arena, Format_Options options, usiz value);
 
 str16
-str16_from_u64(Arena* arena, Format_Options opts, u64 value);
+str16_from_u64(Arena* arena, Format_Options options, u64 value);
 
 str16
-str16_from_u32(Arena* arena, Format_Options opts, u32 value);
+str16_from_u32(Arena* arena, Format_Options options, u32 value);
 
 str16
-str16_from_u16(Arena* arena, Format_Options opts, u16 value);
+str16_from_u16(Arena* arena, Format_Options options, u16 value);
 
 str16
-str16_from_u8(Arena* arena, Format_Options opts, u8 value);
+str16_from_u8(Arena* arena, Format_Options options, u8 value);
 
-/* str16 parsing unsigned */
-
-b32
-uptr_from_str16(str16 self, Format_Options opts, uptr* value);
+/* str16 reading unsigned */
 
 b32
-u64_from_str16(str16 self, Format_Options opts, u64* value);
+usiz_from_str16(str16 self, Format_Options options, usiz* value);
 
 b32
-u32_from_str16(str16 self, Format_Options opts, u32* value);
+u64_from_str16(str16 self, Format_Options options, u64* value);
 
 b32
-u16_from_str16(str16 self, Format_Options opts, u16* value);
+u32_from_str16(str16 self, Format_Options options, u32* value);
 
 b32
-u8_from_str16(str16 self, Format_Options opts, u8* value);
+u16_from_str16(str16 self, Format_Options options, u16* value);
 
-/* str16 printing integer */
+b32
+u8_from_str16(str16 self, Format_Options options, u8* value);
+
+/* str16 writing integer */
 
 str16
-str16_from_iptr(Arena* arena, Format_Options opts, iptr value);
+str16_from_isiz(Arena* arena, Format_Options options, isiz value);
 
 str16
-str16_from_i64(Arena* arena, Format_Options opts, i64 value);
+str16_from_i64(Arena* arena, Format_Options options, i64 value);
 
 str16
-str16_from_i32(Arena* arena, Format_Options opts, i32 value);
+str16_from_i32(Arena* arena, Format_Options options, i32 value);
 
 str16
-str16_from_i16(Arena* arena, Format_Options opts, i16 value);
+str16_from_i16(Arena* arena, Format_Options options, i16 value);
 
 str16
-str16_from_i8(Arena* arena, Format_Options opts, i8 value);
+str16_from_i8(Arena* arena, Format_Options options, i8 value);
 
-/* str16 parsing integer */
-
-b32
-iptr_from_str16(str16 self, Format_Options opts, iptr* value);
+/* str16 reading integer */
 
 b32
-i64_from_str16(str16 self, Format_Options opts, i64* value);
+isiz_from_str16(str16 self, Format_Options options, isiz* value);
 
 b32
-i32_from_str16(str16 self, Format_Options opts, i32* value);
+i64_from_str16(str16 self, Format_Options options, i64* value);
 
 b32
-i16_from_str16(str16 self, Format_Options opts, i16* value);
+i32_from_str16(str16 self, Format_Options options, i32* value);
 
 b32
-i8_from_str16(str16 self, Format_Options opts, i8* value);
+i16_from_str16(str16 self, Format_Options options, i16* value);
+
+b32
+i8_from_str16(str16 self, Format_Options options, i8* value);
 
 } // namespace pax
 

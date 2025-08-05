@@ -18,7 +18,7 @@ struct Windows_Socket_TCP;
 /* Windows_Socket_TCP */
 
 Windows_Socket_TCP*
-windows_socket_tcp_create(Arena* arena, Address_Kind kind);
+windows_socket_tcp_create(Arena* arena, Address_Type type);
 
 void
 windows_socket_tcp_destroy(Windows_Socket_TCP* self);
@@ -45,13 +45,13 @@ b32
 windows_socket_tcp_write(Windows_Socket_TCP* self, buf8* buffer);
 
 b32
-windows_socket_tcp_write_mem8(Windows_Socket_TCP* self, u8* memory, uptr length);
+windows_socket_tcp_write_mem8(Windows_Socket_TCP* self, u8* memory, isiz length);
 
 b32
 windows_socket_tcp_read(Windows_Socket_TCP* self, buf8* buffer);
 
 b32
-windows_socket_tcp_read_mem8(Windows_Socket_TCP* self, u8* memory, uptr length, uptr* size);
+windows_socket_tcp_read_mem8(Windows_Socket_TCP* self, u8* memory, isiz length, isiz* size);
 
 } // namespace pax
 

@@ -11,54 +11,61 @@ using namespace pax;
 #define PRP(str) "\x1b[35m" str "\x1b[0m"
 #define AZR(str) "\x1b[36m" str "\x1b[0m"
 
+static u8 memory[8 * MEMORY_KIB] = {};
+
 int
 main(int argc, char** argv)
 {
-    u8 memory[8 * MEMORY_KIB] = {};
+    Arena arena = arena_make(memory, 8 * MEMORY_KIB);
 
-    Arena arena = arena_make(memory, pax_array_length(memory));
+    if (argc != 2) {
+        printf("usage: <program-name> <path>\n");
 
-    if (argc != 2) return 1;
+        return 1;
+    }
 
-    str8 path = str8_count_max(pax_cast(u8*, argv[1]), 128);
+    str8 path = pax_str8_max(argv[1], 128);
 
-    File_Props props  = {};
-    Dir_View   dir    = dir_view(&arena, path);
+    File_Attribs attribs = {};
+    Directory    directory = directory_open(&arena, path);
 
-    uptr offset = arena_offset(&arena);
+    isiz offset = arena_offset(&arena);
 
-    while (dir_next(dir, &arena, &props) != 0) {
-        str8 type = pax_str8(RED("E"));
+    while (directory_next(directory, &arena, &attribs) != 0) {
+        str8 type = pax_str8(RED("ERR"));
 
-        switch (props.type) {
-            case FILE_TYPE_NORMAL:    { type = pax_str8(GRN("F")); } break;
-            case FILE_TYPE_DIRECTORY: { type = pax_str8(BLU("D")); } break;
+        switch (attribs.type) {
+            case FILE_TYPE_SIMPLE:    { type = pax_str8(GRN("file")); } break;
+            case FILE_TYPE_DIRECTORY: { type = pax_str8(BLU("dir")); } break;
 
             default: break;
         }
 
-        str8 perm = pax_str8(RED("E"));
+        str8 perm = pax_str8(RED("ERR"));
 
-        switch (props.perm) {
-            case FILE_PERM_READ:       { perm = pax_str8(GRN("R") "__"); } break;
-            case FILE_PERM_WRITE:      { perm = pax_str8("_" BLU("W") "_"); } break;
-            case FILE_PERM_READ_WRITE: { perm = pax_str8(GRN("RW") "_"); } break;
-            case FILE_PERM_EXEC:       { perm = pax_str8("__" GRN("E")); } break;
-            case FILE_PERM_READ_EXEC:  { perm = pax_str8(GRN("R") "_" GRN("E")); } break;
-            case FILE_PERM_WRITE_EXEC: { perm = pax_str8("_" GRN("RE")); } break;
-            case FILE_PERM_FULL:       { perm = pax_str8(GRN("RWE")); } break;
+        switch (attribs.perm) {
+            case FILE_PERM_NONE:       { perm = pax_str8("--:--:--"); } break;
+            case FILE_PERM_READ:       { perm = pax_str8(GRN("rd") ":__:__"); } break;
+            case FILE_PERM_WRITE:      { perm = pax_str8("__:" BLU("wr") ":__"); } break;
+            case FILE_PERM_READ_WRITE: { perm = pax_str8(GRN("rd") ":" BLU("wr") ":__"); } break;
+            case FILE_PERM_EXEC:       { perm = pax_str8("__:__:" YLW("ex")); } break;
+            case FILE_PERM_READ_EXEC:  { perm = pax_str8(GRN("rd") ":__:" YLW("ex")); } break;
+            case FILE_PERM_WRITE_EXEC: { perm = pax_str8("__:" BLU("wr") ":" YLW("ex")); } break;
+            case FILE_PERM_FULL:       { perm = pax_str8(GRN("rd") ":" BLU("wr") ":" YLW("ex")); } break;
 
             default: break;
         }
 
         printf("{ ");
-        printf("path: " PRP("'%.*s'") ", ", pax_cast(int, props.path.length), props.path.memory);
-        printf("name: " PRP("'%32.*s'") ", ", pax_cast(int, props.name.length), props.name.memory);
+        printf("path: " PRP("'%.*s'") ", ", pax_as(int, attribs.path.length), attribs.path.memory);
+        printf("name: " PRP("'%32.*s'") ", ", pax_as(int, attribs.name.length), attribs.name.memory);
         printf("type: %s, ", type.memory);
         printf("perm: %s, ", perm.memory);
-        printf("size: " YLW("%llu") " ", props.size);
+        printf("size: " YLW("%llu") " ", attribs.size);
         printf("}\n");
 
         arena_rewind(&arena, offset);
     }
+
+    directory_close(directory);
 }

@@ -18,8 +18,8 @@ enum Format_Flag
 
 struct Format_Options
 {
-    uptr flags = FORMAT_FLAG_NONE;
-    uptr base  = 10;
+    i8   radix = 10;
+    usiz flags = FORMAT_FLAG_NONE;
 };
 
 //
@@ -29,10 +29,10 @@ struct Format_Options
 /* Format_Options */
 
 Format_Options
-format_options(uptr base, uptr flags);
+format_options(i8 radix, usiz flags);
 
 Format_Options
-format_options_base(uptr base);
+format_options_simple(i8 radix);
 
 } // namespace pax
 

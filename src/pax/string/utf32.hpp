@@ -9,8 +9,8 @@ namespace pax {
 // Values
 //
 
-static const uptr UTF32_MAX_UNITS = 1;
-static const uptr UTF32_MIN_UNITS = 1;
+static const isiz UTF32_MAX_UNITS = 1;
+static const isiz UTF32_MIN_UNITS = 1;
 
 //
 // Types
@@ -28,34 +28,41 @@ struct UTF32
         u32 memory[UTF32_MAX_UNITS] = {};
     };
 
-    uptr size = 0;
+    isiz size = 0;
 };
 
 //
 // Procs
 //
 
-/* UTF32 */
+/* UTF32 writing */
 
 b32
 utf32_encode(UTF32* self, u32 value);
 
-uptr
-utf32_encode_forw(u32* memory, uptr length, uptr index, u32 value);
+isiz
+mem32_write_utf32_forw(u32* memory, isiz length, isiz index, u32 value);
+
+isiz
+mem32_write_utf32_back(u32* memory, isiz length, isiz index, u32 value);
+
+/* UTF32 reading */
 
 b32
 utf32_decode(UTF32* self, u32* value);
 
-uptr
-utf32_decode_forw(u32* memory, uptr length, uptr index, u32* value);
+isiz
+mem32_read_utf32_forw(u32* memory, isiz length, isiz index, u32* value);
 
-uptr
-utf32_decode_back(u32* memory, uptr length, uptr index, u32* value);
+isiz
+mem32_read_utf32_back(u32* memory, isiz length, isiz index, u32* value);
 
-uptr
+/* Utils */
+
+isiz
 utf32_units_to_write(u32 value);
 
-uptr
+isiz
 utf32_units_to_read(u32 value);
 
 } // namespace pax

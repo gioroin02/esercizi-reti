@@ -6,9 +6,9 @@
 #include <stdio.h>
 
 Socket_UDP
-client_udp_start(Arena* arena, Address_Kind kind)
+client_udp_start(Arena* arena, Address_Type type)
 {
-    return socket_udp_create(arena, kind);
+    return socket_udp_create(arena, type);
 }
 
 void
@@ -23,9 +23,9 @@ client_udp_write(Socket_UDP self, buf8* buffer, u16 port, Address address)
     printf(TRACE " Scrittura richiesta di " YLW("%lluB") " a {addr = [",
         buffer->size);
 
-    switch (address.kind) {
-        case ADDRESS_KIND_IP4: {
-            for (uptr i = 0; i < ADDRESS_IP4_GROUPS; i += 1) {
+    switch (address.type) {
+        case ADDRESS_TYPE_IP4: {
+            for (usiz i = 0; i < ADDRESS_IP4_GROUPS; i += 1) {
                 printf(YLW("%u"), address.ip4.memory[i]);
 
                 if (i + 1 != ADDRESS_IP4_GROUPS)
@@ -33,8 +33,8 @@ client_udp_write(Socket_UDP self, buf8* buffer, u16 port, Address address)
             }
         } break;
 
-        case ADDRESS_KIND_IP6: {
-            for (uptr i = 0; i < ADDRESS_IP6_GROUPS; i += 1) {
+        case ADDRESS_TYPE_IP6: {
+            for (usiz i = 0; i < ADDRESS_IP6_GROUPS; i += 1) {
                 printf(YLW("%x"), address.ip6.memory[i]);
 
                 if (i + 1 != ADDRESS_IP6_GROUPS)
@@ -64,9 +64,9 @@ client_udp_read(Socket_UDP self, buf8* buffer, u16* port, Address* address)
     printf("di " YLW("%lluB") " da {addr = [", buffer->size);
 
     if (state != 0 && address != 0) {
-        switch (address->kind) {
-            case ADDRESS_KIND_IP4: {
-                for (uptr i = 0; i < ADDRESS_IP4_GROUPS; i += 1) {
+        switch (address->type) {
+            case ADDRESS_TYPE_IP4: {
+                for (usiz i = 0; i < ADDRESS_IP4_GROUPS; i += 1) {
                     printf(YLW("%u"), address->ip4.memory[i]);
 
                     if (i + 1 != ADDRESS_IP4_GROUPS)
@@ -74,8 +74,8 @@ client_udp_read(Socket_UDP self, buf8* buffer, u16* port, Address* address)
                 }
             } break;
 
-            case ADDRESS_KIND_IP6: {
-                for (uptr i = 0; i < ADDRESS_IP6_GROUPS; i += 1) {
+            case ADDRESS_TYPE_IP6: {
+                for (usiz i = 0; i < ADDRESS_IP6_GROUPS; i += 1) {
                     printf(YLW("%x"), address->ip6.memory[i]);
 
                     if (i + 1 != ADDRESS_IP6_GROUPS)

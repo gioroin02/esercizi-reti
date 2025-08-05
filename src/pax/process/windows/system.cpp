@@ -17,20 +17,20 @@ windows_sleep(u32 millis)
     Sleep(millis);
 }
 
-uptr
+isiz
 windows_get_number_of_cpus()
 {
     SYSTEM_INFO info = {};
 
     GetSystemInfo(&info);
 
-    return pax_cast(uptr, info.dwNumberOfProcessors);
+    return pax_as(isiz, info.dwNumberOfProcessors);
 }
 
-uptr
+isiz
 windows_get_thread_ident()
 {
-    return pax_cast(uptr, GetCurrentThreadId());
+    return pax_as(isiz, GetCurrentThreadId());
 }
 
 } // namespace pax

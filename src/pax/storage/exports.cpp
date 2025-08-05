@@ -1,9 +1,9 @@
 #ifndef PAX_STORAGE_EXPORTS_CPP
 #define PAX_STORAGE_EXPORTS_CPP
 
-#include "file_props.cpp"
 #include "file.cpp"
+#include "file_attribs.cpp"
 
-#include "dir_view.cpp"
+#include "directory.cpp"
 
 #endif // PAX_STORAGE_EXPORTS_CPP

@@ -2,7 +2,7 @@ echo off
 
 cls
 
-set "core=src\pax\core\exports.cpp"
+set "base=src\pax\base\exports.cpp"
 set "string=src\pax\string\exports.cpp"
 set "format=src\pax\format\exports.cpp"
 set "memory=src\pax\memory\exports.cpp"
@@ -12,7 +12,7 @@ set "winsock=-lws2_32"
 
 set "udp=src\udp\exports.cpp"
 
-set "src=%core% %string% %format% %memory% %network% %udp%"
+set "src=%base% %string% %format% %memory% %network% %udp%"
 set "lib=%winsock%"
 set "dir=src\udp\test"
 

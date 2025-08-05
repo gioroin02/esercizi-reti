@@ -11,11 +11,11 @@ namespace pax {
 
 /* System */
 
-uptr
+usiz
 windows_get_page_size();
 
 Arena
-windows_reserve(uptr pages);
+windows_reserve(usiz pages);
 
 void
 windows_release(Arena* arena);

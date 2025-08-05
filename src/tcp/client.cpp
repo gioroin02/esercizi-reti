@@ -6,9 +6,9 @@
 #include <stdio.h>
 
 Socket_TCP
-client_tcp_start(Arena* arena, Address_Kind kind)
+client_tcp_start(Arena* arena, Address_Type type)
 {
-    return socket_tcp_create(arena, kind);
+    return socket_tcp_create(arena, type);
 }
 
 void
@@ -22,9 +22,9 @@ client_tcp_connect(Socket_TCP self, u16 port, Address address)
 {
     printf(TRACE " Apertura sessione con {addr = [");
 
-    switch (address.kind) {
-        case ADDRESS_KIND_IP4: {
-            for (uptr i = 0; i < ADDRESS_IP4_GROUPS; i += 1) {
+    switch (address.type) {
+        case ADDRESS_TYPE_IP4: {
+            for (usiz i = 0; i < ADDRESS_IP4_GROUPS; i += 1) {
                 printf(YLW("%u"), address.ip4.memory[i]);
 
                 if (i + 1 != ADDRESS_IP4_GROUPS)
@@ -32,8 +32,8 @@ client_tcp_connect(Socket_TCP self, u16 port, Address address)
             }
         } break;
 
-        case ADDRESS_KIND_IP6: {
-            for (uptr i = 0; i < ADDRESS_IP6_GROUPS; i += 1) {
+        case ADDRESS_TYPE_IP6: {
+            for (usiz i = 0; i < ADDRESS_IP6_GROUPS; i += 1) {
                 printf(YLW("%x"), address.ip6.memory[i]);
 
                 if (i + 1 != ADDRESS_IP6_GROUPS)

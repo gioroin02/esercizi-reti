@@ -9,7 +9,7 @@ namespace pax {
 // Procs
 //
 
-/* Memory */
+/* Memory order */
 
 b32
 mem_is_lower_first();
@@ -17,19 +17,21 @@ mem_is_lower_first();
 b32
 mem_is_upper_first();
 
-addr
-mem_host_from_net(addr memory, uptr length);
+/* Memory network order */
 
-addr
-mem_copy_host_from_net(addr memory, addr value, uptr length);
+void*
+mem_host_from_net(void* memory, isiz length);
 
-addr
-mem_net_from_host(addr memory, uptr length);
+void*
+mem_copy_host_from_net(void* memory, void* value, isiz length);
 
-addr
-mem_copy_net_from_host(addr memory, addr value, uptr length);
+void*
+mem_net_from_host(void* memory, isiz length);
 
-/* 64 bits */
+void*
+mem_copy_net_from_host(void* memory, void* value, isiz length);
+
+/* 64 bits host */
 
 f64
 f64_host_from_net(u64 value);
@@ -40,6 +42,8 @@ i64_host_from_net(u64 value);
 u64
 u64_host_from_net(u64 value);
 
+/* 64 bits network */
+
 u64
 f64_net_from_host(f64 value);
 
@@ -49,7 +53,7 @@ i64_net_from_host(i64 value);
 u64
 u64_net_from_host(u64 value);
 
-/* 32 bits */
+/* 32 bits host */
 
 f32
 f32_host_from_net(u32 value);
@@ -60,6 +64,8 @@ i32_host_from_net(u32 value);
 u32
 u32_host_from_net(u32 value);
 
+/* 32 bits network */
+
 u32
 f32_net_from_host(f32 value);
 
@@ -69,13 +75,15 @@ i32_net_from_host(i32 value);
 u32
 u32_net_from_host(u32 value);
 
-/* 16 bits */
+/* 16 bits host */
 
 i16
 i16_host_from_net(u16 value);
 
 u16
 u16_host_from_net(u16 value);
+
+/* 16 bits network */
 
 u16
 i16_net_from_host(i16 value);

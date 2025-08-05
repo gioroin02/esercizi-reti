@@ -6,36 +6,38 @@
 namespace pax {
 
 str8
-str8_from_uptr(Arena* arena, Format_Options opts, uptr value)
+str8_from_usiz(Arena* arena, Format_Options options, usiz value)
 {
-    uptr size = 0;
-    uptr base = opts.base;
+    isiz index = 0;
+    usiz flags = options.flags;
+    usiz radix = options.radix;
+    usiz other = value;
 
-    if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        size += 1;
+    for (usiz temp = other; temp != 0; temp /= radix) index += 1;
 
-    for (uptr temp = value; temp != 0; temp /= base) size += 1;
+    if (value == 0) index += 1;
 
-    if (value == 0) size += 1;
+    if ((flags & FORMAT_FLAG_LEADING_PLUS) != 0) index += 1;
 
-    uptr offset = arena_offset(arena);
-    str8 result = str8_reserve(arena, size);
+    isiz offset = arena_offset(arena);
+    str8 result = str8_reserve(arena, index);
 
-    for (uptr i = size; i > 0; i -= 1) {
-        u32 ascii = ascii_from_digit(value, base);
+    while (index > 0) {
+        u32 ascii = ascii_digit_from_index(other, radix, 0);
+
+        index -= 1;
+        other /= radix;
 
         if (ascii != ASCII_NULL)
-            result.memory[i - 1] = pax_cast(u8, ascii);
+            result.memory[index] = ascii;
         else
             break;
-
-        value /= base;
     }
 
-    if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        result.memory[0] = ASCII_PLUS;
+    if ((flags & FORMAT_FLAG_LEADING_PLUS) != 0)
+        result.memory[index] = ASCII_PLUS;
 
-    if (value == 0) return result;
+    if (index == 0) return result;
 
     arena_rewind(arena, offset);
 
@@ -43,149 +45,174 @@ str8_from_uptr(Arena* arena, Format_Options opts, uptr value)
 }
 
 str8
-str8_from_u64(Arena* arena, Format_Options opts, u64 value)
+str8_from_u64(Arena* arena, Format_Options options, u64 value)
 {
-    uptr size = 0;
-    u64  base = opts.base;
+    isiz index = 0;
+    usiz flags = options.flags;
+    u64  radix = options.radix;
+    u64  other = value;
 
-    if (value == 0) size = 1;
+    for (u64 temp = other; temp != 0; temp /= radix) index += 1;
 
-    if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        size += 1;
+    if (value == 0) index += 1;
 
-    for (u64 temp = value; temp != 0; temp /= base) size += 1;
+    if ((flags & FORMAT_FLAG_LEADING_PLUS) != 0) index += 1;
 
-    uptr offset = arena_offset(arena);
-    str8 result = str8_reserve(arena, size);
+    isiz offset = arena_offset(arena);
+    str8 result = str8_reserve(arena, index);
 
-    for (uptr i = size; i > 0; i -= 1) {
-        u32 ascii = ascii_from_digit(value, base);
+    while (index > 0) {
+        u32 ascii = ascii_digit_from_index(other, radix, 0);
+
+        index -= 1;
+        other /= radix;
 
         if (ascii != ASCII_NULL)
-            result.memory[i - 1] = pax_cast(u8, ascii);
+            result.memory[index] = ascii;
         else
             break;
-
-        value /= base;
     }
 
-    if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        result.memory[0] = ASCII_PLUS;
+    if ((flags & FORMAT_FLAG_LEADING_PLUS) != 0)
+        result.memory[index] = ASCII_PLUS;
 
-    return result;
+    if (index == 0) return result;
+
+    arena_rewind(arena, offset);
+
+    return {};
 }
 
 str8
-str8_from_u32(Arena* arena, Format_Options opts, u32 value)
+str8_from_u32(Arena* arena, Format_Options options, u32 value)
 {
-    uptr size = 0;
-    u32  base = opts.base;
+    isiz index = 0;
+    usiz flags = options.flags;
+    u32  radix = options.radix;
+    u32  other = value;
 
-    if (value == 0) size = 1;
+    for (u32 temp = other; temp != 0; temp /= radix) index += 1;
 
-    if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        size += 1;
+    if (value == 0) index += 1;
 
-    for (u32 temp = value; temp != 0; temp /= base) size += 1;
+    if ((flags & FORMAT_FLAG_LEADING_PLUS) != 0) index += 1;
 
-    uptr offset = arena_offset(arena);
-    str8 result = str8_reserve(arena, size);
+    isiz offset = arena_offset(arena);
+    str8 result = str8_reserve(arena, index);
 
-    for (uptr i = size; i > 0; i -= 1) {
-        u32 ascii = ascii_from_digit(value, base);
+    while (index > 0) {
+        u32 ascii = ascii_digit_from_index(other, radix, 0);
+
+        index -= 1;
+        other /= radix;
 
         if (ascii != ASCII_NULL)
-            result.memory[i - 1] = pax_cast(u8, ascii);
+            result.memory[index] = ascii;
         else
             break;
-
-        value /= base;
     }
 
-    if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        result.memory[0] = ASCII_PLUS;
+    if ((flags & FORMAT_FLAG_LEADING_PLUS) != 0)
+        result.memory[index] = ASCII_PLUS;
 
-    return result;
+    if (index == 0) return result;
+
+    arena_rewind(arena, offset);
+
+    return {};
 }
 
 str8
-str8_from_u16(Arena* arena, Format_Options opts, u16 value)
+str8_from_u16(Arena* arena, Format_Options options, u16 value)
 {
-    uptr size = 0;
-    u16  base = opts.base;
+    isiz index = 0;
+    usiz flags = options.flags;
+    u16  radix = options.radix;
+    u16  other = value;
 
-    if (value == 0) size = 1;
+    for (u16 temp = other; temp != 0; temp /= radix) index += 1;
 
-    if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        size += 1;
+    if (value == 0) index += 1;
 
-    for (u16 temp = value; temp != 0; temp /= base) size += 1;
+    if ((flags & FORMAT_FLAG_LEADING_PLUS) != 0) index += 1;
 
-    uptr offset = arena_offset(arena);
-    str8 result = str8_reserve(arena, size);
+    isiz offset = arena_offset(arena);
+    str8 result = str8_reserve(arena, index);
 
-    for (uptr i = size; i > 0; i -= 1) {
-        u32 ascii = ascii_from_digit(value, base);
+    while (index > 0) {
+        u32 ascii = ascii_digit_from_index(other, radix, 0);
+
+        index -= 1;
+        other /= radix;
 
         if (ascii != ASCII_NULL)
-            result.memory[i - 1] = pax_cast(u8, ascii);
+            result.memory[index] = ascii;
         else
             break;
-
-        value /= base;
     }
 
-    if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        result.memory[0] = ASCII_PLUS;
+    if ((flags & FORMAT_FLAG_LEADING_PLUS) != 0)
+        result.memory[index] = ASCII_PLUS;
 
-    return result;
+    if (index == 0) return result;
+
+    arena_rewind(arena, offset);
+
+    return {};
 }
 
 str8
-str8_from_u8(Arena* arena, Format_Options opts, u8 value)
+str8_from_u8(Arena* arena, Format_Options options, u8 value)
 {
-    uptr size = 0;
-    u8   base = opts.base;
+    isiz index = 0;
+    usiz flags = options.flags;
+    u8   radix = options.radix;
+    u8   other = value;
 
-    if (value == 0) size = 1;
+    for (u8 temp = other; temp != 0; temp /= radix) index += 1;
 
-    if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        size += 1;
+    if (value == 0) index += 1;
 
-    for (u8 temp = value; temp != 0; temp /= base) size += 1;
+    if ((flags & FORMAT_FLAG_LEADING_PLUS) != 0) index += 1;
 
-    uptr offset = arena_offset(arena);
-    str8 result = str8_reserve(arena, size);
+    isiz offset = arena_offset(arena);
+    str8 result = str8_reserve(arena, index);
 
-    for (uptr i = size; i > 0; i -= 1) {
-        u32 ascii = ascii_from_digit(value, base);
+    while (index > 0) {
+        u32 ascii = ascii_digit_from_index(other, radix, 0);
+
+        index -= 1;
+        other /= radix;
 
         if (ascii != ASCII_NULL)
-            result.memory[i - 1] = pax_cast(u8, ascii);
+            result.memory[index] = ascii;
         else
             break;
-
-        value /= base;
     }
 
-    if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        result.memory[0] = ASCII_PLUS;
+    if ((flags & FORMAT_FLAG_LEADING_PLUS) != 0)
+        result.memory[index] = ASCII_PLUS;
 
-    return result;
+    if (index == 0) return result;
+
+    arena_rewind(arena, offset);
+
+    return {};
 }
 
 b32
-uptr_from_str8(str8 self, Format_Options opts, uptr* value)
+usiz_from_str8(str8 self, Format_Options options, usiz* value)
 {
-    uptr index = 0;
-    uptr base  = opts.base;
-    uptr temp  = 0;
+    isiz index = 0;
+    usiz flags = options.flags;
+    usiz radix = options.radix;
+    usiz other = 0;
 
     if (self.length < 1) return 0;
 
     switch (self.memory[index]) {
         case ASCII_PLUS: {
-            if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) == 0)
+            if ((flags & FORMAT_FLAG_LEADING_PLUS) == 0)
                 return 0;
 
             index += 1;
@@ -194,40 +221,42 @@ uptr_from_str8(str8 self, Format_Options opts, uptr* value)
         default: break;
     }
 
-    if ((opts.flags & FORMAT_FLAG_LEADING_ZERO) == 0) {
-        if (self.length > index + 1 && self.memory[index] == ASCII_ZERO)
+    if ((flags & FORMAT_FLAG_LEADING_ZERO) == 0) {
+        u32 ascii = self.memory[index];
+
+        if (self.length > index + 1 && ascii == ASCII_ZERO)
             return 0;
     }
 
     for (; index < self.length; index += 1) {
-        uptr digit = digit_from_ascii(self.memory[index], base);
+        usiz digit = ascii_index_from_digit(self.memory[index], radix);
 
-        if (digit >= 0 && digit < base) {
-            if (temp > (UPTR_MAX - digit) / base)
-                return 0;
+        if (digit < 0 || digit >= radix) return 0;
 
-            temp = temp * base + digit;
-        } else
+        if (other > (USIZ_MAX - digit) / radix)
             return 0;
+
+        other = other * radix + digit;
     }
 
-    *value = temp;
+    if (value != 0) *value = other;
 
     return 1;
 }
 
 b32
-u64_from_str8(str8 self, Format_Options opts, u64* value)
+u64_from_str8(str8 self, Format_Options options, u64* value)
 {
-    uptr index = 0;
-    u64  base  = opts.base;
-    u64  temp  = 0;
+    isiz index = 0;
+    usiz flags = options.flags;
+    u64  radix = options.radix;
+    u64  other = 0;
 
     if (self.length < 1) return 0;
 
     switch (self.memory[index]) {
         case ASCII_PLUS: {
-            if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) == 0)
+            if ((flags & FORMAT_FLAG_LEADING_PLUS) == 0)
                 return 0;
 
             index += 1;
@@ -236,40 +265,42 @@ u64_from_str8(str8 self, Format_Options opts, u64* value)
         default: break;
     }
 
-    if ((opts.flags & FORMAT_FLAG_LEADING_ZERO) == 0) {
-        if (self.length > index + 1 && self.memory[index] == ASCII_ZERO)
+    if ((flags & FORMAT_FLAG_LEADING_ZERO) == 0) {
+        u32 ascii = self.memory[index];
+
+        if (self.length > index + 1 && ascii == ASCII_ZERO)
             return 0;
     }
 
     for (; index < self.length; index += 1) {
-        u64 digit = digit_from_ascii(self.memory[index], base);
+        u64 digit = ascii_index_from_digit(self.memory[index], radix);
 
-        if (digit >= 0 && digit < base) {
-            if (temp > (U64_MAX - digit) / base)
-                return 0;
+        if (digit < 0 || digit >= radix) return 0;
 
-            temp = temp * base + digit;
-        } else
+        if (other > (U64_MAX - digit) / radix)
             return 0;
+
+        other = other * radix + digit;
     }
 
-    *value = temp;
+    if (value != 0) *value = other;
 
     return 1;
 }
 
 b32
-u32_from_str8(str8 self, Format_Options opts, u32* value)
+u32_from_str8(str8 self, Format_Options options, u32* value)
 {
-    uptr index = 0;
-    u32  base  = opts.base;
-    u32  temp  = 0;
+    isiz index = 0;
+    usiz flags = options.flags;
+    u32  radix = options.radix;
+    u32  other = 0;
 
     if (self.length < 1) return 0;
 
     switch (self.memory[index]) {
         case ASCII_PLUS: {
-            if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) == 0)
+            if ((flags & FORMAT_FLAG_LEADING_PLUS) == 0)
                 return 0;
 
             index += 1;
@@ -278,40 +309,42 @@ u32_from_str8(str8 self, Format_Options opts, u32* value)
         default: break;
     }
 
-    if ((opts.flags & FORMAT_FLAG_LEADING_ZERO) == 0) {
-        if (self.length > index + 1 && self.memory[index] == ASCII_ZERO)
+    if ((flags & FORMAT_FLAG_LEADING_ZERO) == 0) {
+        u32 ascii = self.memory[index];
+
+        if (self.length > index + 1 && ascii == ASCII_ZERO)
             return 0;
     }
 
     for (; index < self.length; index += 1) {
-        u32 digit = digit_from_ascii(self.memory[index], base);
+        u32 digit = ascii_index_from_digit(self.memory[index], radix);
 
-        if (digit >= 0 && digit < base) {
-            if (temp > (U32_MAX - digit) / base)
-                return 0;
+        if (digit < 0 || digit >= radix) return 0;
 
-            temp = temp * base + digit;
-        } else
+        if (other > (U32_MAX - digit) / radix)
             return 0;
+
+        other = other * radix + digit;
     }
 
-    *value = temp;
+    if (value != 0) *value = other;
 
     return 1;
 }
 
 b32
-u16_from_str8(str8 self, Format_Options opts, u16* value)
+u16_from_str8(str8 self, Format_Options options, u16* value)
 {
-    uptr index = 0;
-    u16  base  = opts.base;
-    u16  temp  = 0;
+    isiz index = 0;
+    usiz flags = options.flags;
+    u16  radix = options.radix;
+    u16  other = 0;
 
     if (self.length < 1) return 0;
 
     switch (self.memory[index]) {
         case ASCII_PLUS: {
-            if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) == 0)
+            if ((flags & FORMAT_FLAG_LEADING_PLUS) == 0)
                 return 0;
 
             index += 1;
@@ -320,40 +353,42 @@ u16_from_str8(str8 self, Format_Options opts, u16* value)
         default: break;
     }
 
-    if ((opts.flags & FORMAT_FLAG_LEADING_ZERO) == 0) {
-        if (self.length > index + 1 && self.memory[index] == ASCII_ZERO)
+    if ((flags & FORMAT_FLAG_LEADING_ZERO) == 0) {
+        u32 ascii = self.memory[index];
+
+        if (self.length > index + 1 && ascii == ASCII_ZERO)
             return 0;
     }
 
     for (; index < self.length; index += 1) {
-        u16 digit = digit_from_ascii(self.memory[index], base);
+        u16 digit = ascii_index_from_digit(self.memory[index], radix);
 
-        if (digit >= 0 && digit < base) {
-            if (temp > (U16_MAX - digit) / base)
-                return 0;
+        if (digit < 0 || digit >= radix) return 0;
 
-            temp = temp * base + digit;
-        } else
+        if (other > (U16_MAX - digit) / radix)
             return 0;
+
+        other = other * radix + digit;
     }
 
-    *value = temp;
+    if (value != 0) *value = other;
 
     return 1;
 }
 
 b32
-u8_from_str8(str8 self, Format_Options opts, u8* value)
+u8_from_str8(str8 self, Format_Options options, u8* value)
 {
-    uptr index = 0;
-    u8   base  = opts.base;
-    u8   temp  = 0;
+    isiz index = 0;
+    usiz flags = options.flags;
+    u8   radix = options.radix;
+    u8   other = 0;
 
     if (self.length < 1) return 0;
 
     switch (self.memory[index]) {
         case ASCII_PLUS: {
-            if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) == 0)
+            if ((flags & FORMAT_FLAG_LEADING_PLUS) == 0)
                 return 0;
 
             index += 1;
@@ -362,251 +397,258 @@ u8_from_str8(str8 self, Format_Options opts, u8* value)
         default: break;
     }
 
-    if ((opts.flags & FORMAT_FLAG_LEADING_ZERO) == 0) {
-        if (self.length > index + 1 && self.memory[index] == ASCII_ZERO)
+    if ((flags & FORMAT_FLAG_LEADING_ZERO) == 0) {
+        u32 ascii = self.memory[index];
+
+        if (self.length > index + 1 && ascii == ASCII_ZERO)
             return 0;
     }
 
     for (; index < self.length; index += 1) {
-        u8 digit = digit_from_ascii(self.memory[index], base);
+        u8 digit = ascii_index_from_digit(self.memory[index], radix);
 
-        if (digit >= 0 && digit < base) {
-            if (temp > (U8_MAX - digit) / base)
-                return 0;
+        if (digit < 0 || digit >= radix) return 0;
 
-            temp = temp * base + digit;
-        } else
+        if (other > (U8_MAX - digit) / radix)
             return 0;
+
+        other = other * radix + digit;
     }
 
-    *value = temp;
+    if (value != 0) *value = other;
 
     return 1;
 }
 
 str8
-str8_from_iptr(Arena* arena, Format_Options opts, iptr value)
+str8_from_isiz(Arena* arena, Format_Options options, isiz value)
 {
-    uptr size  = 0;
-    uptr base  = opts.base;
-    uptr other = pax_cast(uptr, value);
-    b32  negat = 0;
+    isiz index = 0;
+    usiz flags = options.flags;
+    usiz radix = options.radix;
+    usiz other = abs_isiz(value);
+    b32  sign  = sign_isiz(value);
 
-    if (value < 0) {
-        other = pax_cast(uptr, ~value) + 1;
-        negat = 1;
-    }
+    for (usiz temp = other; temp != 0; temp /= radix) index += 1;
 
-    if (negat != 0 || value == 0) size = 1;
+    if (sign != 0 || value == 0) index += 1;
 
-    if (negat == 0 && (opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        size += 1;
+    if (sign == 0 && (flags & FORMAT_FLAG_LEADING_PLUS) != 0)
+        index += 1;
 
-    for (uptr temp = other; temp != 0; temp /= base) size += 1;
+    isiz offset = arena_offset(arena);
+    str8 result = str8_reserve(arena, index);
 
-    uptr offset = arena_offset(arena);
-    str8 result = str8_reserve(arena, size);
+    while (index > 0) {
+        u32 ascii = ascii_digit_from_index(other, radix, 0);
 
-    for (uptr i = size; i > 0; i -= 1) {
-        u32 ascii = ascii_from_digit(other, base);
+        index -= 1;
+        other /= radix;
 
         if (ascii != ASCII_NULL)
-            result.memory[i - 1] = pax_cast(u8, ascii);
+            result.memory[index] = ascii;
         else
             break;
-
-        other /= base;
     }
 
-    if (negat != 0) result.memory[0] = ASCII_MINUS;
+    if (sign != 0) result.memory[index] = ASCII_MINUS;
 
-    if (negat == 0 && (opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        result.memory[0] = ASCII_PLUS;
+    if (sign == 0 && (flags & FORMAT_FLAG_LEADING_PLUS) != 0)
+        result.memory[index] = ASCII_PLUS;
 
-    return result;
+    if (index == 0) return result;
+
+    arena_rewind(arena, offset);
+
+    return {};
 }
 
 str8
-str8_from_i64(Arena* arena, Format_Options opts, i64 value)
+str8_from_i64(Arena* arena, Format_Options options, i64 value)
 {
-    uptr size  = 0;
-    u64  base  = opts.base;
-    u64  other = pax_cast(u64, value);
-    b32  negat = 0;
+    isiz index = 0;
+    usiz flags = options.flags;
+    u64  radix = options.radix;
+    u64  other = abs_i64(value);
+    b32  sign  = sign_i64(value);
 
-    if (value < 0) {
-        other = pax_cast(u64, ~value) + 1;
-        negat = 1;
-    }
+    for (u64 temp = other; temp != 0; temp /= radix) index += 1;
 
-    if (negat != 0 || value == 0) size = 1;
+    if (sign != 0 || value == 0) index += 1;
 
-    if (negat == 0 && (opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        size += 1;
+    if (sign == 0 && (flags & FORMAT_FLAG_LEADING_PLUS) != 0)
+        index += 1;
 
-    for (u64 temp = other; temp != 0; temp /= base) size += 1;
+    isiz offset = arena_offset(arena);
+    str8 result = str8_reserve(arena, index);
 
-    uptr offset = arena_offset(arena);
-    str8 result = str8_reserve(arena, size);
+    while (index > 0) {
+        u32 ascii = ascii_digit_from_index(other, radix, 0);
 
-    for (uptr i = size; i > 0; i -= 1) {
-        u32 ascii = ascii_from_digit(other, base);
+        index -= 1;
+        other /= radix;
 
         if (ascii != ASCII_NULL)
-            result.memory[i - 1] = pax_cast(u8, ascii);
+            result.memory[index] = ascii;
         else
             break;
-
-        other /= base;
     }
 
-    if (negat != 0) result.memory[0] = ASCII_MINUS;
+    if (sign != 0) result.memory[index] = ASCII_MINUS;
 
-    if (negat == 0 && (opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        result.memory[0] = ASCII_PLUS;
+    if (sign == 0 && (flags & FORMAT_FLAG_LEADING_PLUS) != 0)
+        result.memory[index] = ASCII_PLUS;
 
-    return result;
+    if (index == 0) return result;
+
+    arena_rewind(arena, offset);
+
+    return {};
 }
 
 str8
-str8_from_i32(Arena* arena, Format_Options opts, i32 value)
+str8_from_i32(Arena* arena, Format_Options options, i32 value)
 {
-    uptr size  = 0;
-    u32  base  = opts.base;
-    u32  other = pax_cast(u32, value);
-    b32  negat = 0;
+    isiz index = 0;
+    usiz flags = options.flags;
+    u32  radix = options.radix;
+    u32  other = abs_i32(value);
+    b32  sign  = sign_i32(value);
 
-    if (value < 0) {
-        other = pax_cast(u32, ~value) + 1;
-        negat = 1;
-    }
+    for (u32 temp = other; temp != 0; temp /= radix) index += 1;
 
-    if (negat != 0 || value == 0) size = 1;
+    if (sign != 0 || value == 0) index += 1;
 
-    if (negat == 0 && (opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        size += 1;
+    if (sign == 0 && (flags & FORMAT_FLAG_LEADING_PLUS) != 0)
+        index += 1;
 
-    for (u32 temp = other; temp != 0; temp /= base) size += 1;
+    isiz offset = arena_offset(arena);
+    str8 result = str8_reserve(arena, index);
 
-    uptr offset = arena_offset(arena);
-    str8 result = str8_reserve(arena, size);
+    while (index > 0) {
+        u32 ascii = ascii_digit_from_index(other, radix, 0);
 
-    for (uptr i = size; i > 0; i -= 1) {
-        u32 ascii = ascii_from_digit(other, base);
+        index -= 1;
+        other /= radix;
 
         if (ascii != ASCII_NULL)
-            result.memory[i - 1] = pax_cast(u8, ascii);
+            result.memory[index] = ascii;
         else
             break;
-
-        other /= base;
     }
 
-    if (negat != 0) result.memory[0] = ASCII_MINUS;
+    if (sign != 0) result.memory[index] = ASCII_MINUS;
 
-    if (negat == 0 && (opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        result.memory[0] = ASCII_PLUS;
+    if (sign == 0 && (flags & FORMAT_FLAG_LEADING_PLUS) != 0)
+        result.memory[index] = ASCII_PLUS;
 
-    return result;
+    if (index == 0) return result;
+
+    arena_rewind(arena, offset);
+
+    return {};
 }
 
 str8
-str8_from_i16(Arena* arena, Format_Options opts, i16 value)
+str8_from_i16(Arena* arena, Format_Options options, i16 value)
 {
-    uptr size  = 0;
-    u16  base  = opts.base;
-    u16  other = pax_cast(u16, value);
-    b32  negat = 0;
+    isiz index = 0;
+    usiz flags = options.flags;
+    u16  radix = options.radix;
+    u16  other = abs_i16(value);
+    b32  sign  = sign_i16(value);
 
-    if (value < 0) {
-        other = pax_cast(u16, ~value) + 1;
-        negat = 1;
-    }
+    for (u16 temp = other; temp != 0; temp /= radix) index += 1;
 
-    if (negat != 0 || value == 0) size = 1;
+    if (sign != 0 || value == 0) index += 1;
 
-    if (negat == 0 && (opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        size += 1;
+    if (sign == 0 && (flags & FORMAT_FLAG_LEADING_PLUS) != 0)
+        index += 1;
 
-    for (u16 temp = other; temp != 0; temp /= base) size += 1;
+    isiz offset = arena_offset(arena);
+    str8 result = str8_reserve(arena, index);
 
-    uptr offset = arena_offset(arena);
-    str8 result = str8_reserve(arena, size);
+    while (index > 0) {
+        u32 ascii = ascii_digit_from_index(other, radix, 0);
 
-    for (uptr i = size; i > 0; i -= 1) {
-        u32 ascii = ascii_from_digit(other, base);
+        index -= 1;
+        other /= radix;
 
         if (ascii != ASCII_NULL)
-            result.memory[i - 1] = pax_cast(u8, ascii);
+            result.memory[index] = ascii;
         else
             break;
-
-        other /= base;
     }
 
-    if (negat != 0) result.memory[0] = ASCII_MINUS;
+    if (sign != 0) result.memory[index] = ASCII_MINUS;
 
-    if (negat == 0 && (opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        result.memory[0] = ASCII_PLUS;
+    if (sign == 0 && (flags & FORMAT_FLAG_LEADING_PLUS) != 0)
+        result.memory[index] = ASCII_PLUS;
 
-    return result;
+    if (index == 0) return result;
+
+    arena_rewind(arena, offset);
+
+    return {};
 }
 
 str8
-str8_from_i8(Arena* arena, Format_Options opts, i8 value)
+str8_from_i8(Arena* arena, Format_Options options, i8 value)
 {
-    uptr size  = 0;
-    u8   base  = opts.base;
-    u8   other = pax_cast(u8, value);
-    b32  negat = 0;
+    isiz index = 0;
+    usiz flags = options.flags;
+    u8   radix = options.radix;
+    u8   other = abs_i8(value);
+    b32  sign  = sign_i8(value);
 
-    if (value < 0) {
-        other = pax_cast(u8, ~value) + 1;
-        negat = 1;
-    }
+    for (u8 temp = other; temp != 0; temp /= radix) index += 1;
 
-    if (negat != 0 || value == 0) size = 1;
+    if (sign != 0 || value == 0) index += 1;
 
-    if (negat == 0 && (opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        size += 1;
+    if (sign == 0 && (flags & FORMAT_FLAG_LEADING_PLUS) != 0)
+        index += 1;
 
-    for (u8 temp = other; temp != 0; temp /= base) size += 1;
+    isiz offset = arena_offset(arena);
+    str8 result = str8_reserve(arena, index);
 
-    uptr offset = arena_offset(arena);
-    str8 result = str8_reserve(arena, size);
+    while (index > 0) {
+        u32 ascii = ascii_digit_from_index(other, radix, 0);
 
-    for (uptr i = size; i > 0; i -= 1) {
-        u32 ascii = ascii_from_digit(other, base);
+        index -= 1;
+        other /= radix;
 
         if (ascii != ASCII_NULL)
-            result.memory[i - 1] = pax_cast(u8, ascii);
+            result.memory[index] = ascii;
         else
             break;
-
-        other /= base;
     }
 
-    if (negat != 0) result.memory[0] = ASCII_MINUS;
+    if (sign != 0) result.memory[index] = ASCII_MINUS;
 
-    if (negat == 0 && (opts.flags & FORMAT_FLAG_LEADING_PLUS) != 0)
-        result.memory[0] = ASCII_PLUS;
+    if (sign == 0 && (flags & FORMAT_FLAG_LEADING_PLUS) != 0)
+        result.memory[index] = ASCII_PLUS;
 
-    return result;
+    if (index == 0) return result;
+
+    arena_rewind(arena, offset);
+
+    return {};
 }
 
 b32
-iptr_from_str8(str8 self, Format_Options opts, iptr* value)
+isiz_from_str8(str8 self, Format_Options options, isiz* value)
 {
-    uptr index = 0;
-    iptr base  = opts.base;
-    iptr temp  = 0;
-    b32  negat = 0;
+    isiz index = 0;
+    usiz flags = options.flags;
+    isiz radix = options.radix;
+    isiz other = 0;
+    b32  sign  = 0;
 
     if (self.length < 1) return 0;
 
     switch (self.memory[index]) {
         case ASCII_PLUS: {
-            if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) == 0)
+            if ((flags & FORMAT_FLAG_LEADING_PLUS) == 0)
                 return 0;
 
             index += 1;
@@ -614,60 +656,62 @@ iptr_from_str8(str8 self, Format_Options opts, iptr* value)
 
         case ASCII_MINUS: {
             index += 1;
-            negat  = 1;
+            sign   = 1;
         } break;
 
         default: break;
     }
 
-    if ((opts.flags & FORMAT_FLAG_LEADING_ZERO) == 0) {
-        if (self.length > index + 1 && self.memory[index] == ASCII_ZERO)
+    if ((flags & FORMAT_FLAG_LEADING_ZERO) == 0) {
+        u32 ascii = self.memory[index];
+
+        if (self.length > index + 1 && ascii == ASCII_ZERO)
             return 0;
     }
 
     for (; index < self.length; index += 1) {
-        iptr digit = digit_from_ascii(self.memory[index], base);
+        isiz digit = ascii_index_from_digit(self.memory[index], radix);
 
-        if (digit >= 0 && digit < base) {
-            switch (negat) {
-                case 1: {
-                    if (temp < (IPTR_MIN + digit) / base)
-                        return 0;
+        if (digit < 0 || digit >= radix) return 0;
 
-                    temp = temp * base - digit;
-                } break;
+        switch (sign) {
+            case 0: {
+                if (other > (ISIZ_MAX - digit) / radix)
+                    return 0;
 
-                case 0: {
-                    if (temp > (IPTR_MAX - digit) / base)
-                        return 0;
+                other = other * radix + digit;
+            } break;
 
-                    temp = temp * base + digit;
-                } break;
+            case 1: {
+                if (other < (ISIZ_MIN + digit) / radix)
+                    return 0;
 
-                default: return 0;
-            }
-        } else
-            return 0;
+                other = other * radix - digit;
+            } break;
+
+            default: return 0;
+        }
     }
 
-    *value = temp;
+    if (value != 0) *value = other;
 
     return 1;
 }
 
 b32
-i64_from_str8(str8 self, Format_Options opts, i64* value)
+i64_from_str8(str8 self, Format_Options options, i64* value)
 {
-    uptr index = 0;
-    i64  base  = opts.base;
-    i64  temp  = 0;
-    b32  negat = 0;
+    isiz index = 0;
+    usiz flags = options.flags;
+    i64  radix = options.radix;
+    i64  other = 0;
+    b32  sign  = 0;
 
     if (self.length < 1) return 0;
 
     switch (self.memory[index]) {
         case ASCII_PLUS: {
-            if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) == 0)
+            if ((flags & FORMAT_FLAG_LEADING_PLUS) == 0)
                 return 0;
 
             index += 1;
@@ -675,60 +719,62 @@ i64_from_str8(str8 self, Format_Options opts, i64* value)
 
         case ASCII_MINUS: {
             index += 1;
-            negat  = 1;
+            sign   = 1;
         } break;
 
         default: break;
     }
 
-    if ((opts.flags & FORMAT_FLAG_LEADING_ZERO) == 0) {
-        if (self.length > index + 1 && self.memory[index] == ASCII_ZERO)
+    if ((flags & FORMAT_FLAG_LEADING_ZERO) == 0) {
+        u32 ascii = self.memory[index];
+
+        if (self.length > index + 1 && ascii == ASCII_ZERO)
             return 0;
     }
 
     for (; index < self.length; index += 1) {
-        i64 digit = digit_from_ascii(self.memory[index], base);
+        i64 digit = ascii_index_from_digit(self.memory[index], radix);
 
-        if (digit >= 0 && digit < base) {
-            switch (negat) {
-                case 1: {
-                    if (temp < (I64_MIN + digit) / base)
-                        return 0;
+        if (digit < 0 || digit >= radix) return 0;
 
-                    temp = temp * base - digit;
-                } break;
+        switch (sign) {
+            case 0: {
+                if (other > (I64_MAX - digit) / radix)
+                    return 0;
 
-                case 0: {
-                    if (temp > (I64_MAX - digit) / base)
-                        return 0;
+                other = other * radix + digit;
+            } break;
 
-                    temp = temp * base + digit;
-                } break;
+            case 1: {
+                if (other < (I64_MIN + digit) / radix)
+                    return 0;
 
-                default: return 0;
-            }
-        } else
-            return 0;
+                other = other * radix - digit;
+            } break;
+
+            default: return 0;
+        }
     }
 
-    *value = temp;
+    if (value != 0) *value = other;
 
     return 1;
 }
 
 b32
-i32_from_str8(str8 self, Format_Options opts, i32* value)
+i32_from_str8(str8 self, Format_Options options, i32* value)
 {
-    uptr index = 0;
-    i32  base  = opts.base;
-    i32  temp  = 0;
-    b32  negat = 0;
+    isiz index = 0;
+    usiz flags = options.flags;
+    i32  radix = options.radix;
+    i32  other = 0;
+    b32  sign  = 0;
 
     if (self.length < 1) return 0;
 
     switch (self.memory[index]) {
         case ASCII_PLUS: {
-            if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) == 0)
+            if ((flags & FORMAT_FLAG_LEADING_PLUS) == 0)
                 return 0;
 
             index += 1;
@@ -736,60 +782,62 @@ i32_from_str8(str8 self, Format_Options opts, i32* value)
 
         case ASCII_MINUS: {
             index += 1;
-            negat  = 1;
+            sign  = 1;
         } break;
 
         default: break;
     }
 
-    if ((opts.flags & FORMAT_FLAG_LEADING_ZERO) == 0) {
-        if (self.length > index + 1 && self.memory[index] == ASCII_ZERO)
+    if ((flags & FORMAT_FLAG_LEADING_ZERO) == 0) {
+        u32 ascii = self.memory[index];
+
+        if (self.length > index + 1 && ascii == ASCII_ZERO)
             return 0;
     }
 
     for (; index < self.length; index += 1) {
-        i32 digit = digit_from_ascii(self.memory[index], base);
+        i32 digit = ascii_index_from_digit(self.memory[index], radix);
 
-        if (digit >= 0 && digit < base) {
-            switch (negat) {
-                case 1: {
-                    if (temp < (I32_MIN + digit) / base)
-                        return 0;
+        if (digit < 0 || digit >= radix) return 0;
 
-                    temp = temp * base - digit;
-                } break;
+        switch (sign) {
+            case 0: {
+                if (other > (I32_MAX - digit) / radix)
+                    return 0;
 
-                case 0: {
-                    if (temp > (I32_MAX - digit) / base)
-                        return 0;
+                other = other * radix + digit;
+            } break;
 
-                    temp = temp * base + digit;
-                } break;
+            case 1: {
+                if (other < (I32_MIN + digit) / radix)
+                    return 0;
 
-                default: return 0;
-            }
-        } else
-            return 0;
+                other = other * radix - digit;
+            } break;
+
+            default: return 0;
+        }
     }
 
-    *value = temp;
+    if (value != 0) *value = other;
 
     return 1;
 }
 
 b32
-i16_from_str8(str8 self, Format_Options opts, i16* value)
+i16_from_str8(str8 self, Format_Options options, i16* value)
 {
-    uptr index = 0;
-    i16  base  = opts.base;
-    i16  temp  = 0;
-    b32  negat = 0;
+    isiz index = 0;
+    usiz flags = options.flags;
+    i16  radix = options.radix;
+    i16  other = 0;
+    b32  sign  = 0;
 
     if (self.length < 1) return 0;
 
     switch (self.memory[index]) {
         case ASCII_PLUS: {
-            if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) == 0)
+            if ((flags & FORMAT_FLAG_LEADING_PLUS) == 0)
                 return 0;
 
             index += 1;
@@ -797,60 +845,62 @@ i16_from_str8(str8 self, Format_Options opts, i16* value)
 
         case ASCII_MINUS: {
             index += 1;
-            negat  = 1;
+            sign  = 1;
         } break;
 
         default: break;
     }
 
-    if ((opts.flags & FORMAT_FLAG_LEADING_ZERO) == 0) {
-        if (self.length > index + 1 && self.memory[index] == ASCII_ZERO)
+    if ((flags & FORMAT_FLAG_LEADING_ZERO) == 0) {
+        u32 ascii = self.memory[index];
+
+        if (self.length > index + 1 && ascii == ASCII_ZERO)
             return 0;
     }
 
     for (; index < self.length; index += 1) {
-        i16 digit = digit_from_ascii(self.memory[index], base);
+        i16 digit = ascii_index_from_digit(self.memory[index], radix);
 
-        if (digit >= 0 && digit < base) {
-            switch (negat) {
-                case 1: {
-                    if (temp < (I16_MIN + digit) / base)
-                        return 0;
+        if (digit < 0 || digit >= radix) return 0;
 
-                    temp = temp * base - digit;
-                } break;
+        switch (sign) {
+            case 0: {
+                if (other > (I16_MAX - digit) / radix)
+                    return 0;
 
-                case 0: {
-                    if (temp > (I16_MAX - digit) / base)
-                        return 0;
+                other = other * radix + digit;
+            } break;
 
-                    temp = temp * base + digit;
-                } break;
+            case 1: {
+                if (other < (I16_MIN + digit) / radix)
+                    return 0;
 
-                default: return 0;
-            }
-        } else
-            return 0;
+                other = other * radix - digit;
+            } break;
+
+            default: return 0;
+        }
     }
 
-    *value = temp;
+    if (value != 0) *value = other;
 
     return 1;
 }
 
 b32
-i8_from_str8(str8 self, Format_Options opts, i8* value)
+i8_from_str8(str8 self, Format_Options options, i8* value)
 {
-    uptr index = 0;
-    i8   base  = opts.base;
-    i8   temp  = 0;
-    b32  negat = 0;
+    isiz index = 0;
+    usiz flags = options.flags;
+    i8   radix = options.radix;
+    i8   other = 0;
+    b32  sign  = 0;
 
     if (self.length < 1) return 0;
 
     switch (self.memory[index]) {
         case ASCII_PLUS: {
-            if ((opts.flags & FORMAT_FLAG_LEADING_PLUS) == 0)
+            if ((flags & FORMAT_FLAG_LEADING_PLUS) == 0)
                 return 0;
 
             index += 1;
@@ -858,43 +908,44 @@ i8_from_str8(str8 self, Format_Options opts, i8* value)
 
         case ASCII_MINUS: {
             index += 1;
-            negat  = 1;
+            sign  = 1;
         } break;
 
         default: break;
     }
 
-    if ((opts.flags & FORMAT_FLAG_LEADING_ZERO) == 0) {
-        if (self.length > index + 1 && self.memory[index] == ASCII_ZERO)
+    if ((flags & FORMAT_FLAG_LEADING_ZERO) == 0) {
+        u32 ascii = self.memory[index];
+
+        if (self.length > index + 1 && ascii == ASCII_ZERO)
             return 0;
     }
 
     for (; index < self.length; index += 1) {
-        i8 digit = digit_from_ascii(self.memory[index], base);
+        i8 digit = ascii_index_from_digit(self.memory[index], radix);
 
-        if (digit >= 0 && digit < base) {
-            switch (negat) {
-                case 1: {
-                    if (temp < (I8_MIN + digit) / base)
-                        return 0;
+        if (digit < 0 || digit >= radix) return 0;
 
-                    temp = temp * base - digit;
-                } break;
+        switch (sign) {
+            case 0: {
+                if (other > (I8_MAX - digit) / radix)
+                    return 0;
 
-                case 0: {
-                    if (temp > (I8_MAX - digit) / base)
-                        return 0;
+                other = other * radix + digit;
+            } break;
 
-                    temp = temp * base + digit;
-                } break;
+            case 1: {
+                if (other < (I8_MIN + digit) / radix)
+                    return 0;
 
-                default: return 0;
-            }
-        } else
-            return 0;
+                other = other * radix - digit;
+            } break;
+
+            default: return 0;
+        }
     }
 
-    *value = temp;
+    if (value != 0) *value = other;
 
     return 1;
 }

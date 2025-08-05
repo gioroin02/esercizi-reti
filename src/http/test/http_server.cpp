@@ -54,9 +54,9 @@ main(int argc, char** argv)
     Server server = {};
 
     if (argc != 1) {
-        Format_Options opts = format_options_base(10);
+        Format_Options opts = format_options_simple(10);
 
-        for (uptr i = 1; i < argc; i += 1) {
+        for (usiz i = 1; i < argc; i += 1) {
             str8 arg = pax_str8_max(argv[i], 128);
 
             if (str8_starts_with(arg, SERVER_ARG_PORT) != 0) {
@@ -75,11 +75,11 @@ main(int argc, char** argv)
         }
     }
 
-    server.socket = server_tcp_start(&arena, server.port, address_any(ADDRESS_KIND_IP4));
+    server.socket = server_tcp_start(&arena, server.port, address_any(ADDRESS_TYPE_IP4));
 
     if (server.socket == 0) return 1;
 
-    uptr offset = arena_offset(&arena);
+    usiz offset = arena_offset(&arena);
 
     while (1) {
         Session session = {};
@@ -90,7 +90,7 @@ main(int argc, char** argv)
 
         session.heading = http_request_heading(&session.reader, &arena, session.socket);
 
-        uptr payload = http_heading_get_content_length(&session.heading, 0);
+        usiz payload = http_heading_get_content_length(&session.heading, 0);
 
         if (payload != 0)
             session.content = http_request_content(&session.reader, &arena, payload, session.socket);
@@ -99,13 +99,13 @@ main(int argc, char** argv)
 
         printf(DEBUG " Heading (%llu):\n", session.heading.inner.size);
 
-        for (uptr i = 0; i < session.heading.inner.size; i += 1) {
+        for (usiz i = 0; i < session.heading.inner.size; i += 1) {
             str8 key   = array_get_or(&session.heading.key,   i, pax_str8(""));
             str8 value = array_get_or(&session.heading.value, i, pax_str8(""));
 
             printf(DEBUG "     - " YLW("'%.*s'") " => " BLU("'%.*s'") "\n",
-                pax_cast(int, key.length), key.memory,
-                pax_cast(int, value.length), value.memory);
+                pax_as(int, key.length), key.memory,
+                pax_as(int, value.length), value.memory);
         }
 
         printf(DEBUG " Content (%llu)\n", session.content.size);
@@ -143,31 +143,31 @@ http_server_on_get(Arena* arena, Server* server, Session* session)
     resource = str8_trim_prefix(resource, pax_str8("/"));
 
     printf(INFO " Requested resource " BLU("'%.*s'") "\n",
-        pax_cast(int, resource.length), resource.memory);
+        pax_as(int, resource.length), resource.memory);
 
     /* Begin debug */
 
     printf(DEBUG " Params (%llu):\n", params.inner.size);
 
-    for (uptr i = 0; i < params.inner.size; i += 1) {
+    for (usiz i = 0; i < params.inner.size; i += 1) {
         str8 key   = array_get_or(&params.key,   i, pax_str8(""));
         str8 value = array_get_or(&params.value, i, pax_str8(""));
 
         printf(DEBUG "     - " YLW("'%.*s'") " => " BLU("'%.*s'") "\n",
-            pax_cast(int, key.length), key.memory,
-            pax_cast(int, value.length), value.memory);
+            pax_as(int, key.length), key.memory,
+            pax_as(int, value.length), value.memory);
     }
 
     /* End debug */
 
     if (resource.length == 0) resource = pax_str8("index.html");
 
-    File_Props properties = {};
+    File_Attribs attribs = file_attribs(arena, server->path, resource);
 
-    if (file_props(&properties, arena, server->path, resource) == 0)
+    if (file_size(&attribs) <= 0)
         printf(ERROR " Unable to locate resource\n");
 
-    buf8 buffer = buf8_reserve(arena, file_size(&properties));
+    buf8 buffer = buf8_reserve(arena, file_size(&attribs));
 
     if (buffer.length != 0) {
         File file = file_open(arena, server->path, resource, FILE_PERM_READ);
@@ -175,7 +175,7 @@ http_server_on_get(Arena* arena, Server* server, Session* session)
         if (file != 0) {
             if (file_read(file, &buffer) != 0) {
                 printf(INFO " Responding with content of " BLU("'%.*s'") "\n",
-                    pax_cast(int, resource.length), resource.memory);
+                    pax_as(int, resource.length), resource.memory);
             }
         } else
             printf(ERROR " Unable to open file for reading\n");
@@ -184,7 +184,7 @@ http_server_on_get(Arena* arena, Server* server, Session* session)
     }
 
     str8 type   = pax_str8("");
-    str8 length = str8_from_uptr(arena, format_options_base(10), buffer.size);
+    str8 length = str8_from_usiz(arena, format_options_simple(10), buffer.size);
 
     if (str8_ends_with(resource, pax_str8(".html")) != 0) type = MIME_TEXT_HTML;
     if (str8_ends_with(resource, pax_str8(".js"))   != 0) type = MIME_TEXT_JAVASCRIPT;
@@ -218,13 +218,13 @@ http_server_on_post(Arena* arena, Server* server, Session* session)
 
     printf(DEBUG " Content Args (%llu):\n", content_args.inner.size);
 
-    for (uptr i = 0; i < content_args.inner.size; i += 1) {
+    for (usiz i = 0; i < content_args.inner.size; i += 1) {
         str8 key   = array_get_or(&content_args.key,   i, pax_str8(""));
         str8 value = array_get_or(&content_args.value, i, pax_str8(""));
 
         printf(DEBUG "     - " YLW("'%.*s'") " => " BLU("'%.*s'") "\n",
-            pax_cast(int, key.length), key.memory,
-            pax_cast(int, value.length), value.memory);
+            pax_as(int, key.length), key.memory,
+            pax_as(int, value.length), value.memory);
     }
 
     /* End debug */
@@ -274,13 +274,13 @@ http_server_on_multipart_form_data(Arena* arena, Server* server, Session* sessio
 
     printf(DEBUG " Multipart Args (%llu):\n", payload_args.inner.size);
 
-    for (uptr i = 0; i < payload_args.inner.size; i += 1) {
+    for (usiz i = 0; i < payload_args.inner.size; i += 1) {
         str8 key   = array_get_or(&payload_args.key,   i, pax_str8(""));
         str8 value = array_get_or(&payload_args.value, i, pax_str8(""));
 
         printf(DEBUG "     - " YLW("'%.*s'") " => " BLU("'%.*s'") "\n",
-            pax_cast(int, key.length), key.memory,
-            pax_cast(int, value.length), value.memory);
+            pax_as(int, key.length), key.memory,
+            pax_as(int, value.length), value.memory);
     }
 
     /* End debug */
@@ -302,13 +302,13 @@ http_server_on_multipart_form_data(Arena* arena, Server* server, Session* sessio
 
     printf(DEBUG " Content Disposition Args (%llu):\n", contdisp_args.inner.size);
 
-    for (uptr i = 0; i < contdisp_args.inner.size; i += 1) {
+    for (usiz i = 0; i < contdisp_args.inner.size; i += 1) {
         str8 key   = array_get_or(&contdisp_args.key,   i, pax_str8(""));
         str8 value = array_get_or(&contdisp_args.value, i, pax_str8(""));
 
         printf(DEBUG "     - " YLW("'%.*s'") " => " BLU("'%.*s'") "\n",
-            pax_cast(int, key.length), key.memory,
-            pax_cast(int, value.length), value.memory);
+            pax_as(int, key.length), key.memory,
+            pax_as(int, value.length), value.memory);
     }
 
     /* End debug */
@@ -335,7 +335,7 @@ http_server_on_multipart_form_data(Arena* arena, Server* server, Session* sessio
 
         if (file_write(file, &buffer) != 0) {
             printf(INFO " Wrote content to " BLU("'%.*s'") "\n",
-                pax_cast(int, name.length), name.memory);
+                pax_as(int, name.length), name.memory);
 
             file_close(file);
 
@@ -370,13 +370,13 @@ http_server_on_application_form_url_encoded(Arena* arena, Server* server, Sessio
 
     printf(DEBUG " Params (%llu):\n", params.inner.size);
 
-    for (uptr i = 0; i < params.inner.size; i += 1) {
+    for (usiz i = 0; i < params.inner.size; i += 1) {
         str8 key   = array_get_or(&params.key,   i, pax_str8(""));
         str8 value = array_get_or(&params.value, i, pax_str8(""));
 
         printf(DEBUG "     - " YLW("'%.*s'") " => " BLU("'%.*s'") "\n",
-            pax_cast(int, key.length), key.memory,
-            pax_cast(int, value.length), value.memory);
+            pax_as(int, key.length), key.memory,
+            pax_as(int, value.length), value.memory);
     }
 
     /* End debug */

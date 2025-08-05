@@ -1,7 +1,6 @@
 #ifndef PAX_STRING_EXPORTS_CPP
 #define PAX_STRING_EXPORTS_CPP
 
-// TODO: Maybe move to own packages?
 #include "ascii.cpp"
 #include "unicode.cpp"
 

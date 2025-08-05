@@ -1,9 +1,9 @@
 #ifndef PAX_STORAGE_EXPORTS_HPP
 #define PAX_STORAGE_EXPORTS_HPP
 
-#include "file_props.hpp"
 #include "file.hpp"
+#include "file_attribs.hpp"
 
-#include "dir_view.hpp"
+#include "directory.hpp"
 
 #endif // PAX_STORAGE_EXPORTS_HPP

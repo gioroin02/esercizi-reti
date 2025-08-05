@@ -29,9 +29,9 @@ main(int argc, char** argv)
     Server server = {};
 
     if (argc != 1) {
-        Format_Options opts = format_options_base(10);
+        Format_Options opts = format_options_simple(10);
 
-        for (uptr i = 1; i < argc; i += 1) {
+        for (usiz i = 1; i < argc; i += 1) {
             str8 arg = pax_str8_max(argv[i], 128);
 
             if (str8_starts_with(arg, SERVER_ARG_PORT) != 0) {
@@ -43,7 +43,7 @@ main(int argc, char** argv)
         }
     }
 
-    server.socket = server_tcp_start(&arena, server.port, address_any(ADDRESS_KIND_IP4));
+    server.socket = server_tcp_start(&arena, server.port, address_any(ADDRESS_TYPE_IP4));
 
     if (server.socket == 0) return 1;
 
@@ -58,7 +58,7 @@ main(int argc, char** argv)
     session.request  = buf8_reserve(&arena, MEMORY_KIB);
     session.response = buf8_reserve(&arena, MEMORY_KIB);
 
-    uptr offset = arena_offset(&arena);
+    usiz offset = arena_offset(&arena);
     u32  result = 0;
     u32  number = 0;
 
@@ -69,7 +69,7 @@ main(int argc, char** argv)
         number = 0;
 
         buf8_read_mem8_head(&session.request,
-            pax_cast(u8*, &number), pax_size_of(u32));
+            pax_as_u8p(&number), pax_size_of(u32));
 
         number  = u32_host_from_net(number);
         result += number;
@@ -80,7 +80,7 @@ main(int argc, char** argv)
         result = u32_net_from_host(result);
 
         buf8_write_mem8_tail(&session.response,
-            pax_cast(u8*, &result), pax_size_of(u32));
+            pax_as_u8p(&result), pax_size_of(u32));
 
         session_tcp_write(session.socket, &session.response);
 

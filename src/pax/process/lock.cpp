@@ -3,7 +3,7 @@
 
 #include "lock.hpp"
 
-#if PAX_PLATFORM == PAX_PLATFORM_WINDOWS
+#if PAX_SYSTEM == PAX_SYSTEM_WINDOWS
 
     #include "windows/lock.cpp"
 
@@ -20,7 +20,7 @@
 
 #endif
 
-#define pax_lock(self) pax_cast(__Lock__*, self)
+#define pax_lock(self) pax_as(__Lock__*, self)
 
 namespace pax {
 

@@ -14,10 +14,10 @@ namespace pax {
 void
 system_sleep(u32 millis);
 
-uptr
+isiz
 system_get_number_of_cpus();
 
-uptr
+isiz
 system_get_thread_ident();
 
 } // namespace pax

@@ -9,7 +9,7 @@ static const str8 CLIENT_ARG_PORT = pax_str8("--port=");
 
 struct Server
 {
-    Address addr = {};
+    Address addr = address_localhost(ADDRESS_TYPE_IP4);
     u16     port = 8000;
 };
 
@@ -30,19 +30,17 @@ main(int argc, char** argv)
 
     Server server = {};
 
-    address_from_str8(pax_str8("localhost"), ADDRESS_KIND_IP4, &server.addr);
-
     if (argc != 1) {
-        Format_Options opts = format_options_base(10);
+        Format_Options opts = format_options_simple(10);
 
-        for (uptr i = 1; i < argc; i += 1) {
+        for (usiz i = 1; i < argc; i += 1) {
             str8 arg = pax_str8_max(argv[i], 128);
 
             if (str8_starts_with(arg, CLIENT_ARG_ADDR) != 0) {
                 arg = str8_trim_prefix(arg, CLIENT_ARG_ADDR);
                 arg = str8_trim_spaces(arg);
 
-                address_from_str8(arg, ADDRESS_KIND_IP4, &server.addr);
+                address_from_str8(arg, ADDRESS_TYPE_IP4, &server.addr);
             }
 
             if (str8_starts_with(arg, CLIENT_ARG_PORT) != 0) {
@@ -56,7 +54,7 @@ main(int argc, char** argv)
 
     Client client = {};
 
-    client.socket = client_tcp_start(&arena, ADDRESS_KIND_IP4);
+    client.socket = client_tcp_start(&arena, ADDRESS_TYPE_IP4);
 
     if (client.socket == 0) return 1;
 
@@ -75,7 +73,7 @@ main(int argc, char** argv)
             &arena, client.response.size);
 
         printf(INFO " " BLU("'%.*s'") "\n",
-            pax_cast(int, string.length), string.memory);
+            pax_as(int, string.length), string.memory);
     }
 
     client_tcp_stop(client.socket);

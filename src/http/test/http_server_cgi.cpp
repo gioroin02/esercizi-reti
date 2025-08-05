@@ -49,9 +49,9 @@ main(int argc, char** argv)
     Server server = {};
 
     if (argc != 1) {
-        Format_Options opts = format_options_base(10);
+        Format_Options opts = format_options_simple(10);
 
-        for (uptr i = 1; i < argc; i += 1) {
+        for (usiz i = 1; i < argc; i += 1) {
             str8 arg = pax_str8_max(argv[i], 128);
 
             if (str8_starts_with(arg, SERVER_ARG_PORT) != 0) {
@@ -63,11 +63,11 @@ main(int argc, char** argv)
         }
     }
 
-    server.socket = server_tcp_start(&arena, server.port, address_any(ADDRESS_KIND_IP4));
+    server.socket = server_tcp_start(&arena, server.port, address_any(ADDRESS_TYPE_IP4));
 
     if (server.socket == 0) return 1;
 
-    uptr offset = arena_offset(&arena);
+    usiz offset = arena_offset(&arena);
 
     while (1) {
         Session session = {};
@@ -78,7 +78,7 @@ main(int argc, char** argv)
 
         session.heading = http_request_heading(&session.reader, &arena, session.socket);
 
-        uptr payload = http_heading_get_content_length(&session.heading, 0);
+        usiz payload = http_heading_get_content_length(&session.heading, 0);
 
         if (payload != 0)
             session.content = http_request_content(&session.reader, &arena, payload, session.socket);
@@ -87,13 +87,13 @@ main(int argc, char** argv)
 
         printf(DEBUG " Heading (%llu):\n", session.heading.inner.size);
 
-        for (uptr i = 0; i < session.heading.inner.size; i += 1) {
+        for (usiz i = 0; i < session.heading.inner.size; i += 1) {
             str8 key   = array_get_or(&session.heading.key,   i, pax_str8(""));
             str8 value = array_get_or(&session.heading.value, i, pax_str8(""));
 
             printf(DEBUG "     - " YLW("'%.*s'") " => " BLU("'%.*s'") "\n",
-                pax_cast(int, key.length), key.memory,
-                pax_cast(int, value.length), value.memory);
+                pax_as(int, key.length), key.memory,
+                pax_as(int, value.length), value.memory);
         }
 
         printf(DEBUG " Content (%llu)\n", session.content.size);
@@ -128,19 +128,19 @@ http_server_on_get(Arena* arena, Server* server, Session* session)
     resource = str8_trim_prefix(resource, pax_str8("/"));
 
     printf(INFO " Requested resource " BLU("'%.*s'") "\n",
-        pax_cast(int, resource.length), resource.memory);
+        pax_as(int, resource.length), resource.memory);
 
     /* Begin debug */
 
     printf(DEBUG " Params (%llu):\n", params.inner.size);
 
-    for (uptr i = 0; i < params.inner.size; i += 1) {
+    for (usiz i = 0; i < params.inner.size; i += 1) {
         str8 key   = array_get_or(&params.key,   i, pax_str8(""));
         str8 value = array_get_or(&params.value, i, pax_str8(""));
 
         printf(DEBUG "     - " YLW("'%.*s'") " => " BLU("'%.*s'") "\n",
-            pax_cast(int, key.length), key.memory,
-            pax_cast(int, value.length), value.memory);
+            pax_as(int, key.length), key.memory,
+            pax_as(int, value.length), value.memory);
     }
 
     /* End debug */
@@ -154,7 +154,7 @@ http_server_on_get(Arena* arena, Server* server, Session* session)
         i32 x = 0;
         i32 y = 0;
 
-        Format_Options opts = format_options_base(10);
+        Format_Options opts = format_options_simple(10);
 
         i32_from_str8(argx, opts, &x);
         i32_from_str8(argy, opts, &y);
@@ -187,7 +187,7 @@ http_server_on_get(Arena* arena, Server* server, Session* session)
         i32 x = 0;
         i32 y = 0;
 
-        Format_Options opts = format_options_base(10);
+        Format_Options opts = format_options_simple(10);
 
         i32_from_str8(argx, opts, &x);
         i32_from_str8(argy, opts, &y);
@@ -214,7 +214,7 @@ http_server_on_get(Arena* arena, Server* server, Session* session)
     }
 
     str8 type   = MIME_TEXT_HTML;
-    str8 length = str8_from_uptr(arena, format_options_base(10), buffer.size);
+    str8 length = str8_from_usiz(arena, format_options_simple(10), buffer.size);
 
     http_response_write_start(&session->writer, HTTP_VERSION_1_1,
         HTTP_STATUS_OK, HTTP_MESSAGE_OK);

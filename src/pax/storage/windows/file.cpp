@@ -19,7 +19,7 @@ struct Windows_File
 b32
 windows_file_delete(Arena* arena, str8 path, str8 name)
 {
-    uptr  offset = arena_offset(arena);
+    isiz  offset = arena_offset(arena);
     buf16 buffer = buf16_reserve(arena, MEMORY_KIB);
 
     buf16_write_str8_tail(&buffer, path);
@@ -28,7 +28,7 @@ windows_file_delete(Arena* arena, str8 path, str8 name)
 
     str16 string = buf16_read_str16_head(&buffer, arena, buffer.size);
 
-    b32 state = DeleteFileW(pax_cast(wchar_t*, string.memory));
+    b32 state = DeleteFileW(pax_as(wchar_t*, string.memory));
 
     arena_rewind(arena, offset);
 
@@ -40,37 +40,17 @@ windows_file_delete(Arena* arena, str8 path, str8 name)
 Windows_File*
 windows_file_open(Arena* arena, str8 path, str8 name, File_Perm perm)
 {
-    uptr offset = arena_offset(arena);
-    uptr access = 0;
+    isiz offset = arena_offset(arena);
+    isiz access = 0;
 
-    switch (perm) {
-        case FILE_PERM_READ:  { access = GENERIC_READ;    } break;
-        case FILE_PERM_WRITE: { access = GENERIC_WRITE;   } break;
-        case FILE_PERM_EXEC:  { access = GENERIC_EXECUTE; } break;
+    if ((perm & FILE_PERM_READ)  != 0) access |= GENERIC_READ;
+    if ((perm & FILE_PERM_WRITE) != 0) access |= GENERIC_WRITE;
+    if ((perm & FILE_PERM_EXEC)  != 0) access |= GENERIC_EXECUTE;
 
-        case FILE_PERM_READ_WRITE: {
-            access = GENERIC_READ | GENERIC_WRITE;
-        } break;
-
-        case FILE_PERM_READ_EXEC: {
-            access = GENERIC_READ | GENERIC_EXECUTE;
-        } break;
-
-        case FILE_PERM_WRITE_EXEC: {
-            access = GENERIC_WRITE | GENERIC_EXECUTE;
-        } break;
-
-        case FILE_PERM_FULL: {
-            access = GENERIC_READ | GENERIC_WRITE | GENERIC_EXECUTE;
-        } break;
-
-        default: return 0;
-    }
-
-    Windows_File* result = arena_reserve_one<Windows_File>(arena);
+    Windows_File* result = pax_arena_reserve_one(arena, Windows_File);
 
     if (result != 0) {
-        uptr  temp   = arena_offset(arena);
+        isiz  temp   = arena_offset(arena);
         buf16 buffer = buf16_reserve(arena, MEMORY_KIB);
 
         buf16_write_str8_tail(&buffer, path);
@@ -79,7 +59,7 @@ windows_file_open(Arena* arena, str8 path, str8 name, File_Perm perm)
 
         str16 string = buf16_read_str16_head(&buffer, arena, buffer.size);
 
-        result->handle = CreateFileW(pax_cast(wchar_t*, string.memory),
+        result->handle = CreateFileW(pax_as(wchar_t*, string.memory),
             access, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
         arena_rewind(arena, temp);
@@ -96,37 +76,17 @@ windows_file_open(Arena* arena, str8 path, str8 name, File_Perm perm)
 Windows_File*
 windows_file_open_always(Arena* arena, str8 path, str8 name, File_Perm perm)
 {
-    uptr offset = arena_offset(arena);
-    uptr access = 0;
+    isiz offset = arena_offset(arena);
+    isiz access = 0;
 
-    switch (perm) {
-        case FILE_PERM_READ:  { access = GENERIC_READ;    } break;
-        case FILE_PERM_WRITE: { access = GENERIC_WRITE;   } break;
-        case FILE_PERM_EXEC:  { access = GENERIC_EXECUTE; } break;
+    if ((perm & FILE_PERM_READ)  != 0) access |= GENERIC_READ;
+    if ((perm & FILE_PERM_WRITE) != 0) access |= GENERIC_WRITE;
+    if ((perm & FILE_PERM_EXEC)  != 0) access |= GENERIC_EXECUTE;
 
-        case FILE_PERM_READ_WRITE: {
-            access = GENERIC_READ | GENERIC_WRITE;
-        } break;
-
-        case FILE_PERM_READ_EXEC: {
-            access = GENERIC_READ | GENERIC_EXECUTE;
-        } break;
-
-        case FILE_PERM_WRITE_EXEC: {
-            access = GENERIC_WRITE | GENERIC_EXECUTE;
-        } break;
-
-        case FILE_PERM_FULL: {
-            access = GENERIC_READ | GENERIC_WRITE | GENERIC_EXECUTE;
-        } break;
-
-        default: return 0;
-    }
-
-    Windows_File* result = arena_reserve_one<Windows_File>(arena);
+    Windows_File* result = pax_arena_reserve_one(arena, Windows_File);
 
     if (result != 0) {
-        uptr  temp   = arena_offset(arena);
+        isiz  temp   = arena_offset(arena);
         buf16 buffer = buf16_reserve(arena, MEMORY_KIB);
 
         buf16_write_str8_tail(&buffer, path);
@@ -135,7 +95,7 @@ windows_file_open_always(Arena* arena, str8 path, str8 name, File_Perm perm)
 
         str16 string = buf16_read_str16_head(&buffer, arena, buffer.size);
 
-        result->handle = CreateFileW(pax_cast(wchar_t*, string.memory),
+        result->handle = CreateFileW(pax_as(wchar_t*, string.memory),
             access, FILE_SHARE_READ, 0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
 
         arena_rewind(arena, temp);
@@ -152,37 +112,17 @@ windows_file_open_always(Arena* arena, str8 path, str8 name, File_Perm perm)
 Windows_File*
 windows_file_open_new(Arena* arena, str8 path, str8 name, File_Perm perm)
 {
-    uptr offset = arena_offset(arena);
-    uptr access = 0;
+    isiz offset = arena_offset(arena);
+    isiz access = 0;
 
-    switch (perm) {
-        case FILE_PERM_READ:  { access = GENERIC_READ;    } break;
-        case FILE_PERM_WRITE: { access = GENERIC_WRITE;   } break;
-        case FILE_PERM_EXEC:  { access = GENERIC_EXECUTE; } break;
+    if ((perm & FILE_PERM_READ)  != 0) access |= GENERIC_READ;
+    if ((perm & FILE_PERM_WRITE) != 0) access |= GENERIC_WRITE;
+    if ((perm & FILE_PERM_EXEC)  != 0) access |= GENERIC_EXECUTE;
 
-        case FILE_PERM_READ_WRITE: {
-            access = GENERIC_READ | GENERIC_WRITE;
-        } break;
-
-        case FILE_PERM_READ_EXEC: {
-            access = GENERIC_READ | GENERIC_EXECUTE;
-        } break;
-
-        case FILE_PERM_WRITE_EXEC: {
-            access = GENERIC_WRITE | GENERIC_EXECUTE;
-        } break;
-
-        case FILE_PERM_FULL: {
-            access = GENERIC_READ | GENERIC_WRITE | GENERIC_EXECUTE;
-        } break;
-
-        default: return 0;
-    }
-
-    Windows_File* result = arena_reserve_one<Windows_File>(arena);
+    Windows_File* result = pax_arena_reserve_one(arena, Windows_File);
 
     if (result != 0) {
-        uptr  temp   = arena_offset(arena);
+        isiz  temp   = arena_offset(arena);
         buf16 buffer = buf16_reserve(arena, MEMORY_KIB);
 
         buf16_write_str8_tail(&buffer, path);
@@ -191,7 +131,7 @@ windows_file_open_new(Arena* arena, str8 path, str8 name, File_Perm perm)
 
         str16 string = buf16_read_str16_head(&buffer, arena, buffer.size);
 
-        result->handle = CreateFileW(pax_cast(wchar_t*, string.memory),
+        result->handle = CreateFileW(pax_as(wchar_t*, string.memory),
             access, FILE_SHARE_READ, 0, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, 0);
 
         arena_rewind(arena, temp);
@@ -216,31 +156,31 @@ windows_file_close(Windows_File* self)
     self->handle = INVALID_HANDLE_VALUE;
 }
 
-uptr
+isiz
 windows_file_offset(Windows_File* self)
 {
     LARGE_INTEGER value = {};
 
     value.QuadPart = 0;
 
-    b32 state = SetFilePointerEx(self->handle, value,
-        &value, FILE_CURRENT);
+    b32 state = SetFilePointerEx(self->handle,
+        value, &value, FILE_CURRENT);
 
     if (state != 0)
-        return pax_cast(uptr, value.QuadPart);
+        return pax_as_isiz(value.QuadPart);
 
     return 0;
 }
 
 b32
-windows_file_rewind(Windows_File* self, uptr offset)
+windows_file_rewind(Windows_File* self, isiz offset)
 {
     LARGE_INTEGER value = {};
 
     value.QuadPart = offset;
 
-    b32 state = SetFilePointerEx(self->handle, value,
-        &value, FILE_BEGIN);
+    b32 state = SetFilePointerEx(self->handle,
+        value, &value, FILE_BEGIN);
 
     if (state != 0) return 1;
 
@@ -253,9 +193,10 @@ windows_file_write(Windows_File* self, buf8* buffer)
     buf8_normalize(buffer);
 
     u8*  memory = buffer->memory;
-    uptr length = buffer->size;
+    isiz length = buffer->size;
 
-    b32 state = windows_file_write_mem8(self, memory, length);
+    b32 state = windows_file_write_mem8(self,
+        memory, length);
 
     if (state == 0) return 0;
 
@@ -267,16 +208,14 @@ windows_file_write(Windows_File* self, buf8* buffer)
 }
 
 b32
-windows_file_write_mem8(Windows_File* self, u8* memory, uptr length)
+windows_file_write_mem8(Windows_File* self, u8* memory, isiz length)
 {
-    DWORD size = 0;
+    DWORD size  = 0;
+    b32   state = WriteFile(self->handle, memory, length, &size, 0);
 
-    b32 state = WriteFile(self->handle, memory, length, &size, 0);
+    if (state == 0 || size != length) return 0;
 
-    if (state != 0 && length == size)
-        return 1;
-
-    return 0;
+    return 1;
 }
 
 b32
@@ -285,14 +224,16 @@ windows_file_read(Windows_File* self, buf8* buffer)
     buf8_normalize(buffer);
 
     u8*  memory = buffer->memory + buffer->size;
-    uptr length = buffer->length - buffer->size;
+    isiz length = buffer->length - buffer->size;
+    isiz size   = 0;
 
-    if (length == 0) return 0;
+    if (length <= 0) return 0;
 
-    uptr size  = 0;
-    b32  state = windows_file_read_mem8(self, memory, length, &size);
+    b32 state = windows_file_read_mem8(self,
+        memory, length, &size);
 
-    if (state == 0 || size == 0) return 0;
+    if (state == 0 || size <= 0 || size > length)
+        return 0;
 
     buffer->size += size;
     buffer->tail += size;
@@ -301,20 +242,62 @@ windows_file_read(Windows_File* self, buf8* buffer)
 }
 
 b32
-windows_file_read_mem8(Windows_File* self, u8* memory, uptr length, uptr* size)
+windows_file_read_mem8(Windows_File* self, u8* memory, isiz length, isiz* size)
 {
     DWORD result = 0;
+    b32   state  = ReadFile(self->handle, memory, length, &result, 0);
 
-    b32 state = ReadFile(self->handle, memory, length, &result, 0);
+    if (state == 0 || result <= 0 || result > length)
+        return 0;
 
-    if (state != 0 && result <= length) {
-        if (size != 0)
-            *size = result;
+    if (size != 0) *size = result;
 
-        return 1;
+    return 1;
+}
+
+File_Attribs
+windows_file_attribs(Arena* arena, str8 path, str8 name)
+{
+    File_Attribs result = {};
+
+    WIN32_FIND_DATAW data = {};
+
+    isiz  offset = arena_offset(arena);
+    buf16 buffer = buf16_reserve(arena, MEMORY_KIB);
+
+    buf16_write_str8_tail(&buffer, path);
+    buf16_write_str8_tail(&buffer, pax_str8("\\"));
+    buf16_write_str8_tail(&buffer, name);
+
+    str16 string = buf16_read_str16_head(&buffer, arena, buffer.size);
+
+    HANDLE handle = FindFirstFileW(
+        pax_as(wchar_t*, string.memory), &data);
+
+    arena_rewind(arena, offset);
+
+    if (handle == INVALID_HANDLE_VALUE) return result;
+
+    result.path = str8_copy(arena, path);
+    result.name = str8_copy(arena, name);
+
+    result.type = FILE_TYPE_SIMPLE;
+    result.perm = FILE_PERM_READ_WRITE;
+
+    if ((data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0)
+        result.type = FILE_TYPE_DIRECTORY;
+
+    if (result.type != FILE_TYPE_DIRECTORY) {
+        result.size  = data.nFileSizeLow;
+        result.size += data.nFileSizeHigh * (MAXWORD + 1);
+
+        if ((data.dwFileAttributes & FILE_ATTRIBUTE_READONLY) != 0)
+            result.perm = FILE_PERM_READ;
     }
 
-    return 0;
+    FindClose(handle);
+
+    return result;
 }
 
 } // namespace pax
